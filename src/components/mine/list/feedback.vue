@@ -1,0 +1,110 @@
+<template>
+    <!--反馈-->
+		<div class="feedback">
+				<my-head :text="til"></my-head>
+				<div class="text">
+						<textarea name="text" id="con" maxlength="200"  @input="descInput"  placeholder="请简单描述您的问题或意见，谢谢" v-model="str">
+
+						</textarea>
+						<span>{{remnant}}/200</span>
+				</div>
+				<div class="btn">
+						<button :class="{'colour':str.length>5}" @click="subCon">提交</button>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+		import { Toast } from 'mint-ui';
+		export default {
+        name: "feedback",
+				data(){
+        		return{
+        				til:["举报反馈"],
+								remnant:0,
+								str:"",
+								token:'',
+						}
+				},
+				mounted(){
+        		this.token = localStorage.getItem('userName');
+				},
+				methods:{
+						descInput(){
+								let txtVal = this.str.length;
+								this.remnant = txtVal;
+								if(this.remnant >= 200){
+										Toast({
+												message: '只能输入200字',
+												position: 'middle',
+												duration: 2000
+										});
+								}
+						},
+						subCon(){
+								let val = this.str.replace(/\n|\r\n/g,'<br/>');
+								if(this.str.length>=6){
+										this.$axios.post(url+'/api/userOpinionFeedback/addUserOpinionFeedback',this.$qs.stringify({
+												token:this.token,
+												feedbackMsg:val
+										})).then((res) => {
+												console.log('反馈');
+												console.log(res);
+												Toast({
+														message: res.data.message,
+														position: 'middle',
+														duration: 2000
+												});
+										}).catch((err) => {
+												alert('网络错误')
+										})
+								}
+						},
+				},
+
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.text{
+				text-align: center;
+				padding-top:.2rem ;
+				position: relative;
+				span{
+						position: absolute;
+						bottom: .1rem;
+						right: .25rem;
+						color: #9B9B9B;
+				}
+		}
+		#con{
+				width: 3.15rem;
+				padding: .1rem;
+				height: 3rem;
+				border: 1px solid #9B9B9B;
+				border-radius: 2px;
+				color: #333;
+				font-size: .14rem;
+				line-height: .24rem;
+		}
+		.btn{
+				padding: .6rem .15rem 0;
+				height: .48rem;
+				.colour{
+						background: #FF5558;
+						color: #ffffff;
+				}
+				button{
+						border-radius: 4px;
+						height: 100%;
+						width: 100%;
+						color: #ffffff;
+						background: #D6D6D6;
+						border: none;
+				}
+		}
+</style>

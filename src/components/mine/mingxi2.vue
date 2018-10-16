@@ -1,0 +1,132 @@
+<template>
+		<!--星光明细-->
+		<div class="mingxi">
+				<my-head :text="til"></my-head>
+				<div id="mescroll" class="mescroll">
+								<!--有数据-->
+								<div class="conVi" v-show="!flag">
+										<List v-for="(item,index) in dataList" :key="index" :class="item.recordType ==0 ? 'cz':'tx'">
+												<div slot="left">
+														<img class="leftimg" src="../../assets/img/home/star@2x.png" alt="">
+														<span>{{item.recordType ==0 ? '+' : '-'}} {{item.consumeStarlightNum}}</span>
+												</div>
+												<div slot="right">
+														<p style="height: .18rem">{{item.investorsName}}</p>
+														<span>{{item.createTime}}</span>
+												</div>
+										</List>
+								</div>
+								<!--无数据-->
+								<div class="wuJu" v-show="flag">
+										<div>
+												<img src="../../assets/img/state/order@2x.png" alt="">
+												<p>暂无相关的明细</p>
+										</div>
+								</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+		import List from '@/components/mine/list/tixian'
+		import { Toast } from 'mint-ui';
+		import MeScroll from 'mescroll.js'
+		export default {
+				name: "mingxi",
+				data(){
+						return{
+								til:["星光明细"],
+								token:'',
+								dataList:[],
+								flag:false,
+								mescroll:null,
+						}
+				},
+				mounted(){
+						this.token = localStorage.getItem('userName');
+						this.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
+								down:{
+										callback: this.upCallback, //上拉回调
+										//以下参数可删除,不配置
+										isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+								}
+						});
+
+				},
+				methods:{
+						upCallback(){
+								this.$axios.post(url+'/api/userStarlightDetails/findUserStarlightDetail',this.$qs.stringify({
+										token:this.token,
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												var data = res.data.userStarlightDetailsPageList;
+												this.dataList = data.list;
+										}else{
+												Toast({
+														message: '暂无星光明细',
+														position: 'bottom',
+														duration: 1000
+												})
+										}
+										setTimeout(() => {
+												this.mescroll.endSuccess();
+										},1000)
+								}).catch((err) => {
+										Toast({
+												message: '网络错误',
+												position: 'bottom',
+												duration: 1000
+										})
+								})
+						},
+
+				},
+				components:{
+						"my-head":Head,
+						List,
+				}
+		}
+</script>
+<style lang="scss" scoped>
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+		.conVi{
+				height: 100%;
+				overflow: auto;
+		}
+		.mingxi{
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				ul{
+						height: 100%;
+				}
+		}
+		.leftimg{
+				width: .16rem;
+				height: .16rem;
+		}
+		.tx{
+				color: #FF8323 ;
+		}
+		.cz{
+				color: #00BB37;
+		}
+		.wuJu{
+				height: 100%;
+				div{
+						color: #666;
+						text-align: center;
+						img{
+								width: 2rem;
+								margin-top: 1rem;
+						}
+				}
+		}
+</style>

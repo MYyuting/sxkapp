@@ -1,0 +1,202 @@
+<template>
+    <!--登录-->
+		<div class="signIn">
+				<div class="nav">
+						<div class="text1" @click="back"><i class="el-icon-arrow-left"></i></div>
+						<div class="text" @click="register">注册</div>
+				</div>
+				<div class="img">
+						<img src="../../assets/img/login_logo.svg" alt="">
+				</div>
+				<div class="fill">
+						<div>
+								<img src="../../assets/img/account.svg" alt="">
+								<input type="text" ref="input1"
+											 v-on:input ="inputFunc" placeholder="请输入手机号" v-model="phone">
+								<span>+86</span>
+						</div>
+						<div>
+								<img src="../../assets/img/password.svg" alt="">
+								<input type="password" ref="input2"
+											 v-on:input ="inputFunc" placeholder="请输入密码" v-model="password">
+						</div>
+				</div>
+				<div class="btn">
+						<button :disabled="!flag" :class="{'colour':flag}" @click="loge">登录</button>
+						<p @click="wnagji">忘记登录密码？</p>
+				</div>
+		</div>
+</template>
+
+<script>
+		import { Toast ,Indicator } from 'mint-ui';
+		export default {
+        name: "SignIn",
+				data(){
+        		return{
+        				texe:["","注册"],
+								flag:false,
+								phone:'',
+								password:'',
+						}
+				},
+				mounted(){
+        	  // console.log(localStorage.getItem('phone'));
+						if(localStorage.getItem('phone')){
+								this.phone = localStorage.getItem('phone')
+						}
+				},
+
+				methods:{
+						back(){
+								this.$router.back(-1)
+						},
+						inputFunc(){
+								if(this.$refs.input1.value!="" &&this.$refs.input2.value !=""){
+										this.flag =true
+								}else{
+										this.flag =false
+								}
+						},
+
+						// 登录
+						loge(){
+								// console.log(this.$md5(this.password));
+								let _this = this;
+								this.$axios.post(url+'/api/user/login', this.$qs.stringify({
+												username:this.phone,
+												password:this.$md5(this.password),
+										}),{
+												headers:{'Content-Type':'application/x-www-form-urlencoded'}
+										}).then(function(res){
+										console.log(res);
+										if(res.data.status == 0){
+												// 请求成功
+												Indicator.open({
+														text: '登录中...',
+														spinnerType: 'fading-circle'
+												});
+												setTimeout(() => {
+														Indicator.close();
+														Toast({
+																message: '登录成功',
+																position: 'bottom',
+																duration: 1000
+														});
+														localStorage.setItem('userName',res.data.token);
+														if(_this.$route.query.redirect){
+																let redirect = _this.$route.query.redirect;
+																_this.$router.push(redirect)
+														}else{
+																_this.$router.push("/mine")
+														}
+												},1000)
+										}else {
+												Toast({
+														message: res.data.message,
+														position: 'bottom',
+														duration: 2000
+												});
+										}
+								}).catch(function(err){
+										console.log(err);
+										Toast({
+												message: '网络错误',
+												position: 'bottom',
+										});
+								});
+
+						},
+						// 注册
+						register(){
+								this.$router.push("/register")
+						},
+						//忘记密码
+						wnagji(){
+								this.$router.push("/gmima")
+						}
+				},
+				components:{}
+    }
+</script>
+
+<style scoped lang="scss">
+		.nav{
+				display: flex;
+				height: .5rem;
+				padding: 0 .15rem;
+				justify-content: space-between;
+				align-items: center;
+				.text{
+						color: #ff5558;
+						font-size: .16rem;
+				}
+				.text1{
+						font-size: .2rem;
+				}
+		}
+		.img{
+				text-align: center;
+				img{
+						width: 1rem;
+						height: 1rem;
+				}
+		}
+		.fill{
+				margin-top: .27rem;
+				div{
+						width: 2.85rem;
+						height: .5rem;
+						margin: 0 auto .1rem;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						border: 1px solid #aaa;
+						-webkit-border-radius: 2px;
+						-moz-border-radius: 2px;
+						border-radius: 2px;
+						img{
+								width: .4rem;
+								height: .4rem;
+						}
+						input{
+								font-size: .15rem;
+								flex-grow: 1;
+								height: 70%;
+								border: none;
+						}
+						input::placeholder{
+								text-align: left;
+						}
+						span{
+								font-size: .15rem;
+								color: #bcbcbc;
+								display: inline-block;
+								width: .45rem;
+						}
+				}
+		}
+		.btn{
+				text-align: center;
+				margin-top: .55rem;
+				button{
+						width: 2.85rem;
+						height: .44rem;
+						font-size: .15rem;
+						border-radius: 3px;
+						color: #ffffff;
+						background: #D6D6D6;
+						border: none;
+				}
+				.colour{
+						background: #ff5558;
+				}
+				p{
+						margin: .18rem auto 0;
+						width: 2.85rem;
+						text-align: right;
+						color: #ff5558;
+						font-size: .13rem;
+				}
+		}
+</style>

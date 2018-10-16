@@ -1,0 +1,39 @@
+<template>
+		<!--明细list-->
+    <div class="list">
+				<div class="leftList">
+						<slot name="left"></slot>
+				</div>
+				<div class="rightList" slot="right">
+						<slot name="right"></slot>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "tixian"
+    }
+</script>
+
+<style scoped lang="scss">
+		.list{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height: .6rem;
+				padding: 0 .15rem;
+				/*.leftList{*/
+						/*color: #00BB37;*/
+				/*}*/
+				.rightList{
+						*{font-size: .12rem;text-align: right}
+						/*p{*/
+								/*color: #00BB37;*/
+						/*}*/
+						span{
+								color: #9B9B9B;
+						}
+				}
+		}
+</style>
