@@ -46,7 +46,7 @@
 				<!--未登陆状态-->
 				<div class="welo">
 						<ul>
-								<li v-for="(item,index) in list1">
+								<li v-for="(item,index) in list1" @click="baidu">
 										<span>{{item.til}}</span>
 										<div>
 												<span class="text">{{item.phone}}</span>
@@ -126,6 +126,9 @@
 
 			},
 			methods:{
+					baidu(){
+							window.location.href = 'https://www.pgyer.com/uw7g'
+					},
 					set(index){
 							this.$router.push(this.list[index].url);
 					},

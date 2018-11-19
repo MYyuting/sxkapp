@@ -1,7 +1,7 @@
 <template>
 		<!--充值  提现公用-->
 		<div class="box">
-				<div class="shuoM">充值免手续费，提现手续费0.5%（支付通道收取）</div>
+				<div class="shuoM">每笔产生0.6%手续费，此手续费由支付宝收取，星时空平台对充提不收取任何费用</div>
 				<div class="czfs">{{data}}</div>
 				<div class="zhifubao">
 						<div>
@@ -36,6 +36,9 @@
 </script>
 
 <style scoped lang="scss">
+		.box{
+				border-bottom: 4px solid #f3f3f3;
+		}
 		.display{
 				display: flex;
 				justify-content: space-between;
@@ -49,8 +52,8 @@
 				background: #fff;
 		}
 		.shuoM{
-				@include pad(0 .15rem,.5rem);
-				line-height: .5rem;
+				padding: .1rem .15rem;
+				font-size: .12rem;
 		}
 		.czfs{
 				line-height: .4rem;
@@ -107,10 +110,5 @@
 				top: 23%;
 				left: 24%;
 				background: #fff;
-		}
-</style>
-<style>
-		.zhifubao{
-				border-bottom: 4px solid #F3F3F3;
 		}
 </style>

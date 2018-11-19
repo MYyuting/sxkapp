@@ -1,15 +1,14 @@
 <template>
 		<div class="wbtm">
 				<div class="issuser" v-for="(item,index) in datalist">
-						<div class="left_img">
-								<!--<img src="./../../assets/img/home/home1.png" alt="">-->
-								<img :src="item.avatar" alt=""
-										 @click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">
+						<div class="left_img" :style="{backgroundImage: 'url('+item.avatar+')'}" @click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">
+								<!--<img :src="item.avatar" alt=""-->
+										 <!--@click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">-->
 						</div>
 						<div class="right_content">
 								<div class="right_title" @click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">
 										<span class="right_title_name">
-												<span>{{item.userName}}</span>
+												<span :class="item.isOfficialService == 0? 'colH' : ''">{{item.userName}}</span>
 												<img v-show="item.isFans == 1" src="../../assets/img/tip/fans@2x.png" alt="">
 										</span>
 										<span class="right_time">{{item.grTime}}</span>
@@ -297,8 +296,7 @@
 												path:'/geren',
 												query: {
 														id:id,
-														userImg:ater,
-														name:name,
+														isMy:'true',
 												}
 										})
 								}
@@ -341,6 +339,8 @@
 						border-radius:50% ;
 						margin-right: .15rem;
 						overflow: hidden;
+						background-position: 100% 35%;
+						background-size: cover;
 						img{
 								max-width: 100%;
 								min-height: 100%;
@@ -351,25 +351,28 @@
 						flex-grow: 1;
 						/*padding-left: .1rem;*/
 						.right_title{
+								display: flex;
+								align-items: center;
+								justify-content: space-between;
 								.right_title_name{
 										font-size:.16rem;
 										color:$color;
 										font-weight:bold;
 										height: .26rem;
-										/*>span{
-       		   width: 1.3rem;
-       		   height: .26rem;
-             display: inline-block;
-             border:1px solid red;
-       	}*/
+										span{
+												vertical-align: middle;
+										}
+										.colH{
+												color:#333;
+												font-weight:normal;
+										}
 										img{
 												width:.2rem;
 												display: inline-block;
-												vertical-align: top;
 										}
 								}
 								.right_time{
-										float:right;
+										/*float:right;*/
 										font-size:.14rem;
 										color:#999;
 								}
@@ -425,7 +428,7 @@
 								.lerse{
 										float:right;
 										img{
-												height:.3rem;
+												width: .26rem;
 										}
 								}
 						}

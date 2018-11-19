@@ -50,7 +50,6 @@
 		import homes from './../public/homeS'
 		import MeScroll from 'mescroll.js'
 		import issuser from './../public/issuser'
-		import community from './../public/community'
 		import { Toast } from 'mint-ui';
   
 		export default {
@@ -227,9 +226,9 @@
 														for(var item of ic){
 																var a=item.grTime.substring(0,10)
 																//截取到8
-																var b=item.userName.substring(0,8)
+																// var b=item.userName.substring(0,10)
 																item.grTime=a
-																item.userName=b
+																// item.userName=b
 																item.pListNum= item.pList.length;
 																item.cListNum= item.cList.length;
 														}
@@ -252,7 +251,6 @@
 				components: {
 						homes,
 						issuser,
-						community
 				}
 		}
 </script>

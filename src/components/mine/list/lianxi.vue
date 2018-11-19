@@ -5,6 +5,7 @@
 				<div class="main">
 						<div class="tubiao">
 								<span class="iconfont icon-login_logo"></span>
+								<p>{{this.$store.state.version}}</p>
 						</div>
 						<ul v-for="(item,index) in listArr">
 								<li>{{item.title}}</li>
@@ -33,11 +34,11 @@
 								listArr:[
 										{
 												title:"客服邮箱",
-												con:"kefu@xsk.cn"
+												con:"kefu@xingshukong.cn"
 										},
 										{
 												title:"客服微信",
-												con:"xsk_2018"
+												con:"xsk_kefu"
 										}
 								]
 						}
@@ -81,7 +82,8 @@
 						margin-bottom: .18rem;
 				}
 				p{
-						font-size: .18rem;
+						font-size: .14rem;
+						color: #666;
 				}
 		}
 		.display{

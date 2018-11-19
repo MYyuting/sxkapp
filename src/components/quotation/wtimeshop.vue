@@ -81,8 +81,8 @@ import { Toast } from 'mint-ui';
         			value: null,
 				      value1: null,
 				      //show: true,
-				      startDate: new Date('2014/01/01') ,
-				      endDate: new Date("2019/01/01"),
+				      startDate: new Date('2018/01/01') ,
+				      endDate: new Date("2099/01/01"),
         			whTime:"",
         			inputobj:{}
 				      
@@ -193,7 +193,7 @@ import { Toast } from 'mint-ui';
 										          message: '平台审核成功后将自动发布该时间商品 ' ,
 										          position: 'bottom'
 										        });
-										        this.$router.push("/wusermsg")
+									        this.$router.push('/quotation/dynamic')
 								     		}else{
                   			//否则提示
 								     			var msga=res.data.message;
@@ -206,8 +206,6 @@ import { Toast } from 'mint-ui';
 								     .catch(err=>{
 								       console.log(err);
 								     });
-	     			
-	     			
 	     		
 	     		}
 	     	}

@@ -1,6 +1,6 @@
 <template>
     <div class="purchase">
-      <!--买入-->
+      <!--测试页-->
 
     </div>
 </template>

@@ -1,71 +1,74 @@
 <template>
 		<!--买入-->
 		<div>
-				<div class="mescroll dynamic_temp" id="mescroll">
-						<div class="temp_content_top">
-								<!--左-->
-								<div class="temp_content_left">
-										<div class="div-ipt">
-												<input type="text" placeholder="发行人姓名或代码" v-model="input1" v-on:input="change">
-												<div class="sousuo" id="ss" v-show="flag">
-														<p v-for="(item,index) in arrList" @click="clickLIST(index)">
-																<span>{{item.investorsName}}</span>
-																<span>{{item.investorsCode}}</span>
-														</p>
+				<div class="dynamic_temp">
+						<div class="con-box">
+								<div class="temp_content_top">
+										<!--左-->
+										<div class="temp_content_left">
+												<div class="div-ipt">
+														<input type="text" placeholder="发行人姓名或代码" v-model="input1" v-on:input="change">
+														<div class="sousuo" id="ss" v-show="flag">
+																<p v-for="(item,index) in arrList" @click="clickLIST(index)">
+																		<span>{{item.investorsName}}</span>
+																		<span>{{item.investorsCode}}</span>
+																</p>
+														</div>
+												</div>
+												<div class="div-ipt">
+														<span class="jian iconfont icon-price_down" :class="disb ? 'colorH' : ''" @click="jian"></span>
+														<input :disabled="disb" id="price" type="text" step="0.01" v-model="input2" placeholder="价格" >
+														<span class="ding ding1">￥</span>
+														<span class="jia iconfont icon-price_up" :class="disb ? 'colorH' : ''" @click="jia"></span>
+												</div>
+												<div class="div-btn">
+														<span class="iconfont icon-btn_high" :class="disb ? 'colorH' : 'colorR'" @click="zhang"></span>
+														<span class="iconfont icon-btn_low" :class="disb ? 'colorH' : 'colorG'" @click="die"></span>
+												</div>
+												<div class="div-ipt">
+														<input type="number" placeholder="数量" v-model="input3">
+														<span class="ding">s</span>
+												</div>
+												<div class="div-ipt kemai " >可买 {{queryNum}} 秒</div>
+												<div class="div-ipt btnBuy" @click="mairuClick">买入时间</div>
+										</div>
+										<!--、右-->
+										<div class="temp_content_right">
+												<div class="temp-tab">
+														<span :class="tabShow ? '':'active'" @click="tabBtn(0)">五档</span>
+														<span @click="tabBtn(1)" :class="tabShow ? 'active':''">明细</span>
+														<img src="../../assets/img/shuaxin.svg" :class="shuaxin ? 'tran' : ''" @click="trans" alt="">
+												</div>
+												<div v-show="!tabShow">
+														<ul class="sell">
+																<li v-for="(item,index) in sellFiverList" @click="sellmxlist(item.price)">
+																		<span>卖{{5-index}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																</li>
+														</ul>
+														<br>
+														<ul class="buy">
+																<li v-for="(item,index) in buyFiverList" @click="sellmxlist(item.price)">
+																		<span>买 {{index+1}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																</li>
+														</ul>
+												</div>
+												<!--明细-->
+												<div v-show="tabShow">
+														<ul class="sellBuy" v-if="buyAndSellerList.length!=0">
+																<li  v-for="item in buyAndSellerList">
+																		<span>{{item.time}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																</li>
+														</ul>
+														<div class="wnone" v-if="buyAndSellerList.length==0">
+																<p v-show="!mxShow">暂无数据</p>
+																<p v-show="mxShow">先选择一个发行人</p>
+														</div>
 												</div>
 										</div>
-										<div class="div-ipt">
-												<span class="jian iconfont icon-price_down" @click="jian"></span>
-												<input :disabled="disb" id="price" type="text" step="0.01" v-model="input2" placeholder="价格" >
-												<span class="ding ding1">￥</span>
-												<span class="jia iconfont icon-price_up" @click="jia"></span>
-										</div>
-										<div class="div-btn">
-												<span class="iconfont icon-btn_high" @click="zhang"></span>
-												<span class="iconfont icon-btn_low" @click="die"></span>
-										</div>
-										<div class="div-ipt">
-												<input type="number" placeholder="数量" v-model="input3">
-												<span class="ding">s</span>
-										</div>
-										<div class="div-ipt kemai " >可买 {{queryNum}} 秒</div>
-										<div class="div-ipt btnBuy" @click="mairuClick">买入时间</div>
 								</div>
-								<!--、右-->
-								<div class="temp_content_right">
-										<div class="temp-tab">
-												<span :class="tabShow ? '':'active'" @click="tabBtn(0)">五档</span>
-												<span @click="tabBtn(1)" :class="tabShow ? 'active':''">明细</span>
-										</div>
-										<div v-show="!tabShow">
-												<ul class="sell">
-														<li v-for="(item,index) in sellFiverList" @click="sellmxlist(item.price)">
-																<span>卖{{5-index}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
-														</li>
-												</ul>
-												<br>
-												<ul class="buy">
-														<li v-for="(item,index) in buyFiverList" @click="sellmxlist(item.price)">
-																<span>买 {{index+1}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
-														</li>
-												</ul>
-										</div>
-										<!--明细-->
-										<div v-show="tabShow">
-												<ul class="sellBuy" v-if="buyAndSellerList.length!=0">
-														<li  v-for="item in buyAndSellerList">
-																<span>{{item.time}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
-														</li>
-												</ul>
-												<div class="wnone" v-if="buyAndSellerList.length==0">
-														<p v-show="!mxShow">暂无数据</p>
-														<p v-show="mxShow">先选择一个发行人</p>
-												</div>
-										</div>
+								<div class=" temp_content_bottom" >
+										<tabListToBuy @ievent="ievent" ref="mychild"></tabListToBuy>
 								</div>
-						</div>
-						<div class="temp_content_bottom">
-								<tabListToBuy @ievent="ievent" ref="mychild"></tabListToBuy>
 						</div>
 				</div>
 				<!--输入密码-->
@@ -175,6 +178,7 @@
 								ss:null,                //时间定时刷新5档
 								limitDownPrice:'',      //跌价
 								limitUpPrice:'',      //涨价
+								shuaxin:false,
 						}
 				},
 
@@ -188,12 +192,6 @@
 								this.getJson();
 								this.queryJson();
 						}
-						var self = this;
-						self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
-								down: {
-										callback: this.downCallback //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
-								},
-						});
 				},
 				watch:{
 						//监听价格变化
@@ -203,6 +201,13 @@
 						}
 				},
 				methods: {
+						trans(){
+								this.getJson();
+								this.shuaxin = true;
+								setTimeout(()=>{
+										this.shuaxin = false;
+								},2000)
+						},
 						zhang(){
 								this.input2 = this.limitUpPrice
 						},
@@ -226,9 +231,9 @@
 								if(this.input2 == ''){
 										this.input2 = 0.01
 								}else{
-										if(this.input2 >= this.limitUpPrice){
+										if(parseFloat(this.input2) >= this.limitUpPrice){
 												Toast({
-														message: '交易价格不能大于涨幅价',
+														message: '交易价格不能大于涨停价',
 														duration: 1000
 												});
 												return;
@@ -239,9 +244,10 @@
 						},
 						//点击减
 						jian(){
-								if(this.input2 <= this.limitDownPrice){
+								console.log(this.input2+'-------'+this.limitDownPrice)
+								if(parseFloat(this.input2) <= this.limitDownPrice){
 										Toast({
-												message: '交易价格不能小于跌幅价',
+												message: '交易价格不能小于跌停价',
 												duration: 1000
 										});
 										return;
@@ -271,9 +277,10 @@
 						//子组件调用父组件的方法
 						ievent(data){
 								console.log(data);
-								this.input1=data.investorsCode;
+								this.input1= data.investorsName +' '+data.investorsCode;
 								this.input2=data.newOrderPrice;
-								this.queryJson()
+								this.investorsCode = data.investorsCode;
+								this.getJson();
 						},
 						//搜索框
 						change(){
@@ -308,7 +315,7 @@
 										this.$router.push('/signin');
 										return;
 								}
-								if(this.input2 > this.limitUpPrice || this.input2 < this.limitDownPrice){
+								if(parseFloat(this.input2) > this.limitUpPrice || parseFloat(this.input2) < this.limitDownPrice){
 										Toast({
 												message: '交易价格不能超过涨跌幅限制',
 												position: 'middle',
@@ -463,7 +470,7 @@
 												this.mxShow = true
 										}
 										this.limitUpPrice = res.data.OBJECT.limitUpPrice  // 涨价
-										this.limitDownPrice = res.data.OBJECT.limitDownPrice  // 涨价
+										this.limitDownPrice = res.data.OBJECT.limitDownPrice  // die价
 										this.buyAndSellerList = res.data.OBJECT.buyAndSellerList;//明细
 										var buyFiverList = res.data.OBJECT.buyFiverList;//买五集合
 										var buyFiverListNew = [];
@@ -489,14 +496,8 @@
 										}
 										this.sellFiverList = sellFilverListNew;
 										console.log(this.sellFiverList )
-										setTimeout(() => {
-												this.mescroll.endSuccess();
-										},1000)
 								}).catch((err) => {
 										console.log(err);
-										setTimeout(() => {
-												this.mescroll.endErr();
-										},1000)
 								})
 								// },10000);
 						},
@@ -542,12 +543,12 @@
 
 <style scoped lang="scss">
 		/*mescroll滚动的区域*/
-		.mescroll {
-				position: fixed;
-				top: .49rem;
-				bottom: .49rem;
-				height: auto;
-		}
+		/*.mescroll {*/
+				/*position: fixed;*/
+				/*top: .49rem;*/
+				/*bottom: .49rem;*/
+				/*height: auto;*/
+		/*}*/
 		#ss{
 				height: 1.72rem;
 				overflow: auto;
@@ -580,10 +581,18 @@
 						border-bottom: 1px solid #ddd;
 				}
 		}
-		.dynamic_temp {
+		.con-box{
 				height: 100%;
+				display: flex;
+				flex-direction: column;
+		}
+		.dynamic_temp {
+				width: 100%;
+				position: fixed;
+				top: .49rem;
+				bottom: .49rem;
+				height: auto;
 				box-sizing: border-box;
-				padding-bottom: .5rem;
 				.temp_content_top {
 						display: flex;
 						flex-wrap: wrap;
@@ -632,6 +641,9 @@
 										color: #ff5558;
 										z-index: 1;
 								}
+								.colorH{
+										color: #666;
+								}
 								.jian{
 										left: 0;
 								}
@@ -646,11 +658,16 @@
 						>div:nth-child(3){
 								padding: .07rem 0;
 								span:nth-child(1){
-										color: #ff5558;
 										margin-right: .1rem;
 								}
-								span:nth-child(2){
+								.colorR{
+										color: #ff5558;
+								}
+								.colorG{
 										color: #38f321;
+								}
+								.colorH{
+										color: #666;
 								}
 						}
 						.kemai{
@@ -673,7 +690,8 @@
 						overflow:auto;
 						.temp-tab{
 								display: flex;
-								justify-content: center;
+								justify-content: space-between;
+								align-items: center;
 								padding-bottom: .07rem;
 								span{
 										padding: .05rem 0;
@@ -683,6 +701,21 @@
 										border-bottom: 3px solid #ff5558;
 										color: #ff5558;
 								}
+								img{
+										width: .15rem;
+										height: .15rem;
+								}
+								.tran{
+										animation-name:go;
+										animation-duration:2s;
+										animation-iteration-count: infinite
+								}
+						}
+						@keyframes go{
+								0% {
+										transform: rotateZ(0);
+								}
+								100% {transform: rotateZ(360deg); }
 						}
 						.buy,.sell,.sellBuy{
 								li{
@@ -720,6 +753,10 @@
 				}
 				.temp_content_bottom {
 						width: 100%;
+						height: 20%;
+						flex-grow: 1;
+						margin-top:.1rem;
+						border-top: 4px solid #eee;
 				}
 		}
 

@@ -19,24 +19,24 @@
 														<img :src="item.investorsAvatar" alt="">
 														<div>
 																<p>{{item.investorsName}} {{item.investorsCode}}</p>
-																<span>{{item.investorsWork}} </span>
+																<span>{{item.bookingContent}} </span>
 														</div>
 												</div>
 												<div>
 														<i :class="index == index1? 'el-icon-arrow-up':'el-icon-arrow-down'"></i>
 												</div>
 										</div>
-										<div class="Speed">
-												<span :class="item.bookingStatus == 0 ? 'activ' : '' ">待受理{{item.bookingStatus}}</span>
-												<span :class="item.bookingStatus == 1 ? 'activ' : '' ">受理中</span>
-												<span :class="item.bookingStatus == 2 ? 'activ' : '' ">预约成功</span>
-												<span :class="item.bookingStatus == 3 ? 'activ' : '' ">订单进行中</span>
+										<div class="Speed" v-show="!item.bookingStatus == 2 || item.bookingStatus == 1">
+												<span :class="item.bookingStatus == 2 ? 'activ' : '' ">受理中</span>
+												<i :class="item.bookingStatus == 2 ? 'activ' : '' "></i>
+												<span :class="item.bookingStatus == 1 ? 'activ' : '' ">预约成功</span>
+												<i :class="item.bookingStatus == 1 ? 'activ' : '' "></i>
 												<span :class="item.bookingStatus == 4 ? 'activ' : '' ">订单完成</span>
 										</div>
-										<ul class="listUl" v-show="index == index1 " >
+										<ul class="listUl" v-show="index == index1 ">
 												<li>
 														<span>时间商品</span>
-														<span>{{}}</span>
+														<span>{{item.bookingContent}}</span>
 												</li>
 												<li>
 														<span>下单时间</span>
@@ -46,14 +46,13 @@
 														<span>商品价格</span>
 														<span>{{item.averPrice}}</span>
 												</li>
-												<li>
-														<span>当前进度</span>
-														<span>{{arrJD[item.bookingStatus]}}</span>
-												</li>
 										</ul>
 										<div class="cancel">
 												<span>订单编号：{{item.bookingOrderNo}}</span>
-												<button @click="wdel(index,item.bookingId)">取消订单</button>
+												<button @click="wdel(index,item.bookingId)"
+												v-show="item.bookingStatus == 2">取消订单</button>
+												<span v-show="item.bookingStatus == 4">订单已完成</span>
+												<span v-show="item.bookingStatus == 31 || item.bookingStatus == 33">订单已取消</span>
 										</div>
 								</div>
 						</div>
@@ -184,7 +183,6 @@
 										})).then((res) => {
 												console.log(res.data);
 												if(res.data.STATUS == 0){
-														this.dataList.splice(index,1);
 														Toast({
 																message: '删除成功',
 																position: 'bottom',
@@ -267,6 +265,7 @@
 				height: .4rem;
 				display: flex;
 				justify-content: space-between;
+				align-items: center;
 				padding: 0 .15rem;
 				border-bottom: 1px solid #eee;
 				color: #999;
@@ -275,25 +274,14 @@
 						line-height: .4rem;
 						position: relative;
 				}
+				i{
+						width: .8rem;
+						height: 1px;
+						border-bottom: 1px solid #aaa;
+				}
 				.activ{
 						color: #FF5558;
-				}
-				span:not(:nth-child(5)):after{
-						content: "";
-						position: absolute;
-						width: .26rem;
-						height: 1px;
-						top: .18rem;
-						border-left: .2rem solid #999;
-				}
-				span:nth-child(1):after,span:nth-child(2):after{
-						left: .4rem;
-				}
-				span:nth-child(3):after{
-						left: .51rem;
-				}
-				span:nth-child(4):after{
-						left: .62rem;
+						border-color: #ff5558;
 				}
 		}
 		.cancel{

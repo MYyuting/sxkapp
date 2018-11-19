@@ -75,7 +75,7 @@
         color: $color;
       }
       .select_class {
-        background: rgba(255, 55, 58, .8);
+        background: #FF656B;
         color: #fff;
       }
       .other_class {

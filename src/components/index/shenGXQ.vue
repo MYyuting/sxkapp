@@ -23,14 +23,13 @@
 														<!--<button @click="songXg">送星光</button>-->
 												</div>
 										</div>
-										<p><span>申购时间</span> {{dataMy.investorsPresellDate}}</p>
-										<p><span>上市时间</span> {{dataMy.investorsPublishDate}}</p>
+										<!--<p><span>申购时间</span> {{dataMy.investorsPresellDate}}</p>-->
+										<!--<p><span>上市时间</span> {{dataMy.investorsPublishDate}}</p>-->
 								</div>
 								<ul class="shu-right">
-										<li><span>发行价</span> <span>{{dataMy.newOrderPrice}}</span></li>
+										<li><span>发行价</span> <span>{{dataMy.newOrderPrice}}元/秒</span></li>
 										<li><span>发行总量</span> <span>{{dataMy.investorsTotalNum}}s</span></li>
 										<li><span>申购上限</span> <span>{{dataMy.investorStaggingNum}}s</span></li>
-										<li><span>上限资金</span> <span>{{dataMy.newOrderPrice*dataMy.investorStaggingNum}}</span></li>
 										<li><span>所属板块</span> <span>{{dataMy.labelTag}}</span></li>
 										<li><span>发行代码</span> <span>{{dataMy.investorsCode}}</span></li>
 								</ul>
@@ -371,9 +370,10 @@
 				}
 				display: flex;
 				justify-content: space-between;
-				padding: .1rem 0 .1rem .15rem;
+				padding: .1rem 0 .0rem .15rem;
 				.shu-left{
 						flex-grow: 1;
+						padding-top: 3px;
 						>div{
 								display: flex;
 								margin-bottom: .1rem;
@@ -424,6 +424,7 @@
 						display: flex;
 						flex-direction: column;
 						justify-content: space-between;
+						li{padding-bottom: 3px;}
 						li span:nth-child(1){
 								color: #999;
 						}

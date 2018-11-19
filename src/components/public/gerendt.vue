@@ -3,18 +3,22 @@
 		<div class="geren">
 				<Head>
 						<p slot="head_left" @click="back"><i class="el-icon-arrow-left"></i></p>
-						<p slot="head_center">{{userName}}</p>
+						<p slot="head_center">{{info.userName}}</p>
 				</Head>
 				<div class="hei"></div>
 				<div class="top-con">
-						<div class="img">
-								<img :src="imgUrl" alt="">
+						<div class="imgT" :style="{backgroundImage: 'url('+info.userAvatar+')'}">
+								<!--<img :src="imgUrl" alt="">-->
 						</div>
 						<div class="conter-txt">
 								<p><span>动态</span> <span>{{length1}}</span></p>
 								<p><span>获赞</span> <span>{{length}}</span></p>
 						</div>
-						<button @click="gzClick" :class="thide==0 ? 'bock' : ''" :disabled="thide==0">发布动态</button>
+						<button v-show="isMy == 'false'" @click="gzClick" :class="thide==0 ? 'bock' : ''" :disabled="thide==0">发布动态</button>
+						<button @click="btnClick2(info.attentionStatus)" v-show="isMy == 'true'"
+										:class="info.attentionStatus == 1? '' : 'bock'">
+								{{info.attentionStatus == 1  ? '关注' : '取消'}}
+						</button>
 				</div>
 				<!--tab切换-->
 				<div class="tabtil"  v-model="debtLibraryTabIndex">
@@ -25,18 +29,17 @@
 						<div v-show="newsList0Show"  id="dataList0">
 								<Issuser :datalist="newsList0" ></Issuser>
 						</div>
-						<div class="zanwu" v-show="!newsList0Show">暂无发布动态</div>
 				</div>
 				<!--自选-->
-				<div id="mescroll1" class="mescroll" v-show="num == 1">
-						<div v-show="newsList1Show" id="dataList1">
-								<Homes :datalist1="newsList1" :whide="thide"></Homes>
-						</div>
-						<div class="zanwu" v-show="!newsList1Show">暂无自选</div>
-				</div>
+				<!--<div id="mescroll1" class="mescroll" v-show="num == 1">-->
+						<!--<div v-show="newsList1Show" id="dataList1">-->
+								<!--<Homes :datalist1="newsList1" :whide="thide"></Homes>-->
+						<!--</div>-->
+						<!--<div class="zanwu" v-show="!newsList1Show">暂无自选</div>-->
+				<!--</div>-->
 				<!--关注-->
-				<div id="mescroll2" class="mescroll" v-show="num == 2">
-						<div id="dataList2" v-show="newsList2Show">
+				<div id="mescroll1" class="mescroll" v-show="num == 1">
+						<div id="dataList1" v-show="newsList2Show">
 								<div class="guanzhu" v-for="(item,index) in newsList2">
 										<div>
 												<div><img :src="item.userAvatar" :onerror="defaultImg" alt=""></div>
@@ -51,8 +54,8 @@
 						<div class="zanwu" v-show="!newsList2Show">暂无关注信息</div>
 				</div>
 				<!--ta的偶像-->
-				<div id="mescroll3" class="mescroll" v-show="num == 3">
-						<div v-show="newsList3Show" id="dataList3">
+				<div id="mescroll2" class="mescroll" v-show="num == 2">
+						<div v-show="newsList3Show" id="dataList2">
 								<Homes :datalist1="newsList3" :whide="thide"></Homes>
 						</div>
 						<div class="zanwu" v-show="!newsList3Show">暂无偶像信息</div>
@@ -89,7 +92,7 @@
 								flag:true,
 								thide:1,//判断ismay
 								token:localStorage.getItem("userName"),
-								tab:["动态",'自选','关注','Ta的偶像'],
+								tab:["动态",'关注','Ta的偶像'],
 								guanList:[
 										{
 												flag:true,
@@ -97,17 +100,30 @@
 												til:'油腻大叔',
 										},
 								],
-								imgUrl:this.$route.query.userImg,
-								userName:this.$route.query.name
+								isMy:this.$route.query.isMy,
+								info:'',
 						}
 				},
 				mounted(){
-						this.getDt()
-						console.log(this.$route.query.id)
+						this.getDate();
+						// console.log(this.$route.query.isMy)
 						//初始化首页
 						this.mescrollArr[0] = this.initMescroll("mescroll0", "dataList0");
 				},
 				methods:{
+						//请求个人信息
+						getDate(){
+								this.$axios.post(url+'/api/user/getUserInfo',this.$qs.stringify({
+										token:this.token,
+										userId:this.$route.query.id,
+								})).then((res) =>{
+										console.log(res.data.data);
+										if(!res.data.data.user_avatar){
+												res.data.data.user_avatar = require('../../assets/img/toux.png');
+										}
+										this.info = res.data.data;
+								})
+						},
 						back(){
 								this.$router.back(-1)
 						},
@@ -119,72 +135,106 @@
 										}
 								}
 						},
-						//关注
-						btnClick(index){
-//						this.guanList[index].flag = !this.guanList[index].flag
-								let userid = this.newsList2[index].userId;
-								// if(this.newsList2[index].attentionStatus ==0){
-								// 		this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
-								// 				token:this.token,
-								// 				attentionUserId:userid,  //被关注人的userId
-								// 				attentionStatus:1,       //发1关注
-								// 		})).then((res) => {
-								// 				console.log(res.data);
-								// 				if(res.data.status == 0){
-								// 						this.newsList2[index].attentionStatus = 1;
-								// 						Toast({
-								// 								message: '关注成功',
-								// 								position: 'bottom',
-								// 								duration: 1000
-								// 						});
-								// 				}else{
-								// 						Toast({
-								// 								message: res.data.message,
-								// 								position: 'bottom',
-								// 								duration: 1000
-								// 						});
-								// 				}
-								// 		}).catch((err) => {
-								// 				console.log(err);
-								// 		})
-								// }else{
-										this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
-												token:this.token,
-												attentionUserId:userid,  //被关注人的userId
-												attentionStatus:0,       //发0取消
-										})).then((res) => {
-												console.log(res.data);
-												if(res.data.status == 0){
-														this.newsList2[index].attentionStatus = 0;
-														this.newsList2.splice(index,1);
-														Toast({
-																message: '取消关注成功',
-																position: 'bottom',
-																duration: 2000
-														});
-												}else {
-														Toast({
-																message: res.data.message,
-																position: 'bottom',
-																duration: 2000
-														});
-												}
-										}).catch((err) => {
-												console.log(err);
+						btnClick2(status){
+								if(status == 0){
+										this.guanzhu()
+								}else{
+										this.cellGxz()
+								}
+						},
+						//关注请求
+						guanzhu(){
+								this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
+										token:this.token,
+										attentionUserId:this.$route.query.id,  //被关注人的userId
+										attentionStatus:0,       //发1关注
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.info.attentionStatus = 1;
 												Toast({
-														message: '网络错误',
+														message: '取消关注成功',
 														position: 'bottom',
-														duration: 2000
+														duration: 1000
 												});
-										})
-								// }
+										}else{
+												Toast({
+														message: res.data.message,
+														position: 'bottom',
+														duration: 1000
+												});
+										}
+								}).catch((err) => {
+										console.log(err);
+								})
+						},
+						//取消关注请求
+						cellGxz(){
+								this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
+										token:this.token,
+										attentionUserId:this.$route.query.id,  //被关注人的userId
+										attentionStatus:1,       //发0取消
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.info.attentionStatus = 0;
+												Toast({
+														message: '关注成功',
+														position: 'bottom',
+														duration: 1000
+												});
+										}else {
+												Toast({
+														message: res.data.message,
+														position: 'bottom',
+														duration: 1000
+												});
+										}
+								}).catch((err) => {
+										console.log(err);
+										Toast({
+												message: '网络错误',
+												position: 'bottom',
+												duration: 1000
+										});
+								})
+						},
+						//取消关注列表
+						btnClick(index){
+								let userid = this.newsList2[index].userId;
+								this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
+										token:this.token,
+										attentionUserId:userid,  //被关注人的userId
+										attentionStatus:0,       //发0取消
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.newsList2[index].attentionStatus = 0;
+												this.newsList2.splice(index,1);
+												Toast({
+														message: '取消关注成功',
+														position: 'bottom',
+														duration: 1000
+												});
+										}else {
+												Toast({
+														message: res.data.message,
+														position: 'bottom',
+														duration: 1000
+												});
+										}
+								}).catch((err) => {
+										console.log(err);
+										Toast({
+												message: '网络错误',
+												position: 'bottom',
+												duration: 1000
+										});
+								})
 						},
 						// 点击发布动态
 						gzClick(){
 								this.$router.push('/addynamic')
-						},
-						getDt(){
-				
 						},
 						
 						initMescroll(mescrollId, clearEmptyId) {
@@ -198,7 +248,7 @@
 												isBounce: true, //是否允许ios的bounce回弹;默认true,允许回弹; 此处配置为false,可解决微信,QQ,Safari等等iOS浏览器列表顶部下拉和底部上拉露出浏览器灰色背景和卡顿2秒的问题
 												offset:100,
 												page: {
-														num: 1, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+														num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
 														size:4, //每页数据条数
 														time: null //加载第一页数据服务器返回的时间; 防止用户翻页时,后台新增了数据从而导致下一页数据重复;
 												},
@@ -244,15 +294,15 @@
 												if (page.num == 1) this.newsList0 = [];
 												this.newsList0 = this.newsList0.concat(pageData);
 												break;
+										// case 1:
+										// 		if (page.num == 1) this.newsList1 = [];
+										// 		this.newsList1 = this.newsList1.concat(pageData);
+										// 		break;
 										case 1:
-												if (page.num == 1) this.newsList1 = [];
-												this.newsList1 = this.newsList1.concat(pageData);
-												break;
-										case 2:
 												if (page.num == 1) this.newsList2 = [];
 												this.newsList2 = this.newsList2.concat(pageData);
 												break;
-										case 3:
+										case 2:
 												if (page.num == 1) this.newsList3 = [];
 												this.newsList3 = this.newsList3.concat(pageData);
 												break;
@@ -269,21 +319,21 @@
 										var url1=''
 										var url2=''
 										var url3=''
-										var url4=''
+										// var url4=''
 										switch (curNavIndex) {
 												case 0:
 														url1=url+'/sxz/api/findSxzRecordPageList'//动态
 														aon()
 														break;
+												// case 1:
+												// 		url4=url+'/api/userAttention/findUserAttentionInvestors'//自选
+												// 		aon3()
+												// 		break;
 												case 1:
-														url4=url+'/api/userAttention/findUserAttentionInvestors'//自选
-														aon3()
-														break;
-												case 2:
 														url3=url+'/api/userAttention/findUserAttentionUser'//关注
 														aon2()
 														break;
-												case 3:
+												case 2:
 														url2=url+'/api/userStarlightDetails/findUserStar'//偶像
 //          /api/userStarlightDetails/findUserStar 查询ta的偶像
 //		  参数 token、userId、
@@ -293,7 +343,7 @@
 														aon1();
 														break;
 										}
-										//封装  ---》动态、
+										//》动态、
 										function aon(){
 												that.$axios({
 														headers:{'Content-Type':'application/x-www-form-urlencoded'},
@@ -307,7 +357,7 @@
 														})
 												})
 														.then(res=> {
-																console.log(res)
+																console.log(res.data)
 																if(res.data.status==0){
 																		that.newsList0Show = true
 																		var ic=res.data.data.list;
@@ -330,10 +380,6 @@
 																}else if(res.data.status==212){
 																		that.newsList0Show = false
 																		var msga=res.data.message
-																		Toast({
-																				message:'没有更多数据了...',
-																				duration: 1000,
-																		});
 																		successCallback && successCallback('');
 																}else{
 																		var msga=res.data.message;
@@ -399,18 +445,13 @@
 																that.newsList2Show = true;
 																for(var item of res.data.userTeamList){
 																		if(item.userAvatar == null){
-																				item.userAvatar == '../../assets/img/toux.png'
+																				item.userAvatar = '../../assets/img/toux.png'
 																		}
 																}
 																var two=res.data.userTeamList;
 																successCallback && successCallback(two);
 														}else{
-																// var msga=res.data.message
 																that.newsList2Show = false
-																Toast({
-																		message:'暂无关注任何信息',
-																		duration: 1000,
-																});
 																successCallback && successCallback('');//失败回调
 														}
 												}).catch(err=>{
@@ -524,19 +565,17 @@
 				display: flex;
 				justify-content: space-around;
 				align-items: center;
-				.img{
+				.imgT{
 						width: .65rem;
 						height: .65rem;
 						border-radius: 50%;
 						overflow: hidden;
-						img{
-								max-width: 100%;
-								min-height: 100%;
-						}
+						background-size: cover;
+						background-position: 100% 35%;
 				}
 				span{
 						position: relative;
-						font-size: .12rem;
+						font-size: .13rem;
 						color: #999;
 						margin-right: .3rem;
 				}

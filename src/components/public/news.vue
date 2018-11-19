@@ -1,9 +1,13 @@
 <template>
     <!--消息-->
 		<div class="news">
-				<my-head :text="til"></my-head>
+				<my-head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span slot="head_center">消息</span>
+						<span slot="head_right" @click="empty">清空</span>
+				</my-head>
 				<div class="newsCon mescroll" id="mescroll">
-						<ul v-for="item in dataArr">
+						<ul v-for="item in dataArr" @click="details(item.id)">
 								<li class="top">
 										<div>{{item.title}}</div>
 										<span>{{item.created}}</span>
@@ -18,13 +22,13 @@
 </template>
 
 <script>
-		import Head from "@/components/mine/headMe"
+		import Head from "@/components/public/headNav"
+		import { Toast } from 'mint-ui'
 		import MeScroll from 'mescroll.js'
     export default {
         name: "news",
 				data(){
         		return{
-        				til:["消息"],
 								dataArr:[],
 								token:'',
 								dataArrShow:false,
@@ -44,6 +48,9 @@
 
 				},
 				methods:{
+						back(){
+								this.$router.go(-1)
+						},
 						// 下拉
 						downCallback(){
 										this.$axios.post(url+'/api/main/top',this.$qs.stringify({
@@ -51,9 +58,10 @@
 										}),{
 												headers:{'Content-Type':'application/x-www-form-urlencoded'}
 										}).then((res)=>{
-												// console.log(res.data.msgList);
+												console.log(res.data);
 												if(res.data.status ==0 && res.data.msgList.length > 0){
 														this.dataArr =res.data.msgList;
+														this.dataArrShow = false;
 														setTimeout(() => {
 																this.mescroll.endSuccess();
 														},1000);
@@ -70,8 +78,39 @@
 										});
 
 						},
+						// 清空消息
+						empty(){
+								this.$axios.post( url+ '/api/notification/cleanAllReadNotification',this.$qs.stringify({
+										token:this.token,
+								})).then((res) => {
+										console.log(res.data)
+										if(res.data.status == 0){
+												Toast({
+														message: '清除成功',
+														duration: 1000
+												});
+												this.dataArr = [];
+												this.dataArrShow = true;
+										}
+								}).catch((err) => {
+										console.log(err)
+								})
+						},
+						details(id){
+								this.$router.push({
+										path: '/Details',
+										name: 'Details',
+										query: {
+												id:id,
+										}
+								})
+						}
 
-				},
+						// /api/notification/findEmailDetails、消息详情查看
+						// 参数：id：主键id
+						// /api/notification/cleanOneReadNotification  清除一条消息，
+						// 参数：id主键id
+		},
 				components:{
         		"my-head":Head
 				}
@@ -130,6 +169,10 @@
 								font-size: .12rem;
 								line-height: .24rem;
 								color: rgba(0,0,0,0.40);
+								height: .3rem;
+								overflow: hidden;
+								text-overflow: ellipsis;
+								white-space: nowrap;
 						}
 				}
 		}

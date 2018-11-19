@@ -138,15 +138,17 @@
 												if(this.arrzfb.length> 0){
 														this.arrFlag = true
 												}else{
-														this.arrFlag = false
+														this.arrFlag = false;
 														Toast({
 																message: '暂无数据',
+																duration: 1000
 														});
 												}
 										}else{
 												this.arrFlag = false;
 												Toast({
 														message: res.data.message,
+														duration: 1000
 												});
 										}
 								})
@@ -170,11 +172,13 @@
 												this.arrFlag = false;
 												Toast({
 														message: '暂无数据',
+														duration: 1000
 												});
 										}else{
 												this.arrFlag = false;
 												Toast({
 														message: res.data.message,
+														duration: 1000
 												});
 										}
 								})
@@ -319,7 +323,7 @@
 		.PaiList{
 				position: relative;
 				li:first-child{
-						margin-bottom: .24rem;
+						margin-bottom: .35rem;
 						height: 1.8rem;
 						background: url("../../assets/img/paiHangBang_topImgBg@2x.png") no-repeat;
 						background-size: 100% 100%;
@@ -397,6 +401,14 @@
 												min-height: 100%;
 										}
 								}
+								.righttxt{
+										flex-grow: 1;
+										width: 20%;
+										img{
+												width: .13rem;
+												height: .13rem;
+										}
+								}
 								div i{
 										font-size: .17rem;
 										color: #FF5558;
@@ -404,6 +416,7 @@
 						}
 						.fudu{
 								color: #FF5558 ;
+								width: .6rem;
 								img{
 										width: .14rem;
 										height: .14rem;

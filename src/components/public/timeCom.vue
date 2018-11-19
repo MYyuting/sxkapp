@@ -11,7 +11,10 @@
 										<span>下架时间：{{item.isLongEffective == 0? '长期有效' : item.longEffectiveTime}}</span>
 										<span>价格：{{item.seconds}}s</span>
 								</p>
-								<button v-show="item.isshow == 1" @click="yueClick(item.projectId)">预约</button>
+								<div>
+										<button v-show="item.isBen == 'false'" @click="yueClick(item.projectId)">预约</button>
+										<!--<img v-show="item.isBen == 'true'" src="./../../assets/img/news/deleteNews@2x.png" alt="">-->
+								</div>
 						</li>
 				</ul>
 				<div v-show="!tiemShow" class="zanwu">暂无时间商品</div>
@@ -300,16 +303,21 @@
 								font-size: .12rem;
 								margin-right: .3rem;
 						}
-						button{
+						div{
 								position: absolute;
-								top: 8px;
+								top: .11rem;
+								right: .1rem;
+								img{
+										width: .26rem;
+								}
+						}
+						button{
 								width: .5rem;
 								height: .22rem;
 								border: 1px solid #FF5558;
 								color: #FF5558;
 								font-size: .12rem;
 								background: #fff;
-								right: .1rem;
 								border-radius: 4px;
 						}
 				}

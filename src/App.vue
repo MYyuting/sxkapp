@@ -7,14 +7,15 @@
 </template>
 
 <script>
-export default {
-  name: 'App',
-  data(){
-    return {
-      show: true
-    }
-  }
-}
+		export default {
+				name: 'App',
+				data(){
+						return {
+								show: true
+						}
+
+				},
+		}
 </script>
 
 <style lang="scss">

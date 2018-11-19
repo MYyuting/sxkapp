@@ -6,8 +6,8 @@
 						<img :src="item.investorsAvatar" alt="">
 						<div class="home_text"><p>{{item.investorsName}}</p><p>{{item.investorsCode}}</p></div>
 					</div>
-					<div>{{item.addPrice}}</div>
-					<button>{{item.uplowPrice}}</button>
+					<div :class="[item.uplowPrice > 0 ? '' : 'colod']">{{item.price}}</div>
+					<button :class="[item.uplowPrice > 0 ? '' : 'tbcor']">{{item.uplowPrice}}%</button>
 				</div>
 				<!--<div>-->
 					<!--<router-link v-show="whide==1" tag="div" class="add_dynamic beijing" to="/addynamic"><img src="../../assets/img/FaXingRen/addNewsOrService@2x.png" alt="" /></router-link>-->
@@ -71,8 +71,8 @@
 				align-items: center;
 				height:.6rem;
 				>div:nth-child(1){
+						width: 40%;
 						display: flex;
-						justify-content: space-between;
 						align-items: center;
 						img{
 								width: .4rem;

@@ -4,21 +4,19 @@
 				<Head>
 						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
 						<span class="" slot="head_center">星光榜</span>
-						<span slot="head_right">Top10</span>
+						<span slot="head_right" style="font-size: .16rem">Top10</span>
 				</Head>
 
 				<div class="content-r">
 						<div class="tab-w">
 								<div class="tab-l">
-										<!--'http://xsk.quanxiankaibo.com/'+-->
 										<div class="touimg">
-												<img  :src="img" alt="">
+												<img :src="tInvestors.investorsAvatar" alt="">
 										</div>
-										<span> {{name}} </span>
-										<!--<i class="iconfont icon-touPiao"></i>-->
-										<i class="iconfont icon-fans"></i>
+										<span> {{tInvestors.investorsName}} </span>
+										<i v-show="isfen" class="iconfont icon-fans"></i>
 										<img class="xingimg" src="../../assets/img/home/star@2x.png" alt="">
-										{{num}}
+										{{tInvestors.starlightNum}}
 								</div>
 								<div class="tab-r">
 										<span v-for="(item,index) in tabarr" :class="index==indexN ? 'acti' : ''"
@@ -49,7 +47,7 @@
 										</li>
 								</ul>
 								<div class="paiwu" v-show="flagWu"></div>
-								<div v-show="flagWu" style="text-align: center; margin-top: .4rem;color: #666;">-- 暂无数据 --</div>
+								<div v-show="flagWu" style="text-align: center; margin-top: .5rem;color: #666;">-- 暂无数据 --</div>
 								<div class="tilX">
 										<span>排名</span>
 										<span>用户</span>
@@ -74,16 +72,32 @@
 								arrList:[],
 								indexN:0,
 								flagWu:true,
-								name:this.$route.query.name,
-								img:this.$route.query.imgUrl,
-								num:this.$route.query.num,
+								tInvestors:'',
+								isfen:false,
 						}
 				},
 				mounted(){
         		this.token = localStorage.getItem('userName');
         		this.getData();
+        		this.isFen();
 				},
 				methods:{
+        		// 判断是否为发行人的粉丝
+						isFen(){
+								this.$axios.post(url+'/api/investors/findTInvestorsIsFans',this.$qs.stringify({
+										token:this.token,
+										investorsCode:this.$route.query.code
+								})).then((res) => {
+										console.log(res)
+										if(res.data.status == 0){
+												this.isfen = true
+										}else{
+												this.isfen = false
+										}
+								}).catch((err) => {
+										console.log(err)
+								})
+						},
 						back(){
 								this.$router.go(-1);
 						},
@@ -101,12 +115,6 @@
 								})).then((res) => {
 										console.log(res.data);
 										switch (res.data.status) {
-												case '106':
-														Toast({
-																message: res.data.message,
-														});
-														this.flagWu = true;
-														break;
 												case '0':
 														this.arrList = res.data.userStarlightDetailsList;
 														// console.log(this.arrList);
@@ -115,9 +123,11 @@
 												default:
 														Toast({
 																message: res.data.message,
+																duration:800
 														});
 														this.flagWu = true;
 										}
+										this.tInvestors = res.data.tInvestors;
 
 								})
 						},
@@ -207,14 +217,15 @@
 				i{
 						font-size: .18rem;
 						color: #ff5558;
+						margin-right: 5px;
 				}
 				.icon-touPiao{
 						color: #F5A623;
 						margin-right: 6px;
 				}
 				.xingimg{
-						width: .15rem;
-						height: .15rem;
+						width: .14rem;
+						height: .14rem;
 						margin-right: 5px;
 				}
 		}
@@ -276,7 +287,7 @@
 								height: .13rem;
 						}
 						overflow: hidden;
-						margin-bottom: .24rem;
+						margin-bottom: .35rem;
 						height: 1.8rem;
 						background: url("../../assets/img/paiHangBang_topImgBg@2x.png") no-repeat;
 						background-size: 100% 100%;

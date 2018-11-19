@@ -56,8 +56,6 @@
 								<div id="mescroll0" class="mescroll" v-show="currentIndex==0">
 										<div id="dataList0">
 												<tablist :datalist="newsList0"></tablist>
-												<!--<div v-show="new0Show" class="zanwu">-->
-														<!--&#45;&#45; 暂无数据 &#45;&#45;</div>-->
 										</div>
 								</div>
 								<!--全部-->
@@ -382,11 +380,6 @@
 														var ic=res.data.investorsList;
 														successCallback && successCallback(ic);
 												}else{
-														var msga=res.data.message;
-														Toast({
-																message:msga,
-																duration: 1000,
-														});
 														successCallback && successCallback([]);
 												}
 										}).catch(err=>{

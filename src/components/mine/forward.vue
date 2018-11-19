@@ -4,18 +4,18 @@
 				<Head :text="til"></Head>
 				<div>
 						<gongY v-on:checkboxFlag="checkboxFlag" :data="data"></gongY>
-						<div class="czfs">姓名：王五（为保证提现，请确保输入正确的账号）</div>
+						<div class="czfs">为避免资金损失，请确保输入正确的支付宝账号</div>
 						<div class="Account">
-								<span>账号 ：</span><input type="text" placeholder="请输入支付宝账号" v-model="zhangh">
+								<span>账号：</span><input type="text" placeholder="请输入支付宝账号" v-model="zhangh">
 						</div>
 						<div class="czfs">提现金额（单笔提现限额1.00 - 50,000.00元）</div>
 						<div class="fill">
 								<div>￥</div>
 								<div>
-										<input type="number" v-on:input="chengeIpt" onkeyup="value=value.replace(/[^\d]/g,'')" v-model="price" placeholder="请输入提现金额">
+										<input type="number" v-on:input="chengeIpt" onkeyup="this.value=value.replace(/[^0-9-]+/,'')" v-model="price" placeholder="请输入提现金额">
 								</div>
 						</div>
-						<div class="czfs">可用余额 ¥ <span>{{moneyNum}}</span> <span @click="allFor">全部提现</span></div>
+						<div class="czfs"><span>可用余额 ¥ {{moneyNum}}</span> <span @click="allFor">全部提现</span></div>
 						<div class="btn">
 								<button :class="[price != '' ? 'colour' : '']"
 												:disabled="!price" @click="wardOk">确定</button>
@@ -70,7 +70,7 @@
 							token:'',
 							price:"",
 							til:["提现","明细"],
-							data:"提现至（单日限额5万，到账时间T+3）",
+							data:"提现方式（单日限额5万，到账时间T+3）",
 							checkbox:false,
 							items: [0, 1, 2, 3, 4, 5],
 							keys: keys(),
@@ -80,18 +80,8 @@
 							isOk:null,      //判断交易密码是否有
 					}
 			},
-			watch:{
-					price(val){
-							if(val<1){
-									Toast({
-											message: '请输入大于1的整数',
-									});
-									this.price = ''
-							}
-					}
-			},
 			mounted(){
-					this.token = localStorage.getItem('userName')
+					this.token = localStorage.getItem('userName');
 					this.getYong();
 					this.requestData();
 			},
@@ -101,13 +91,13 @@
 							console.log(this.checkbox);
 					},
 					chengeIpt(){
-							console.log(this.price)
-							if(this.price<1){
-									Toast({
-											message: '请输入大于1的整数',
-									});
-									this.price = ''
-							}
+						// 	console.log(this.price)
+						// 	if(this.price<1){
+						// 			Toast({
+						// 					message: '请输入大于1的整数',
+						// 			});
+						// 			this.price = '';
+						// 	}
 					},
 					requestData(){
 							this.$axios.post(url+'/api/user/checkUserPayPwd',this.$qs.stringify({
@@ -116,6 +106,14 @@
 									// console.log(res);
 									this.isOk = res.data.isOk
 							})
+					},
+					isDot(num) {
+							var result = (num.toString()).indexOf(".");
+							if(result != -1) {
+									return true;
+							} else {
+									return false;
+							}
 					},
 					//点击提现按钮
 					wardOk(){
@@ -130,6 +128,18 @@
 									Toast({
 											message: '请输入账号',
 											position: 'bottom',
+									});
+									return;
+							}
+							if(parseInt(this.price) > parseInt(this.moneyNum)){
+								  Toast({
+									  message: '不能大于可提额度',
+								  });
+								  return;
+							}
+							if(this.isDot(this.price)){
+									Toast({
+											message: '请输入整数',
 									});
 									return;
 							}
@@ -235,12 +245,13 @@
 				height: $value1;
 		}
 		.czfs{
+				@extend .display;
 				line-height: .4rem;
 				color: #9B9B9B;
 				font-size: .10rem;
 				@include pad(0 .15rem,.4rem);
-				border: 1px solid #eee;
-				span{
+				border-bottom: 1px solid #eee;
+				span:nth-child(2){
 						color: #FF5558;
 						padding-left: .1rem;
 				}
@@ -251,30 +262,39 @@
 				align-items: center;
 				font-size: .14rem;
 				border-bottom: 4px solid #f3f3f3;
+				span{
+						line-height: .32rem;
+						font-size: .16rem;
+						color: #000;
+				}
 				input{
 						height: .3rem;
 						border: none;
 						flex-grow: 1;
+						outline: none;
+						font-size: .16rem;
 				}
+				input::placeholder{text-align: left;}
 		}
 		.fill{
 				@extend .display;
 				height: 1rem;
 				font-size: .3rem;
+				padding: 0 .15rem;
 				>div:nth-child(1){
-						width: 15%;
-						text-align: center;
+						width: .47rem;
 				}
 				>div:nth-child(2){
 						flex-grow: 1;
 				}
 				input{
 						width: 100%;
-						height: 1rem;
+						height: 100%;
 						border: none;
 						font-size: .2rem;
 						outline: none;
 				}
+				input::placeholder{text-align: left;}
 		}
 		.btn{
 				@include pad(.4rem .15rem 0,.48rem);

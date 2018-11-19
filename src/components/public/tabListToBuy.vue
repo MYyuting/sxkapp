@@ -1,54 +1,57 @@
 <template>
 		<div class="tablist"> <!-- v-show="datalist.length == 0" -->
-				<div class="table">
+				<!--<div class="table">-->
 						<div class="tr">
 								<div>市值(￥)</div>
 								<div>持有/可卖(s)</div>
 								<div>现价/成本(￥)</div>
 								<div>盈亏(￥)</div>
 						</div>
-						<ul v-show="arr.length != 0">
-								<li  v-for="(item,index) in arr">
-										<div class="li_top" @click="clickList(index)">
-												<div>
-														<!--investorsName-->
-														<div>{{item.investorsName}}</div>
-														<div>{{item.singlePosition}}</div>
+						<div class="mescroll" id="mescroll">
+								<ul v-show="arr.length != 0">
+										<li  v-for="(item,index) in arr">
+												<div class="li_top" @click="clickList(index)">
+														<div>
+																<!--investorsName-->
+																<div>{{item.investorsName}}</div>
+																<div>{{item.singlePosition}}</div>
+														</div>
+														<div>
+																<div>{{item.possessNum}}</div>
+																<div>{{item.buyerOrderNum}}</div>
+														</div>
+														<div>
+																<div>{{item.newOrderPrice}}</div>
+																<div>{{item.buyerOrderPrice}}</div>
+														</div>
+														<!--[baseInfo.price > baseInfo.closePrice ? 'colr' : (baseInfo.price == baseInfo.closePrice? 'colh' : 'colg' )]-->
+														<div :class="[item.uplowStatus ==1 ? 'colorr' : (item.uplowStatus ==2? 'colorg' : 'colorh' )]">
+																<!--1涨  2跌-->
+																<div>{{item.addPrice}}</div>
+																<div>{{item.uplowPrice}}</div>
+														</div>
 												</div>
-												<div>
-														<div>{{item.possessNum}}</div>
-														<div>{{item.buyerOrderNum}}</div>
+												<div class="li_bottom" v-show="numFlag== index">
+														<div @click="mairu(index)">买入</div>
+														<div @click="maichu(index)">卖出</div>
+														<div @click="market(item.investorsCode)">行情</div>
+														<div>预约</div>
+														<div @click="zhiDing(item.investorsCode)">{{text}}</div>
 												</div>
-												<div>
-														<div>{{item.newOrderPrice}}</div>
-														<div>{{item.buyerOrderPrice}}</div>
-												</div>
-												<div :class="item.uplowStatus ==1 ? 'colorg' : 'colorr' ">
-														<!--1涨  2跌-->
-														<div>{{item.addPrice}}</div>
-														<div>{{item.uplowPrice}}</div>
-												</div>
-										</div>
-										<div class="li_bottom" v-show="numFlag== index">
-												<div @click="mairu(index)">买入</div>
-												<div @click="maichu(index)">卖出</div>
-												<div @click="market(item.investorsCode)">行情</div>
-												<div>预约</div>
-												<div @click="zhiDing(item.investorsCode)">{{text}}</div>
-										</div>
-								</li>
-						</ul>
-						<div class="wusju" v-show="arr.length == 0">
-								<img src="../../assets/img/state/buyTime@2x.png" alt="">
-								<p>您当前还未购买时间</p>
+										</li>
+								</ul>
+								<div class="wusju" v-show="arr.length == 0">
+										<img src="../../assets/img/state/buyTime@2x.png" alt="">
+										<p>您当前还未购买时间</p>
+								</div>
 						</div>
-				</div>
+				<!--</div>-->
 		</div>
 </template>
 
 <script>
 		import { Toast } from 'mint-ui';
-
+		import MeScroll from 'mescroll.js'
 		export default {
 				data() {
 						return {
@@ -56,19 +59,33 @@
 								token:"",
 								text:'置顶',
 								arr:[],
+								mescroll:null,
 						}
 				},
 				mounted(){
 						this.token = localStorage.getItem('userName');
-						this.getChiC();
+						// this.getChiC();
+						var self = this;
+						self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
+								down: {
+										callback: this.getChiC //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
+								},
+						});
 				},
 
 				methods:{
 						//点击买入
 						mairu(index){
 								// console.log(index);
-								this.$router.push('/business/wbuy');
+								this.$router.push({
+										path:'/business/wbuy',
+										query:{
+												code:this.arr[index].investorsCode,
+												name:this.arr[index].investorsName
+										}
+								});
 								let odjS = {
+										investorsName:this.arr[index].investorsName,
 										investorsCode:this.arr[index].investorsCode,  //发行人码
 										newOrderPrice:this.arr[index].newOrderPrice,  //最新价格
 										buyerOrderNum:this.arr[index].buyerOrderNum   //可卖数量
@@ -77,8 +94,15 @@
 						},
 						maichu(index){
 								// console.log(index);
-								this.$router.push('/business/wmai');
+								this.$router.push({
+										path:'/business/wmai',
+										query:{
+												code:this.arr[index].investorsCode,
+												name:this.arr[index].investorsName
+										}
+								});
 								let odjS = {
+										investorsName:this.arr[index].investorsName,
 										investorsCode:this.arr[index].investorsCode,  //发行人码
 										newOrderPrice:this.arr[index].newOrderPrice,  //最新价格
 										buyerOrderNum:this.arr[index].buyerOrderNum   //可卖数量
@@ -102,8 +126,14 @@
 								})).then((res) => {
 										console.log(res.data);
 										this.arr = res.data.LIST
+										setTimeout(() => {
+												this.mescroll.endSuccess();
+										},1000)
 								}).catch((err) => {
 										console.log(err)
+										setTimeout(() => {
+												this.mescroll.endErr();
+										},1000)
 								})
 						},
 				    //取消置顶
@@ -163,11 +193,19 @@
 		.colorr{
 				color: red;
 		}
+		.colorh{
+				color: #333;
+		}
 		.tablist {
-				border-top: 4px solid #eee;
-				margin-top:.1rem;
-				.table {
-						width: 100%;
+				/*position: relative;*/
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				width: 100%;
+				#mescroll{
+						flex-grow: 1;
+						height: 60%;
+				}
 						.tr {
 								display: flex;
 								height: .5rem;
@@ -180,8 +218,9 @@
 										color: #999;
 								}
 						}
-						>ul {
+						ul {
 								box-sizing:border-box;
+								height: 100%;
 								>li{
 										.li_top{
 												display: flex;
@@ -227,6 +266,6 @@
 										}
 								}
 						}
-				}
+
 		}
 </style>

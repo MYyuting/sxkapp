@@ -1,21 +1,23 @@
 <template>
-		<div class="mescroll dynamic_temp " id="mescroll">
-				<ul class="temp_content_top">
-						<li>
-								<div>持仓成本</div>
-								<div>{{arrZ.positionTotalEarnings}}</div>
-						</li>
-						<li>
-								<div>持仓收益</div>
-								<div>{{arrZ.positionTotalCost}}</div>
-						</li>
-						<li>
-								<div>持仓市值</div>
-								<div>{{arrZ.positionPrice}}</div>
-						</li>
-				</ul>
-				<div class="temp_content_bottom">
-						<tabListToBuy></tabListToBuy>
+		<div class=" dynamic_temp ">
+				<div class="con-box">
+						<ul class="temp_content_top">
+								<li>
+										<div>持仓成本</div>
+										<div>{{arrZ.positionTotalEarnings}}</div>
+								</li>
+								<li>
+										<div>持仓收益</div>
+										<div>{{arrZ.positionTotalCost}}</div>
+								</li>
+								<li>
+										<div>持仓市值</div>
+										<div>{{arrZ.positionPrice}}</div>
+								</li>
+						</ul>
+						<div class="temp_content_bottom">
+								<tabListToBuy></tabListToBuy>
+						</div>
 				</div>
 		</div>
 </template>
@@ -42,17 +44,10 @@
 				},
 				mounted(){
 						this.token= localStorage.getItem("userName");
-						var self = this;
-						self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
-								down: {
-										callback: this.downCallback //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
-								},
-						});
+						this.getDa();
 				},
 				methods: {
-						downCallback(){
-								this.getDa();
-						},
+
 						getDa(){
 								this.$axios.post(url+'/miao/queryAllPositionProduct.do',this.$qs.stringify({
 										token:this.token,
@@ -65,22 +60,15 @@
 												Toast({
 														message: '请登录',
 														position: 'middle',
-														duration: 1500
+														duration: 1000
 												});
 										}
-										setTimeout(() => {
-												this.mescroll.endSuccess();
-										},1000)
 								}).catch((err) => {
 										console.log(err);
 										Toast({
 												message: '网络错误',
-												position: 'bottom',
-												duration: 1500
+												duration: 1000
 										});
-										setTimeout(() => {
-												this.mescroll.endErr();
-										},1000)
 								})
 						}
 				},
@@ -92,13 +80,18 @@
 
 <style scoped lang="scss">
 		/*mescroll滚动的区域*/
-		.mescroll {
+
+		.dynamic_temp {
+				.con-box{
+						display: flex;
+						flex-direction: column;
+						height: 100%;
+				}
+				width: 100%;
 				position: fixed;
 				top: .49rem;
 				bottom: .49rem;
 				height: auto;
-		}
-		.dynamic_temp {
 				.temp_content_top {
 						display: flex;
 						box-sizing: border-box;
@@ -135,6 +128,9 @@
 				}
 				.temp_content_bottom {
 						width: 100%;
+						border-top: 4px solid #eee;
+						flex-grow: 1;
+						height: 70%;
 				}
 		}
 </style>

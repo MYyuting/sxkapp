@@ -4,14 +4,14 @@
 				<my-head :text="til"></my-head>
 				<div class="content">
 						<div class="rule">
-								<div>
+								<router-link to="/trading" tag="div">
 										<span class="iconfont icon-home_normal"></span>
 										交易规则
-								</div>
-								<div>
+								</router-link>
+								<router-link to="/make" tag="div">
 										<span class="iconfont icon-rule_meeting"></span>
 										约见规则
-								</div>
+								</router-link>
 						</div>
 						<ul>
 								<li v-for="(item,index) in userHelp">

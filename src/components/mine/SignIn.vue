@@ -164,6 +164,7 @@
 								flex-grow: 1;
 								height: 70%;
 								border: none;
+								outline: none;
 						}
 						input::placeholder{
 								text-align: left;

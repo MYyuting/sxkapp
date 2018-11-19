@@ -423,7 +423,7 @@
 								margin-right: .2rem;
 						}
 						div:nth-child(2){
-								margin-right: 1.3rem;
+								margin-right: 1.25rem;
 						}
 				}
 		}
@@ -439,7 +439,7 @@
 								text-align: center;
 						}
 						.til-name{
-								width: 53%;
+								width: 45%;
 								overflow: hidden;
 						}
 						.img{
@@ -457,7 +457,8 @@
 								}
 						}
 						.num{
-								width: 18%;
+								width: 25%;
+								/*flex-grow: 1;*/
 								display: flex;
 								overflow: hidden;
 								align-items: center;

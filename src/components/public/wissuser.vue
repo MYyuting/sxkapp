@@ -1,12 +1,15 @@
 <template>
 		<div class="wbtm">
 				<div class="issuser">
-						<div class="left_img">
-								<img :src="wmsg.avatar" alt="">
+						<div class="left_img" :style="{backgroundImage: 'url('+wmsg.avatar+')'}">
+								<!--<img :src="wmsg.avatar" alt="">-->
 						</div>
 						<div class="right_content">
 								<div class="right_title">
-										<span class="right_title_name">{{wmsg.userName}}<img src="./../../assets/img/tip/fans@2x.png" alt=""></span>
+										<span class="right_title_name">
+												{{wmsg.userName}}
+												<img src="./../../assets/img/tip/fans@2x.png" alt="">
+										</span>
 										<span class="right_time">{{wmsg.grTime}}</span>
 								</div>
 								<router-link to="/wdynamic" tag="div" class="right_matter" @click="dynamic()" >
@@ -112,7 +115,6 @@
 										id:this.wid
 								})
 						}).then(res=> {
-								console.log("详情");
 								console.log(res.data);
 								if(res.data.status==0){
 										Indicator.close();//关闭loding
@@ -166,10 +168,10 @@
 										operatingType:'2',//0:投票赠送、1申购赠送、2发行人动态赠送、
 								})).then((res) => {
 										console.log(res.data);
-										switch (res.data.status)
+										switch(res.data.status)
 										{
 												case '0':
-														this.product[this.index].starlightNum += parseInt(this.xingNum);
+														this.wmsg.starlightNum += parseInt(this.xingNum);
 														Toast({
 																message: '赠送成功',
 																duration: 1000
@@ -181,9 +183,9 @@
 																duration: 1000
 														});
 										}
-										this.alertS = false;
-										this.xingNum = '';
-								}).catch((err) => {
+									  this.alertS = false;
+									  this.xingNum = '';
+								}).catch( (err) => {
 										console.log(err);
 								})
 						},
@@ -327,27 +329,30 @@
 						border-radius:50%;
 						margin-right: .16rem;
 						overflow: hidden;
-						img{
-								max-width: 100%;
-								min-height: 100%;
-
-						}
+						background-size: cover;
+						background-position: 100% 35%;
 				}
 				.right_content{
 						/*padding-left: .1rem;*/
 						width: 2.6rem;
 						flex-grow: 1;
 						.right_title{
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
 								.right_title_name{
 										font-size:.16rem;
 										color:$color;
 										font-weight:bold;
+										display: flex;
+										align-items: center;
 										img{
 												width:.2rem;
+												vertical-align: middle;
 										}
 								}
 								.right_time{
-										float:right;
+										/*float:right;*/
 										font-size:.14rem;
 										color:#999;
 								}
@@ -402,7 +407,7 @@
 								.lerse{
 										float:right;
 										img{
-												height:.3rem;
+												width: .26rem;
 										}
 								}
 						}

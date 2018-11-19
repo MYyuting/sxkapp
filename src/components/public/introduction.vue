@@ -46,8 +46,8 @@
 				<div class="achievement" >
 						<h4>主要成就</h4>
 						<!--<textarea v-model="investors.investorsDescription">{{investors.investorsDescription}}</textarea>-->
-						<div v-html="investors.investorsDescription">
-								{{investors.investorsDescription}}
+						<div v-html="investors.investorsMainAchievements">
+								{{investors.investorsMainAchievements}}
 						</div>
 						<!--<textarea v-model="investors.investorsDescription" style="width: 100% ;height: auto">-->
 						<!--{{investors.investorsDescription}}-->
@@ -62,8 +62,8 @@
 				<!--主要经历-->
 				<div class="experience">
 						<h4>主要经历</h4>
-						<div v-html="investors.investorsMainAchievements">
-								{{investors.investorsMainAchievements}}
+						<div v-html="investors.investorsDescription">
+								{{investors.investorsDescription}}
 								<!--<li>1997年莫文蔚被选为PIFAN 1997第一届韩国釜山市国际电影节评审委员。</li>-->
 								<!--<li>2001年成为Christian Dior口红亚洲区诱人舞会代言人；2001年在电视剧《烈爱伤痕》中饰演更纱。</li>-->
 								<!--<li>2001年莫文蔚被选为第四届法国杜维尔亚洲电影节评审委员。</li>-->

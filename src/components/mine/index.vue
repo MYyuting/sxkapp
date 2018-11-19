@@ -3,11 +3,11 @@
         <!--头部-->
         <div class="nav">
 		        <div class="left" v-bind:class="deng ? '' : 'dis'">
-								<div @click="alertShow = true">
-										<img :src="imageUrl" :onerror="defaultImg" alt="">
+								<div @click="alertShow = true" class="avatarImg" :style="{backgroundImage:'url(' + imageUrl + ')'}">
+										<!--<img :src="imageUrl" :onerror="defaultImg" alt="">-->
 								</div>
-								<span v-show="flag1">{{info.user_name}}</span>
-								<input v-show="flag2" type="text" class="size14" v-model="info.user_name">
+								<span v-show="flag1">{{info.userName}}</span>
+								<input v-show="flag2" type="text" class="size14" v-model="info.userName">
 								<i class="iconfont icon-editName" v-show="flag1" @click="nameClick"></i>
 								<i class="iconfont icon-editName_done" v-show="flag2" @click="nameClick1"></i>
 						</div>
@@ -119,7 +119,7 @@
 												url:"/lianxi"
 										}],
 								info:{
-										user_name:'',
+										userName:'',
 								},
 								flla:false,
 								gerenData:{
@@ -140,44 +140,22 @@
 						// token
 						this.token = localStorage.getItem('userName');
 						this.getInfo();
-						//首页返回键处理
-						// 处理逻辑：1秒内，连续两次按返回键，则退出应用；
-						var first = null;
-						mui.back = function() {
-								//首次按键，提示 再按一次退出应用
-								if (!first) {
-										first = new Date().getTime();//记录第一次按下回退键的时间
-										Toast({
-												message: '再按一次退出应用',
-												duration: 1000
-										});
-										// mui.toast('再按一次退出应用');//给出提示
-										history.go(-1)//回退到上一页面
-										setTimeout(function() {//1s中后清除
-												first = null;
-										}, 1000);
-								} else {
-										if (new Date().getTime() - first < 1000) {//如果两次按下的时间小于1s，
-												plus.runtime.quit();//那么就退出app
-										}
-								}
-						};
+
 				},
 				methods:{
 						//个人账号信息
 						getDate(){
 								this.$axios.post(url+'/api/user/getUserInfo',this.$qs.stringify({
 										token:this.token,
-								})).then((res) => {
+								})).then((res) =>{
 										console.log(res.data.data);
 										this.info = res.data.data;
-					  				localStorage.setItem('phone',res.data.data.user_tel);
+					  				localStorage.setItem('phone',res.data.data.userTel);
 										localStorage.setItem('userType',res.data.data.isOfficialService);
-										if(!res.data.data.user_avatar){
+										if(!res.data.data.userAvatar){
 												this.imageUrl = require('../../assets/img/toux.png');
 										}else{
-												this.imageUrl = 'http://xsk.quanxiankaibo.com'+res.data.data.user_avatar;
-												this.avatar = res.data.data.user_avatar
+												this.imageUrl = res.data.data.userAvatar
 										}
 								})
 						},
@@ -188,7 +166,7 @@
 										languageType:3,
 								})).then((res) => {
 										console.log(res.data);
-										if(res.data.STATUS == 3 ){
+										if(res.data.STATUS == 3){
 												localStorage.removeItem('userName');
 												this.deng = false;
 												return;
@@ -233,7 +211,8 @@
 						},
 						beforeAvatarUpload(file) {
 								const isJPG = file.type === 'image/jpeg';
-								const isLt2M = file.size / 200 / 200 < 2;
+								const isLt2M = file.size < 1024*1024;
+								console.log(isLt2M);
 								if (!isJPG) {
 										Toast({
 												message: '上传图片只能是JPG格式!',
@@ -242,7 +221,7 @@
 								}
 								if (!isLt2M) {
 										Toast({
-												message: '上传图片大小不能超过2MB!',
+												message: '上传图片大小不能超过1MB!',
 												position: 'bottom',
 										});
 								}
@@ -262,18 +241,18 @@
 										url:url+'/api/user/changeNikeName',
 										data:this.$qs.stringify({
 												token:this.token,
-												userName:this.info.user_name
+												userName:this.info.userName
 										})
 								}).then(res=> {
 												if(res.data.status==0){
-														console.log(res)
-														this.flag2 = false
-														this.flag1 =true
+														console.log(res);
+														this.flag2 = false;
+														this.flag1 =true;
 														Toast({
 																message:'修改成功',
 														});
 												}else{
-														var msga=res.data.message
+														var msga=res.data.message;
 														Toast({
 																message:msga,
 														});
@@ -299,9 +278,8 @@
 								this.$router.push({
 									path:this.Arrlist[index].url,
 									query: {
-								      id:this.info.user_id,
-											userImg:this.avatar,
-											name:this.info.user_name,
+								      id:this.info.userId,
+											isMy:'false',
 								    }
 								})
 						},
@@ -362,21 +340,19 @@
 				align-items: center;
 				color: #fff;
 				padding: 0 .1rem;
-				.left img{
-						width: .3rem;
-						height: .3rem;
-						border-radius: 50%;
-						/*border: 1px solid red;*/
-						margin-right: .1rem;
-
-				}
 				.left div{
 						display: inline-block;
 						width: .3rem;
 						height: .3rem;
+						background-size: cover;
+						background-position: 100% 40%;
+						margin-right: .1rem;
+						border-radius: 50%;
+						border: 1px solid #eee;
 				}
 				.left{
 						position: relative;
+						display: flex;
 						input{
 								width: 1rem;
 								height: .25rem;
@@ -386,10 +362,12 @@
 								border-bottom: 1px solid #fff;
 								background: $color;
 								color: #fff;
+								outline: none;
 						}
 						span{
 								display: inline-block;
 								font-size: .14rem;
+								line-height: .33rem;
 						}
 				}
 				.left i{

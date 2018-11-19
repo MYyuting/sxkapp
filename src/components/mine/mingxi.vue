@@ -8,7 +8,8 @@
 										<List v-for="(item,index) in dataList" :key="index" :class="item.recordType ==1 ? 'cz':'tx'">
 												<div slot="left">
 														<span>￥</span>
-														<span>{{item.recordType ==1 ? '+' : '-'}} {{item.recordTradeMoney}}</span>
+														<!--{{item.recordType ==1 ? '+' : '-'}}-->
+														<span>{{item.recordTradeMoney}}</span>
 												</div>
 												<div slot="right">
 														<p>{{item.recordType ==1 ? '充值' : '提现'}}{{item.recordStatus}}</p>
@@ -64,7 +65,6 @@
 					});
 			},
 			methods:{
-//上啦
 					upCallback(page){
 							//联网加载数据
 							var self = this;
@@ -110,7 +110,7 @@
 													let dataList = res.data.LIST;
 													successCallback&&successCallback(dataList);//成功回调
 											}
-									}).catch(function(error) {
+									}).catch(function(error){
 											errorCallback&&errorCallback()//失败回调
 									});
 							},500)

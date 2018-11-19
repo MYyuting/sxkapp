@@ -4,12 +4,12 @@
 				<Head :text="til"></Head>
 				<div v-show="flag">
 						<gongY v-on:checkboxFlag="checkboxFlag" :data="data" ></gongY>
-						<div>
+						<div class="con-bot">
 								<div class="czfs">充值金额（至少充值1.00元）</div>
 								<div class="fill">
 										<div>￥</div>
 										<div>
-												<input type="number" v-on:input="change" onkeyup="value=value.replace(/[^\d]/g,'')" v-model="price" placeholder="请输入充值金额">
+												<input type="number"  onkeyup="this.value=value.replace(/[^0-9-]+/,'')" v-model="price" placeholder="请输入充值金额">
 										</div>
 								</div>
 								<ul class="Tablist">
@@ -50,7 +50,8 @@
 								  "10000元",
 								  "30000元",
 								  "50000元",
-							]
+							],
+			        htmls:'',
 					}
 			},
 			mounted(){
@@ -62,9 +63,6 @@
 							this.checkbox = flag1;
 							console.log(this.checkbox);
 					},
-					change() {
-							console.log(this.price)
-					},
 					//	充值btn按钮
 					rechargeClick(){
 							if(this.checkbox){
@@ -75,7 +73,15 @@
 											})).then((res) => {
 													console.log(res);
 													if(res.status == 200){
-															window.location.href = url+'/miao/security/AliRecharge.do?rechargeMoney='+this.price+'&token='+this.token;
+							              this.$router.push({ path:'/apply',query:{ htmls:res.data} });
+                   this.htmls = res.data.result;
+													  //打开新页面
+													  // window.open(routerData.href,'_ blank');
+						//            const div = document.createElement('div');
+						// 							  div.innerHTML = this.htmls;
+						// 							  document.body.appendChild(div)
+						// 							  document.forms[0].submit();
+														// 	window.location.href = url+'/miao/security/AliRecharge.do?rechargeMoney='+this.price+'&token='+this.token;
 													}else if(res.STATUS == 3){
 															Toast({
 																	message: '请登录',
@@ -147,27 +153,26 @@
 				line-height: .4rem;
 				color: #9B9B9B;
 				font-size: .12rem;
-				@include pad(0 .15rem,.4rem);
-				border: 1px solid #eee;
+				@include pad(0 .15rem,.41rem);
 		}
 		.fill{
 				@extend .display;
 				height: 1rem;
+				padding: 0 .15rem;
+				border-top: 1px solid #eee;
 				font-size: .3rem;
-				>div:nth-child(1){
-						width: 15%;
-						text-align: center;
-				}
 				>div:nth-child(2){
 						flex-grow: 1;
 				}
 				input{
 						width: 100%;
-						height: 1rem;
+						height: 100%;
 						border: none;
 						font-size: .2rem;
 						outline: none;
+						text-align: right;
 				}
+				input::placeholder{text-align: right;}
 		}
 		.Tablist{
 				@extend .display;

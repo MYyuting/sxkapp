@@ -24,10 +24,10 @@
 						</ul>
 				</div>
 				<!--无数据显示-->
-				<div class="wgray" v-show="listSrr.length == 0">
-						<img src="../../assets/img/state/order@2x.png" alt="" />
-						<p>你还没有相关的订单</p>
-				</div>
+				<!--<div class="wgray" v-show="listSrr.length == 0">-->
+						<!--<img src="../../assets/img/state/order@2x.png" alt="" />-->
+						<!--<p>你还没有相关的订单</p>-->
+				<!--</div>-->
 		</div>
 </template>
 

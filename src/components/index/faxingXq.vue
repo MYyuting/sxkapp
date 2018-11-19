@@ -4,7 +4,7 @@
 				<Head>
 						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
 						<span class="" slot="head_center">{{investors.investorsName}}</span>
-						<span class="iconfont icon-paiHangBang_Star" slot="head_right" @click="xgbClick(investors.investorsAvatar,investors.investorsName,investors.investorsId)"></span>
+						<span class="iconfont icon-paiHangBang_Star" slot="head_right" @click="xgbClick(investors.investorsId,investors.investorsCode)"></span>
 				</Head>
 
 				<div id="mescroll" class="mescroll">
@@ -39,9 +39,10 @@
 									@click="tabClick1(index)">{{item.til}}</span>
 								</div>
 								<div class="confirm">
-										<div id="myChart" :style="{width: '2.3rem', height: '2.4rem', border:'1px solid #ccc'}"></div>
+										<div v-show="i==0" id="myChart1" :style="{width: '2.1rem', height: '2.45rem', border:'1px solid #ccc'}"></div>
+										<div v-show="i==1" id="myChart" :style="{width: '2.1rem', height: '2.45rem', border:'1px solid #ccc'}"></div>
 										<!--右买卖5-->
-										<div class="temp_content_right" >
+										<div class="temp_content_right">
 												<div class="temp-tab">
 														<span :class="tabShow ? '':'active'" @click="tabBtn(0)">五档</span>
 														<span @click="tabBtn(1)" :class="tabShow ? 'active':''">明细</span>
@@ -90,7 +91,7 @@
 						</div>
 						<!--动态-->
 						<div v-show="currentIndex==2">
-								<DongTai v-show="dtShow"></DongTai>
+								<DongTai v-show="dtShow" :datalist="datalist"></DongTai>
 								<div class="zanwu" v-show="!dtShow">
 										<p>暂无数据</p>
 								</div>
@@ -161,19 +162,7 @@
 								tabShow:false,
 								tabList1:[
 										{
-												til:"1分"
-										},
-										{
-												til:"5分"
-										},
-										{
-												til:"15分"
-										},
-										{
-												til:"30分"
-										},
-										{
-												til:"60分"
+												til:"分时"
 										},
 										{
 												til:"日线"
@@ -224,6 +213,7 @@
 								alertS:false,
 								user_num:0,
 								xingNum:'',
+								datalist:'',
 						}
 				},
 				mounted(){
@@ -320,13 +310,13 @@
 						},
 						//点击买出
 						buybtn(){
-						this.$router.push({
-									path:'/business/wbuy',
-									query:{
-										code:this.investors.investorsCode,
-										name:this.investors.investorsName,
-									}
-						})
+								this.$router.push({
+											path:'/business/wbuy',
+											query:{
+												code:this.investors.investorsCode,
+												name:this.investors.investorsName,
+											}
+								})
 						},
 						//tab切换
 						tabBtn(i){
@@ -399,12 +389,11 @@
 								}
 						},
 						// 星光榜
-						xgbClick(img,name,id){
+						xgbClick(id,code){
 								this.$router.push({
 										path: '/xgph',
 										query: {
-												imgUrl:img,
-												name:name,
+												code:code,
 												id:id,
 										}
 								})
@@ -445,17 +434,17 @@
 						},
 						//获取动态数据
 						dtJson(){
-								this.$axios.post(url+'/miao/publishInformation.do',this.$qs.stringify({
+								this.$axios.post(url+'/sxz/api/findSxzRecordPageList',this.$qs.stringify({
 										token:this.token,
 										userId:this.investors.investorsUserId,
 								})).then((res) => {
 										console.log(res.data);
-										if(res.data.STATUS == 0){
-												if(res.data.LIST.length == 0){
+										if(res.data.status == 0){
+												if(res.data.data.list.length == 0){
 														this.dtShow = false
 												}else{
 														this.dtShow = true
-														this.datalist = res.data.LIST
+														this.datalist = res.data.data.list
 												}
 										}else{
 
@@ -518,16 +507,18 @@
 												let arr2=[];
 												let arr3=[];
 												arrAll.forEach(function (item,index) {
-														// 	console.log(item);
+															// console.log(item);
 														for (let i in item) {
 																arr2.push(item[i])
 														}
-														// 	console.log(arr2);
+															console.log(arr2);
 														for (var i in arr2){
-																if(i==1|| i ==4 ){
+																if( i ==1 ){
+																		arr3.push(parseFloat(arr2[i]))
+																}else if(i==4){
 																		arr3.push(arr2[i])
 																}else if(i ==5 ||i ==6 ||i ==7 ||i ==8 ){
-																		arr3.unshift(arr2[i])
+																		arr3.unshift(parseFloat(arr2[i]))
 																}
 														}
 														arr.push(arr3);
@@ -541,6 +532,7 @@
 										this.minitePriceList = res.data.OBJECT.minitePriceList;  //分时数据
 										this.getStatus();
 										this.drawLine();
+										this.minDate();
 								}).catch((err) => {
 										console.log(err)
 								})
@@ -556,7 +548,7 @@
 										console.log(rawData[i]);
 										volumes.push([i, rawData[i][4], rawData[i][0] > rawData[i][1] ? 1 : -1]);
 								}
-								console.log(volumes)
+								console.log(volumes);
 								return {
 										categoryData: categoryData,
 										values: values,
@@ -577,7 +569,7 @@
 										}
 										result.push(+(sum / dayCount).toFixed(3));
 								}
-								console.log(result)
+								console.log(result);
 								return result;
 						},
 						//k线绘制
@@ -590,7 +582,7 @@
 								// 绘制图表
 								myChart.setOption({
 										backgroundColor: '#fff',
-										animation: true,
+										animation: false,
 										tooltip: {
 												trigger: 'axis',
 												axisPointer: {
@@ -599,13 +591,13 @@
 												backgroundColor: '#fff',
 												borderWidth: 1,
 												borderColor: '#eee',
-												triggerOn:'mousemove|click',
+												// triggerOn:'mousemove|click',
 												textStyle: {    //提示框文字
 														color: '#333',
 														fontSize:12,
 												},
 												position: [-3,-49],
-												extraCssText: 'height:.3rpx;line-height:.3rem;width: 147%;overflow: hidden;',
+												extraCssText: 'height:.3rem;line-height:.3rem;width: 150%;overflow: hidden;',
 												formatter: function (params) {
 														// console.log(params);
 														return [
@@ -628,10 +620,8 @@
 												show:false,
 										},
 										visualMap: {
-												min: 0,
-												max: 10,
 												// 两个手柄对应的数值是 4 和 15
-												range: [4, 12],
+												// range: [4, 12],
 												show: false,
 												seriesIndex: 5,
 												dimension: 2,
@@ -650,7 +640,6 @@
 														left: 0,
 														right: 0,
 														height: 180,
-														zlevel: 999,
 														borderColor:'#ccc',
 														// borderWidth:1
 												},
@@ -659,9 +648,7 @@
 														left: 0,
 														right: 0,
 														height: 40,
-														// top: 180,
 														bottom:0,
-														zlevel: 999,
 														borderColor:'#ccc',
 														// borderWidth:1
 												}
@@ -683,7 +670,7 @@
 																}
 														},
 														axisLine: {
-																show: true,
+																show: false,
 																lineStyle: {
 																		color: "#b5b7c2",
 																		width: 1
@@ -694,7 +681,6 @@
 														},
 														axisTick: {
 																show: false,
-																alignWithLabel: true
 														},
 														axisPointer: {
 																label: {
@@ -705,23 +691,23 @@
 												{
 														type: 'category',
 														gridIndex: 1,
-														position: 'bottom',
+														// position: 'bottom',
 														data: data.categoryData,
 														scale: true,
-														boundaryGap : true,
-														axisLine: {onZero: true},
+														boundaryGap : false,
+														axisLine: {show: false},
 														axisTick: {show: false},
+														axisLabel: {show: false},
 														splitLine: {
-																show: true,
+																show: false,
 																interval: 3,
 																lineStyle: {
 																		color: ['#ccc']
 																}
 														},
-														axisLabel: {show: false},
-														splitNumber: 30,
 														min: 'dataMin',
-														max: 'dataMax'
+														max: 'dataMax',
+														splitNumber: 100,
 												}
 										],
 										yAxis: [
@@ -742,11 +728,11 @@
 																}
 														},
 														axisTick: {
-																show: true,
+																show: false,
 																alignWithLabel: true
 														},
 														axisLine: {
-																show: true,
+																show: false,
 																lineStyle: {
 																		color: '#ccc'
 																}
@@ -755,7 +741,7 @@
 												{
 														scale: true,
 														gridIndex: 1,
-														splitNumber: 1,
+														splitNumber: 2,
 														axisLabel: {show: false},
 														axisLine: {show: false},
 														axisTick: {show: false},
@@ -767,18 +753,10 @@
 												{
 														type: 'inside',
 														xAxisIndex: [0, 1],
-														start: 0,
-														end: 80,
-														// filterMode: 'filter'
-												},
-												{
-														show: false,
-														xAxisIndex: [0, 1],
-														type: 'slider',
-														// top: '70%',
-														start: 0,
-														end: 50,
-														// filterMode: 'empty'
+														start: 50,
+														end: 100,
+														minSpan:50,
+														maxSpan:100,
 												}
 										],
 										// 走势图数据
@@ -795,25 +773,18 @@
 																		borderColor: null,
 																		borderColor0: null
 																}
-														},
-														// tooltip: {
-														// 		formatter(param) {
-														// 				// return [
-														// 				// 		'Open: ' + param.data[0] + '',
-														// 				// 		'Close: ' + param.data[1] + '',
-														// 				// 		'Lowest: ' + param.data[2] + '',
-														// 				// 		'Highest: ' + param.data[3] + '<br/>'
-														// 				// ].join('');
-														// 		}
-														// }
+														}
 												},
 												{
 														name: 'MA5',
 														type: 'line',
 														data: this.calculateMA(1, data),
 														smooth: true,
+														showSymbol: false,
 														lineStyle: {
-																normal: {opacity: 0.5}
+																normal: {
+																		width: 1
+																}
 														}
 												},
 												{
@@ -821,8 +792,11 @@
 														type: 'line',
 														data: this.calculateMA(10, data),
 														smooth: true,
+														showSymbol: false,
 														lineStyle: {
-																normal: {opacity: 0.5}
+																normal: {
+																		width: 1
+																}
 														}
 												},
 												{
@@ -830,8 +804,11 @@
 														type: 'line',
 														data: this.calculateMA(20, data),
 														smooth: true,
+														showSymbol: false,
 														lineStyle: {
-																normal: {opacity: 0.5}
+																normal: {
+																		width: 1
+																}
 														}
 												},
 												{
@@ -839,8 +816,11 @@
 														type: 'line',
 														data: this.calculateMA(30, data),
 														smooth: true,
+														showSymbol: false,
 														lineStyle: {
-																normal: {opacity: 0.5}
+																normal: {
+																		width: 1
+																}
 														}
 												},
 												{
@@ -866,6 +846,150 @@
 								});
 						},
 
+						// 分时数据
+						minDate(){
+								let upColor = '#00da3c';
+								let downColor = '#ec0000';
+								let heColor = '#aaa';
+								console.log(this.minitePriceList);
+								var arrData =[];
+								var dateArr =[];
+								var values = [[0,80000 ,-1],[1,80000 ,1],[2,89000 ,-1],[3,89000 ,1],[19,89000 ,1],[20,89000 ,-1]];
+								var i = 20 ;
+								for (var item of this.minitePriceList){
+										arrData.push(parseFloat(item.price));
+										dateArr.push(item.time);
+										var valArr = item.buyAndSell.split('.');
+										values.push([i++, parseFloat(valArr[0]), parseFloat(valArr[1])==2 ? 1 : (parseFloat(valArr[1])==3 ? -1 : 0)]);
+								}
+								console.log(values);
+
+								let myChart = this.$echarts.init(document.getElementById('myChart1'));
+								var option = {
+										tooltip: {
+												trigger: 'axis',
+												axisPointer: {
+														type: 'cross'
+												},
+												backgroundColor: '#fff',
+												borderWidth: 1,
+												borderColor: '#eee',
+												// triggerOn:'mousemove|click',
+												textStyle: {    //提示框文字
+														color: '#333',
+														fontSize:12,
+												},
+												// position: [3,49],
+										},
+										visualMap: {
+												show: false,
+												seriesIndex:2,
+												dimension: 2,
+												pieces: [{
+														value: 1,
+														color: upColor
+												}, {
+														value: -1,
+														color: downColor
+												}]
+										},
+										grid: [
+												// 上图表
+												{
+														top: 0,
+														left: -20,
+														right: 0,
+														width:'auto',
+														height: 180,
+														borderColor:'#ccc',
+														containLabel:true,
+														// borderWidth:1
+												},
+												{
+														left: 2,
+														right: 0,
+														height: 40,
+														bottom:0,
+														borderColor:'#ccc',
+														// borderWidth:1
+												}
+										],
+										xAxis: [
+												{
+														type: 'category',
+														data: dateArr,
+														axisTick:{show:false},
+														axisLine:{show:false}
+												},
+												{
+														type: 'category',
+														gridIndex: 1,
+														// position: 'bottom',
+														data: arrData,
+														scale: true,
+														boundaryGap : false,
+														axisLine: {show: false},
+														axisTick: {show: false},
+														axisLabel: {show: false},
+														splitLine: {
+																show: false,
+																interval: 3,
+																lineStyle: {
+																		color: ['#ccc']
+																}
+														},
+														min: 'dataMin',
+														max: 'dataMax',
+												}
+										],
+										yAxis: [
+												{
+														type: 'value',
+														boundaryGap: [0, '100%'],
+														axisTick:{show:false},
+														axisLine:{show:false}
+												},
+												{
+														scale: true,
+														gridIndex: 1,
+														splitNumber: 2,
+														axisLabel: {show: false},
+														axisLine: {show: false},
+														axisTick: {show: false},
+														splitLine: {show: false}
+												}
+										],
+										dataZoom: [
+												{
+												type: 'inside',
+												xAxisIndex: [0, 1],
+												start: 30,
+												end: 100,
+												}
+										],
+										series: [
+												{
+														type:'line',
+														smooth:true,
+														symbol: 'none',
+														lineStyle: {
+																normal: {
+																		width: 1
+																}
+														},
+														data: arrData
+												},
+												{
+														name: 'S',
+														type: 'bar',
+														xAxisIndex: 1,
+														yAxisIndex: 1,
+														data: values,
+												}
+										]
+								};
+								myChart.setOption(option)
+						}
 				},
 				components:{
         		Head,
@@ -878,7 +1002,7 @@
 </script>
 <style>
 		#myChart > div:nth-child(2) span{
-				margin-right: 8%;
+				margin-right: 10%;
 		}
 		#myChart > div:nth-child(2) span i{color: #ff5558;}
 </style>
@@ -903,9 +1027,11 @@
 						height: .36rem;
 						line-height: .36rem;
 						display: flex;
-						justify-content: space-between;
+						span{
+								margin-right: .2rem;
+						}
 						.active{
-								padding-bottom: 2px;
+								padding-bottom: 6px;
 								border-bottom: 1px solid #FF5558;
 								color: #FF5558;
 						}
@@ -926,7 +1052,7 @@
 						margin-top: .54rem;
 				}
 				.temp_content_right {
-						width: 44%;
+						width: 1.4rem;
 						box-sizing:border-box;
 						padding:0 0 0 .1rem ;
 						flex-grow: 1;
@@ -957,11 +1083,11 @@
 										}
 										span:nth-child(2){
 												display: inline-block;
-												width: 30%;
+												width: 33%;
 										}
 										span:nth-child(3){
 												display: inline-block;
-												width: 37%;
+												width: 34%;
 										}
 								}
 						}
@@ -977,6 +1103,7 @@
 				top: .5rem;
 				bottom: .5rem;
 				height: auto;
+				z-index: 222;
 		}
 		$color:#ff5558;
 		.shuju{
@@ -1008,7 +1135,7 @@
 								color: #00BB37!important;
 						}
 						.colh{
-								color: #666!important;
+								color: #333!important;
 						}
 				}
 		}

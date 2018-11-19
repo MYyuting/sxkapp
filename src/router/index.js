@@ -16,7 +16,7 @@ import DynamicTemp  from '@/components/public/dynamic_temp'//买入
 import Sell_temp  from '@/components/public/sell_temp'//卖出
 import Position_temp  from '@/components/public/position_temp'//持仓
 import Atorder from '@/components/business/atorder'//持仓
-// import Marquee from '@/components/business/sellout'//marquee
+import Purchase from '@/components/business/purchase'
 
 //行情
 import Quotation from '@/components/quotation/index'
@@ -32,6 +32,7 @@ import Recharge from '@/components/mine/recharge'
 import Forward from '@/components/mine/forward'
 import MingXi from '@/components/mine/mingxi'
 import MingXi2 from '@/components/mine/mingxi2'
+import Apply from '@/components/mine/applyText'
 //登录注册
 import segnIn from '@/components/mine/SignIn'
 import Register from '@/components/mine/register'
@@ -56,14 +57,18 @@ import Lianxi from '@/components/mine/list/lianxi'
 import Feedback from '@/components/mine/list/feedback'
 //帮助中心
 import Help from '@/components/mine/list/help'
+import tradingRules from '@/components/mine/list/tradingRules'
+import makeRules from '@/components/mine/list/makeRules'
 import Time from '@/components/mine/list/timeDD'
 //充值、提现成功
 import Success from '@/components/mine/success'
+import Fail from '@/components/mine/fail'
 
 //星光排行
 import xgph from '@/components/public/xgpaihang'
 //线图
 import xianTu from '@/components/public/xiantu'
+import Dtails from '@/components/public/details'
 
 //实名认证
 import Authentic from '@/components/mine/authentication'
@@ -242,6 +247,11 @@ export default new Router({
 			component:News
 		},
 		{
+			path:"/Details",
+			name:"Details",
+			component:Dtails
+		},
+		{
 			path:"/xiaofei",
 			name:"xiaofei",
 			component:Time
@@ -317,9 +327,34 @@ export default new Router({
 			component:Success
 		},
 		{
+			path:"/fail",
+			name:'fail',
+			component:Fail
+		},
+		{
 			path:"/webview",
 			name:'webview',
 			component:Webview
+		},
+		{
+			path:"/apply",
+			name:'applyText',
+			component:Apply
+		},
+		{
+			path:"/pau",
+			name:'pau',
+			component:Purchase
+		},
+		{
+			path:"/trading",
+			name:'trading',
+			component:tradingRules
+		},
+		{
+			path:"/make",
+			name:'make',
+			component:makeRules
 		}
 	]
 })

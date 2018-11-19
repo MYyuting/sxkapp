@@ -1,74 +1,77 @@
 <template>
 		<!--卖出-->
 		<div>
-				<div class="mescroll dynamic_temp" id="mescroll">
-						<div class="temp_content_top">
-								<div class="temp_content_left">
-										<div class="div-ipt">
-												<input type="text" placeholder="发行人姓名或代码" v-model="input1" v-on:input="change">
-												<div class="sousuo" id="ss" v-show="flag">
-														<p v-for="(item,index) in arrList" @click="clickLIST(index)">
-																<span>{{item.investorsName}}</span>
-																<span>{{item.investorsCode}}</span>
-														</p>
+				<div class="dynamic_temp">
+						<div class="con-box">
+								<div class="temp_content_top">
+										<div class="temp_content_left">
+												<div class="div-ipt">
+														<input type="text" placeholder="发行人姓名或代码" v-model="input1" v-on:input="change">
+														<div class="sousuo" id="ss" v-show="flag">
+																<p v-for="(item,index) in arrList" @click="clickLIST(index)">
+																		<span>{{item.investorsName}}</span>
+																		<span>{{item.investorsCode}}</span>
+																</p>
+														</div>
 												</div>
-										</div>
-										<div class="div-ipt">
-												<span class="jian iconfont icon-price_down" @click="jian"></span>
-												<input id="price" type="number" step="0.01" v-model="input2" placeholder="价格">
-												<span class="ding ding1">￥</span>
-												<span class="jia iconfont icon-price_up" @click="jia"></span>
-										</div>
-										<div class="div-btn">
-												<span class="iconfont icon-btn_high" @click="zhang"></span>
-												<span class="iconfont icon-btn_low" @click="die"></span>
-										</div>
-										<div class="div-ipt">
-												<input type="number" placeholder="数量" v-model="input3">
-												<span class="ding">s</span>
-										</div>
-										<div class="div-ipt kemai " >可卖 {{sellNum}} 秒</div>
-										<div class="div-ipt btnBuy" @click="sellClick">卖出时间</div>
+												<div class="div-ipt">
+														<span class="jian iconfont icon-price_down" @click="jian"></span>
+														<input id="price" type="number" step="0.01" v-model="input2" placeholder="价格">
+														<span class="ding ding1">￥</span>
+														<span class="jia iconfont icon-price_up" @click="jia"></span>
+												</div>
+												<div class="div-btn">
+														<span class="iconfont icon-btn_high" @click="zhang"></span>
+														<span class="iconfont icon-btn_low" @click="die"></span>
+												</div>
+												<div class="div-ipt">
+														<input type="number" placeholder="数量" v-model="input3">
+														<span class="ding">s</span>
+												</div>
+												<div class="div-ipt kemai " >可卖 {{sellNum}} 秒</div>
+												<div class="div-ipt btnBuy" @click="sellClick">卖出时间</div>
 
-								</div>
-								<div class="temp_content_right" >
-										<div class="temp-tab">
-												<span :class="tabShow ? '':'active'" @click="tabBtn(0)">五档</span>
-												<span @click="tabBtn(1)" :class="tabShow ? 'active':''">明细</span>
 										</div>
-										<div v-show="!tabShow">
-												<ul class="sell" >
-														<li v-for="(item,index) in sellFiverList" @click="sellmxlist(item.price)">
-																<span>卖{{5-index}}</span>
-																<span class="sellcolor">{{item.price}}</span>
-																<span>{{item.num}}</span>
-														</li>
-												</ul>
-												<br>
-												<ul class="buy">
-														<li v-for="(item,index) in buyFiverList" @click="sellmxlist(item.price)">
-																<span>买 {{index+1}}</span>
-																<span class="buycolor">{{item.price}}</span>
-																<span>{{item.num}}</span>
-														</li>
-												</ul>
-										</div>
-										<!--明细-->
-										<div v-show="tabShow">
-												<ul class="sellBuy" v-if="buyAndSellerList.length!=0">
-														<li  v-for="item in buyAndSellerList">
-																<span>{{item.time}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
-														</li>
-												</ul>
-												<div class="wnone" v-if="buyAndSellerList.length==0">
-														<p v-show="!mxShow">暂无数据</p>
-														<p v-show="mxShow">先选择一个发行人</p>
+										<div class="temp_content_right" >
+												<div class="temp-tab">
+														<span :class="tabShow ? '':'active'" @click="tabBtn(0)">五档</span>
+														<span @click="tabBtn(1)" :class="tabShow ? 'active':''">明细</span>
+														<img src="../../assets/img/shuaxin.svg" :class="shuaxin ? 'tran' : ''" @click="trans" alt="">
+												</div>
+												<div v-show="!tabShow">
+														<ul class="sell" >
+																<li v-for="(item,index) in sellFiverList" @click="sellmxlist(item.price)">
+																		<span>卖{{5-index}}</span>
+																		<span class="sellcolor">{{item.price}}</span>
+																		<span>{{item.num}}</span>
+																</li>
+														</ul>
+														<br>
+														<ul class="buy">
+																<li v-for="(item,index) in buyFiverList" @click="sellmxlist(item.price)">
+																		<span>买 {{index+1}}</span>
+																		<span class="buycolor">{{item.price}}</span>
+																		<span>{{item.num}}</span>
+																</li>
+														</ul>
+												</div>
+												<!--明细-->
+												<div v-show="tabShow">
+														<ul class="sellBuy" v-if="buyAndSellerList.length!=0">
+																<li  v-for="item in buyAndSellerList">
+																		<span>{{item.time}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																</li>
+														</ul>
+														<div class="wnone" v-if="buyAndSellerList.length==0">
+																<p v-show="!mxShow">暂无数据</p>
+																<p v-show="mxShow">先选择一个发行人</p>
+														</div>
 												</div>
 										</div>
 								</div>
-						</div>
-						<div class="temp_content_bottom">
-								<tabListToBuy @ievent="ievent2" ref="mychild"></tabListToBuy>
+								<div class="temp_content_bottom">
+										<tabListToBuy @ievent="ievent2" ref="mychild"></tabListToBuy>
+								</div>
 						</div>
 				</div>
 				<mt-popup
@@ -178,6 +181,7 @@
 								mxShow:true,        // 明细状态
 								limitDownPrice:'',      //跌价
 								limitUpPrice:'',      //涨价
+								shuaxin:false,
 						}
 				},
 				mounted(){
@@ -188,12 +192,7 @@
 									this.getJson();
 									this.chaJson();
 							}
-						var self = this;
-						self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
-								down: {
-										callback: this.getJson //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
-								},
-						});
+
 				},
 				watch:{
 						//监听价格变化
@@ -203,6 +202,13 @@
 						}
 				},
 				methods: {
+						trans(){
+								this.getJson();
+								this.shuaxin = true;
+								setTimeout(()=>{
+										this.shuaxin = false;
+								},2000)
+						},
 						zhang(){
 								this.input2 = this.limitUpPrice
 						},
@@ -220,7 +226,7 @@
 								}else{
 										if(this.input2 >= this.limitUpPrice){
 												Toast({
-														message: '不能大于涨幅价',
+														message: '交易价格不能大于涨停价',
 														duration: 1000
 												});
 												return;
@@ -233,7 +239,7 @@
 						jian(){
 								if(this.input2 <= this.limitDownPrice){
 										Toast({
-												message: '不能小于跌幅价',
+												message: '交易价格不能小于跌停价',
 												duration: 1000
 										});
 										return;
@@ -274,9 +280,10 @@
 						//子组件调用父组件
 						ievent2(data){
 								console.log(data);
-								this.input1=data.investorsCode;
+								this.input1= data.investorsName +' '+data.investorsCode;
 								this.input2=data.newOrderPrice;
-								this.sellNum=data.buyerOrderNum;  //可卖数量
+								this.investorsCode = data.investorsCode;
+								this.getJson();
 						},
 						backHandle () {
 								this.clearPasswordHandle();  // 返回时清除password
@@ -478,14 +485,9 @@
 												this.buyFiverList = buyFiverListNew;
 												// console.log(sellFilverListNew)
 												// console.log(buyFiverListNew)
-												setTimeout(() => {
-														this.mescroll.endSuccess();
-												},1000)
+
 										}).catch((err) => {
 												console.log(err);
-												setTimeout(() => {
-														this.mescroll.endErr();
-												},1000)
 										})
 								// },1000);
 						},
@@ -501,12 +503,7 @@
 </style>
 <style scoped lang="scss">
 		/*mescroll滚动的区域*/
-		.mescroll {
-				position: fixed;
-				top: .49rem;
-				bottom: .49rem;
-				height: auto;
-		}
+
 		.wnone{
 			font-size: .12rem;
 			text-align: center;
@@ -523,12 +520,6 @@
 						line-height: .33rem;
 				}
 		}
-		/*.buycolor{*/
-				/*color: red;*/
-		/*}*/
-		.sellcolor{
-				/*color: #38f321;*/
-		}
 		.sousuo{
 				position: absolute;
 				width: 100%;
@@ -544,10 +535,18 @@
 						border-bottom: 1px solid #ddd;
 				}
 		}
-		.dynamic_temp {
+		.con-box{
 				height: 100%;
+				display: flex;
+				flex-direction: column;
+		}
+		.dynamic_temp {
+				position: fixed;
+				top: .49rem;
+				width: 100%;
+				bottom: .49rem;
+				height: auto;
 				box-sizing: border-box;
-				padding-bottom: .5rem;
 				.temp_content_top {
 						display: flex;
 						flex-wrap: wrap;
@@ -641,7 +640,8 @@
 						overflow:auto;
 						.temp-tab{
 								display: flex;
-								justify-content: center;
+								justify-content: space-between;
+								align-items: center;
 								padding-bottom: .07rem;
 								span{
 										padding: .05rem 0;
@@ -651,6 +651,21 @@
 										border-bottom: 3px solid #ff5558;
 										color: #ff5558;
 								}
+								img{
+										width: .15rem;
+										height: .15rem;
+								}
+								.tran{
+										animation-name:go;
+										animation-duration:2s;
+										animation-iteration-count: infinite
+								}
+						}
+						@keyframes go{
+								0% {
+										transform: rotateZ(0);
+								}
+								100% {transform: rotateZ(360deg); }
 						}
 						.buy,.sell,.sellBuy{
 								li{
@@ -660,21 +675,27 @@
 										line-height: .2rem;
 										span{
 												font-size:.12rem;
-												text-align: right;
+												width: 20%;
 										}
 										span:nth-child(2){
 												width: 30%;
 												display: inline-block;
+												text-align: right;
 										}
 										span:nth-child(3){
 												display: inline-block;
 												width: 37%;
+												text-align: right;
 										}
 								}
 						}
 				}
 				.temp_content_bottom {
 						width: 100%;
+						height: 20%;
+						flex-grow: 1;
+						margin-top:.1rem;
+						border-top: 4px solid #eee;
 				}
 		}
 

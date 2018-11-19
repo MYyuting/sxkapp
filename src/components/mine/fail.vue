@@ -2,13 +2,9 @@
 		<!--充值。提现成功-->
 		<div class="success">
 				<div class="tubiao">
-						<span class="el-icon-circle-check"></span>
-						<p>充值成功</p>
+						<span class="el-icon-circle-close"></span>
+						<p>充值失败</p>
 				</div>
-				<ul>
-						<li>充值金额：</li>
-						<li>{{price}} CNY</li>
-				</ul>
 				<div class="btn">
 						<button @click="czSuccess">确认返回</button>
 				</div>
@@ -20,7 +16,6 @@
 				name: "setPhone",
 				data(){
 						return {
-								price:this.$route.query.price,
 						}
 				},
 				mounted(){

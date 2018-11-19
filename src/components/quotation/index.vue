@@ -1,13 +1,13 @@
 <template>
   <div class="quotation">
-    <div class="nav">
-      <div><img src="./../../assets/img/topBar/paiHangBang@2x.png" alt="" @click="Rankings"></div>
-      <div class="quotation_tab">
-        <div :class="[classFlag ? 'select_class' : 'other_class']" @click="classClick">行情</div>
-        <div :class="[classFlag ? 'other_class' : 'select_class']" @click="classClicked">动态</div>
+      <div class="nav">
+        <div><img src="./../../assets/img/topBar/paiHangBang@2x.png" alt="" @click="Rankings"></div>
+        <div class="quotation_tab">
+          <div :class="[classFlag ? 'select_class' : 'other_class']" @click="classClick">行情</div>
+          <div :class="[classFlag ? 'other_class' : 'select_class']" @click="classClicked">动态</div>
+        </div>
+        <div><img src="./../../assets/img/topBar/icon_message@2x.png" alt="" @click="xiaoXi"></div>
       </div>
-      <div><img src="./../../assets/img/topBar/icon_message@2x.png" alt="" @click="xiaoXi"></div>
-    </div>
     <div class="height50"></div>
     <div class="quotation_content">
       <router-view></router-view>
@@ -16,43 +16,43 @@
 </template>
 
 <script>
-  export default {
-    name: "index",
-    data() {
-      return {
-        classFlag: false
-      }
-    },
-			mounted(){
-                    //判断路径切换样式
-                    // console.log(this.$router.history.current.path)
-					if(this.$router.history.current.path.indexOf("/quotation/dynamic") != -1) this.classFlag = true;
-					if(this.$router.history.current.path.indexOf("/quotation/quotat") != -1) this.classFlag = false;
+    export default {
+        name: "index",
+        data() {
+            return {
+                classFlag: false
+            }
+        },
+        mounted(){
+            //判断路径切换样式
+            // console.log(this.$router.history.current.path)
+            if(this.$router.history.current.path.indexOf("/quotation/dynamic") != -1) this.classFlag = true;
+            if(this.$router.history.current.path.indexOf("/quotation/quotat") != -1) this.classFlag = false;
 
-					},
-    methods: {
-      classClick() {
-        this.classFlag = false;
-        this.$router.push("/quotation/quotat")
-      },
-      classClicked() {
-        this.classFlag = true;
-        this.$router.push("/quotation/dynamic")
-      },
-				Rankings(){
-						this.$router.push("/paihangb")
-				},
-				xiaoXi(){
-						this.$router.push("/news")
-				}
+        },
+        methods: {
+            classClick() {
+                this.classFlag = false;
+                this.$router.push("/quotation/quotat")
+            },
+            classClicked() {
+                this.classFlag = true;
+                this.$router.push("/quotation/dynamic")
+            },
+            Rankings(){
+                this.$router.push("/paihangb")
+            },
+            xiaoXi(){
+                this.$router.push("/news")
+            }
+        }
     }
-  }
 </script>
 
 <style scoped lang="scss">
-.height50{
-	height: .5rem;
-}
+  .height50{
+    height: .5rem;
+  }
   $color: #ff5558;
   .quotation {
     height: 100%;
@@ -66,40 +66,40 @@
       align-items: center;
       padding: 0 .1rem;
       position: fixed;
-	    width: 100%;
-	    left: 0;
-	    top: 0;
-	    box-sizing:border-box;
-	    z-index:333;
+      width: 100%;
+      left: 0;
+      top: 0;
+      box-sizing:border-box;
+      z-index:333;
       img {
         width: .25rem;
         height: .25rem;
       }
-    }
-    .quotation_tab {
-      width: 1.64rem;
-      height: .3rem;
-      display: flex;
-      overflow: hidden;
-      border-radius: 5px;
-      > div {
+      .quotation_tab {
+        width: 1.64rem;
         height: .3rem;
-        flex-grow: 1;
-        text-align: center;
-        line-height: .3rem;
-        font-size: .14rem;
-        /*<!--color: $color;-->*/
-        background:#FF656B ;
-        color: #fff;
-				font-weight: 600;
-      }
-     
-      .other_class {
-        background: #fff;
-        color: $color;
+        display: flex;
+        overflow: hidden;
+        border-radius: 5px;
+        > div {
+          height: .3rem;
+          flex-grow: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: .14rem;
+          background:#FF656B ;
+          color: #fff;
+          font-weight: 600;
+        }
+        .other_class {
+          background: #fff;
+          color: $color;
 
+        }
       }
     }
+
     .quotation_content {
       height: 1rem;
       flex-grow: 1;

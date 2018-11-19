@@ -20,8 +20,8 @@
 								<li v-for="(item,index) in arrlist">
 										<span v-show="index != 0 ">{{index+1}}</span>
 										<div>
-												<img :src="'http://xsk.quanxiankaibo.com/'+item.userAvatar" :onerror="defaultImg" alt="">
-												<div>
+												<img :src="item.userAvatar" :onerror="defaultImg" alt="">
+												<div class="txtView">
 														<p>{{item.userName}}</p>
 												</div>
 										</div>
@@ -116,6 +116,11 @@
 								})).then((res) => {
 										console.log(res.data);
 										if(res.data.status ==0){
+												for(var item of res.data.userTeamList){
+														if(!item.userAvatar){
+																item.userAvatar = '../../assets/img/toux.png'
+														}
+												}
 												this.arrlist = res.data.userTeamList;
 												console.log(this.arrlist);
 												if(this.arrlist.length == 0){
@@ -127,6 +132,7 @@
 										}else{
 												Toast({
 														message: '暂无数据',
+														duration: 1000
 												});
 												this.arrlistIndex = true;
 										}
@@ -175,7 +181,7 @@
 														Toast({
 																message: '关注成功',
 																position: 'bottom',
-																duration: 2000
+																duration: 1000
 														});
 												}else if(res.data.status == 102){
 														this.$router.push('/signin')
@@ -183,7 +189,7 @@
 														Toast({
 																message: res.data.message,
 																position: 'bottom',
-																duration: 2000
+																duration: 1000
 														});
 												}
 										}).catch((err) => {
@@ -348,6 +354,10 @@
 										height: .4rem;
 										border-radius: 50%;
 										margin-right: .1rem;
+								}
+								div{
+										flex-grow: 1;
+										width: 50%;
 								}
 								div i{
 										font-size: .17rem;

@@ -100,6 +100,7 @@
 									div{
 											height: .2rem;
 											display: flex;
+											align-items: center;
 											i{
 													color: #ff5558;
 													font-size: .18rem;

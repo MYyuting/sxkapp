@@ -57,7 +57,7 @@
 		import Xlist from "@/components/index/Xlist"
 		import MeScroll from 'mescroll.js'
 		import { swiper, swiperSlide } from 'vue-awesome-swiper'
-		import { Toast} from 'mint-ui';
+		import { Toast,MessageBox} from 'mint-ui';
 		export default {
         name: "index",
         data(){
@@ -76,7 +76,6 @@
 										pagination: {
 												el: '.swiper-pagination',
 										},
-
 								},
 								arrImg:[],      //轮播
 								noticeList:[],  // 消息滚动
@@ -87,7 +86,41 @@
 								token:'',
 						}
 				},
-
+				beforeMount(){
+						var u = navigator.userAgent;
+						console.log(this.$store.state.version);
+						if(!!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)){
+								var PhoneType = 'ios'
+						}else if(u.indexOf('Android') > -1){
+								var PhoneType = 'Android'
+						}
+						//获取版本信息
+						this.$axios.post(url+'/miao/userCheckVersion.do',this.$qs.stringify({
+								osType:PhoneType,
+								clientVersion:this.$store.state.version,
+								uuid:''
+						})).then(res =>{
+								console.log(res.data);
+								if(res.data.OBJECT.version != this.$store.state.version){
+										MessageBox({
+												title: '版本升级',
+												message: '确认升级新版本吗?',
+												showCancelButton: true,
+												closeOnClickModal:false,
+												confirmButtonText:'更新',
+												cancelButtonText:'退出应用'
+										}).then(action => {
+												console.log(action);
+										    if(action == 'confirm'){
+										    		console.log('更新');
+														window.location.href= res.data.OBJECT.redirectlocation ;
+												}else{
+														plus.runtime.quit();
+												}
+										});
+								}
+						})
+				},
 				mounted (){
 						//这边就可以使用swiper这个对象去使用swiper官网中的那些方法
 						// this.swiper.slideTo(0, 0, false);
@@ -103,28 +136,6 @@
 										use:false,
 								}
 						});
-						//首页返回键处理
-						// 处理逻辑：1秒内，连续两次按返回键，则退出应用；
-						var first = null;
-						mui.back = function() {
-								//首次按键，提示 再按一次退出应用
-								if (!first) {
-										first = new Date().getTime();//记录第一次按下回退键的时间
-										Toast({
-												message: '再按一次退出应用',
-												duration: 1000
-										});
-										// mui.toast('再按一次退出应用');//给出提示
-										history.go(-1)//回退到上一页面
-										setTimeout(function() {//1s中后清除
-												first = null;
-										}, 1000);
-								} else {
-										if (new Date().getTime() - first < 1000) {//如果两次按下的时间小于1s，
-												plus.runtime.quit();//那么就退出app
-										}
-								}
-						};
 				},
 				methods:{
         		//点击投票全部
@@ -154,7 +165,7 @@
 										if(res.data.status == 0){
 												this.arrImg = res.data.advertList;   //banner
 												this.noticeList = res.data.noticeList;  // 消息滚动
-												this.newsInformationList=res.data.newsInformationList.reverse();  //星讯
+												this.newsInformationList=res.data.newsInformationList;  //星讯
 												this.votePeopleList = res.data.votePeopleList;   //投票
 												console.log(this.votePeopleList);
 												//申购
@@ -218,7 +229,7 @@
 		.banner{height: 1.81rem;}
 		.banner img{
 				width: 100%;
-				height:1.8rem ;
+				height:1.8rem;
 				display: block;
 		}
 		.content{
@@ -251,14 +262,14 @@
 				letter-spacing: 0;
 				width: 100%;
 				box-sizing: border-box;
-				span{position: relative;display: inline-block;margin-right: 8px}
+				span{position: relative;display: inline-block;margin-right: 8px;height: .2rem;}
 				span::after{
 						content: '';
 						position: absolute;
 						top: 4px;
 						right: -7px;
 						height: .13rem;
-						border-left: 3px solid #444;
+						border-left: 2px solid #444;
 				}
 				a{
 						text-decoration: none;

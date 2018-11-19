@@ -153,7 +153,7 @@
 										path: '/xgph',
 										name: 'xgph',
 										query: {
-												imgUrl:imgUrl,
+												code:this.code,
 												id:this.investorsId,
 										}
 								})
