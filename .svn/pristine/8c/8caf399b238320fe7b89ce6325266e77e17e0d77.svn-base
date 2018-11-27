@@ -1,0 +1,122 @@
+<template>
+		<!--提现-->
+		<div class="PutForward">
+				<Head :text="til"></Head>
+				<gongY :data="data"></gongY>
+				<div class="czfs">姓名：王五（为保证正常提现，请确保输入正确的账号）</div>
+				<div class="Account">
+						<span>账号 ：</span><input type="text" placeholder="请输入支付宝账号">
+				</div>
+				<div class="czfs">提现金额（单笔提现限额1.00 - 50,000.00元）</div>
+				<div class="fill">
+						<div>￥</div>
+						<div>
+								<input type="number" onkeyup="value=value.replace(/[^\d]/g,'')" v-model="price" placeholder="请输入提现金额">
+						</div>
+				</div>
+				<div class="czfs">可用余额 ¥ 1.00 <span>全部提现</span></div>
+				<div class="btn">
+						<button :class="[price != '' ? 'colour' : '']">确定</button>
+				</div>
+		</div>
+</template>
+
+<script>
+	import Head from "@/components/mine/headMe"
+	import gongY from "@/components/mine/gong"
+	export default {
+		name: "forward",
+			data(){
+					return{
+							price:"",
+              til:["提现","明细"],
+							data:"提现至（单日限额5万，到账时间T+3）"
+					}
+			},
+	  components:{
+		    "Head":Head,
+			  "gongY":gongY
+	  }
+	}
+</script>
+
+<style scoped lang="scss">
+		.display{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+		}
+		.PutForward{
+				background: #F6F6F6;
+				height: 100%;
+		}
+		.czfs,.zhifubao,.Account,.fill{
+				background: #fff;
+		}
+		@mixin pad($value,$value1) {
+				padding: $value;
+				height: $value1;
+		}
+		.czfs{
+				line-height: .4rem;
+				color: #9B9B9B;
+				font-size: .12rem;
+				@include pad(0 .15rem,.4rem);
+				border: 1px solid #eee;
+				span{
+						color: #FF5558;
+						padding-left: .1rem;
+				}
+		}
+		.Account{
+				@include pad(0 .15rem,.6rem);
+				display: flex;
+				align-items: center;
+				font-size: .14rem;
+				border-bottom: 4px solid #f3f3f3;
+				input{
+						height: .3rem;
+						border: none;
+						flex-grow: 1;
+				}
+		}
+		.fill{
+				@extend .display;
+				height: 1rem;
+				font-size: .3rem;
+				>div:nth-child(1){
+						width: 15%;
+						text-align: center;
+				}
+				>div:nth-child(2){
+						flex-grow: 1;
+				}
+				input{
+						width: 100%;
+						height: 1rem;
+						border: none;
+						font-size: .2rem;
+						outline: none;
+				}
+		}
+		.btn{
+				@include pad(.4rem .15rem 0,.48rem);
+				.colour{
+						background: #FF5558;
+						color: #ffffff;
+				}
+				button{
+						height: 100%;
+						width: 100%;
+						color: #ffffff;
+						background: #D6D6D6;
+						border: none;
+				}
+		}
+</style>
+
+<style lang="scss">
+		.PutForward .zhifubao{
+				border-bottom: 1px solid #f6f6f6;
+		}
+</style>

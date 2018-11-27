@@ -1,0 +1,197 @@
+<template>
+		<!--充值-->
+		<div class="recharge">
+				<Head :text="til"></Head>
+				<div v-show="flag">
+						<gongY :data="data"></gongY>
+						<div>
+								<div class="czfs">充值金额（至少充值1.00元）</div>
+								<div class="fill">
+										<div>￥</div>
+										<div>
+												<input type="number" onkeyup="value=value.replace(/[^\d]/g,'')" v-model="price" placeholder="请输入充值金额">
+										</div>
+								</div>
+								<ul class="Tablist" @click="listClick">
+										<li v-for="(item,index) in dataPrice" :class="{'colour':listIndex === index}" :data-index="index">{{item}}</li>
+								</ul>
+								<div class="btn">
+										<button :class="[price != '' ? 'colour' : '']"
+														:disabled="!price" @click="rechargeClick">确定</button>
+								</div>
+						</div>
+				</div>
+				<div v-show="!flag" class="success">
+						<div class="tubiao">
+								<span class="el-icon-circle-check"></span>
+								<p>充值成功</p>
+						</div>
+						<ul>
+								<li>充值金额</li>
+								<li>+10000.00 CNY</li>
+						</ul>
+						<ul>
+								<li>可用金额</li>
+								<li>1230000.00 CNY</li>
+						</ul>
+						<div class="btn">
+								<button @click="czSuccess">确认</button>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+  import Head from "@/components/mine/headMe"
+  import gongY from "@/components/mine/gong"
+	export default {
+			name: "recharge",
+			data(){
+					return{
+							flag:true,
+							til:["充值","明细"],
+							data:"充值方式",
+			        listIndex:"",
+							price:"",
+							dataPrice:[
+									"1000元",
+								  "3000元",
+								  "4000元",
+								  "10000元",
+								  "30000元",
+								  "50000元",
+							]
+					}
+			},
+			methods:{
+				//	充值btn
+					rechargeClick(){
+							this.flag = false
+					},
+				//	充值成功
+					czSuccess(){
+							this.flag = true
+					},
+				//	点击选择价格
+					listClick(e){
+						// 	console.log(e.target.nodeName.toLowerCase())
+			        let index = parseInt(e.target.dataset.index);
+			        this.listIndex =index;
+							var str =this.dataPrice[index];
+							this.price = str.substring(0,str.length-1)
+					}
+			},
+			components:{
+				  "Head":Head,
+				  "gongY":gongY
+			}
+
+	}
+</script>
+
+<style scoped lang="scss">
+
+		.colour{
+				background: #FF5558;
+				color: #ffffff;
+		}
+		.display{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+		}
+		@mixin pad($value,$value1) {
+				padding: $value;
+				height: $value1;
+		}
+		.recharge{
+				background:#F6F6F6 ;
+				height: 100%;
+		}
+		.czfs,.zhifubao,.fill,.Tablist{
+				background: #fff;
+		}
+		.czfs{
+				line-height: .4rem;
+				color: #9B9B9B;
+				font-size: .12rem;
+				@include pad(0 .15rem,.4rem);
+				border: 1px solid #eee;
+		}
+		.fill{
+				@extend .display;
+				height: 1rem;
+				font-size: .3rem;
+				>div:nth-child(1){
+						width: 15%;
+						text-align: center;
+				}
+				>div:nth-child(2){
+						flex-grow: 1;
+				}
+				input{
+						width: 100%;
+						height: 1rem;
+						border: none;
+						font-size: .2rem;
+						outline: none;
+				}
+		}
+		.Tablist{
+				@extend .display;
+				flex-wrap: wrap;
+				color:#999;
+				@include pad(0 .15rem,1.32rem);
+				li{
+						width: 25%;
+						height: .36rem;
+						line-height: .36rem;
+						text-align: center ;
+						border-radius: 4px;
+						border: 1px solid #999;
+				}
+				@extend .colour;
+		}
+		.btn{
+				@include pad(.4rem .15rem 0,.48rem);
+				.colour{
+						background: #FF5558;
+						color: #ffffff;
+				}
+				button{
+						height: 100%;
+						width: 100%;
+						color: #ffffff;
+						background: #D6D6D6;
+						border: none;
+				}
+		}
+		.success{
+				.tubiao{
+						text-align: center;
+						padding: .2rem 0;
+						span{
+								font-size: 1rem;
+								color: #FF5558;
+								margin-bottom: .18rem;
+						}
+						p{
+								font-size: .18rem;
+						}
+				}
+				ul{
+						@extend .display;
+						height: .6rem;
+						background: #fff;
+						padding: 0 .15rem;
+						border-bottom: 1px solid #eee;
+				}
+				.btn{
+						@include pad(1.8rem .15rem 0,.48rem);
+						button{
+								background: #FF5558;
+								color: #ffffff;
+						}
+				}
+		}
+</style>

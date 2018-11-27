@@ -1,0 +1,64 @@
+<template>
+    <!--一级邀请-->
+    <div class="one">
+				<ul>
+						<li v-for="item in arrList">
+								<p>{{item.user_tel}}</p>
+								<span>{{item.user_register_date}}</span>
+						</li>
+				</ul>
+		</div>
+</template>
+
+<script>
+		import { Toast } from 'mint-ui';
+    export default {
+        name: "one",
+				data(){
+        		return {
+        				arrList:[],
+								token:'',
+						}
+				},
+				mounted(){
+        		this.token = localStorage.getItem('userName');
+
+        		if(this.token){
+								this.getlist()
+						}
+				},
+				methods:{
+        		getlist(){
+        				this.$axios.post(url+'/api/userInviter/findUserInviterList',this.$qs.stringify({
+										token:this.token
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.arrList = res.data.firstUserList;
+										}else{
+												Toast({
+														message: res.data.message,
+														position: 'bottom',
+												});
+										}
+								})
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.one{
+				padding: 0 .15rem;
+				li{
+						height: .5rem;
+						display: flex;
+						border-bottom: 1px solid #ccc;
+						justify-content: space-between;
+						align-items: center;
+						span{
+								color:  #9B9B9B;
+						}
+				}
+		}
+</style>

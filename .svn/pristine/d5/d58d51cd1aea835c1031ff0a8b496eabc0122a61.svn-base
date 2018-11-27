@@ -1,0 +1,126 @@
+<template>
+		<div class="mescroll dynamic_temp " id="mescroll">
+				<ul class="temp_content_top">
+						<li>
+								<div>持仓成本</div>
+								<div>{{arrZ.frozenFund}}</div>
+						</li>
+						<li>
+								<div>持仓收益</div>
+								<div>{{arrZ.positionPrice}}</div>
+						</li>
+						<li>
+								<div>持仓市值</div>
+								<div>{{arrZ.userPurse}}</div>
+						</li>
+				</ul>
+				<div class="temp_content_bottom">
+						<tabListToBuy></tabListToBuy>
+				</div>
+		</div>
+</template>
+
+<script>
+		import tabListToBuy from './tabListToBuy'
+		import { MessageBox } from 'mint-ui';
+		import MeScroll from 'mescroll.js'
+		export default {
+				name: "position_temp",
+				data() {
+						return {
+								input1: '',
+								input2: '',
+								input3: '',
+								arrZ:{
+										frozenFund:0.000,
+										positionPrice:0.000,
+										userPurse:0.000
+								},
+								token:'',
+								mescroll:null,
+						}
+				},
+				mounted(){
+						this.token= localStorage.getItem("userName");
+						var self = this;
+						self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
+								down: {
+										callback: this.downCallback //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
+								},
+						});
+				},
+				methods: {
+						downCallback(){
+								this.getD();
+						},
+						getD(){
+								this.$axios.post(url+'/miao/queryAllPositionProduct.do',this.$qs.stringify({
+										token:this.token,
+								})).then((res) => {
+										console.log(res.data);
+										this.arrZ = res.data.OBJECT;
+										setTimeout(() => {
+												this.mescroll.endSuccess();
+										},1000)
+								}).catch((err) => {
+										console.log(err);
+										setTimeout(() => {
+												this.mescroll.endErr();
+										},1000)
+								})
+						}
+				},
+				components:{
+						tabListToBuy,
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .49rem;
+				bottom: .49rem;
+				height: auto;
+		}
+		.dynamic_temp {
+				.temp_content_top {
+						display: flex;
+						box-sizing: border-box;
+						justify-content: space-between;
+						align-items: center;
+						height:.8rem;
+						li:not(:nth-of-type(1)){
+								position:relative;
+								&:before{
+										position:absolute;
+										left:0;
+										top:.2rem;
+										width:1px;
+										height:60%;
+										background:#ccc;
+										content:'';
+								}
+						}
+						>li{
+								flex:1;
+								height:100%;
+								text-align: center;
+								>div:nth-of-type(1){
+										color:#999;
+										font-size: .13rem;
+										margin-top: .1rem;
+										line-height: .4rem;
+								}
+								>div:nth-of-type(2){
+										font-size:.15rem;
+										font-weight: bold;
+								}
+						}
+				}
+				.temp_content_bottom {
+						width: 100%;
+				}
+		}
+</style>

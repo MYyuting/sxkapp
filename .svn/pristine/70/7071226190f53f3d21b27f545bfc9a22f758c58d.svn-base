@@ -1,0 +1,232 @@
+<template>
+		<div class="tablist"> <!-- v-show="datalist.length == 0" -->
+				<div class="table">
+						<div class="tr">
+								<div>市值(￥)</div>
+								<div>持有/可卖(s)</div>
+								<div>现价/成本(￥)</div>
+								<div>盈亏(￥)</div>
+						</div>
+						<ul v-show="arr.length != 0">
+								<li  v-for="(item,index) in arr">
+										<div class="li_top" @click="clickList(index)">
+												<div>
+														<!--investorsName-->
+														<div>{{item.investorsName}}</div>
+														<div>{{item.singlePosition}}</div>
+												</div>
+												<div>
+														<div>{{item.possessNum}}</div>
+														<div>{{item.buyerOrderNum}}</div>
+												</div>
+												<div>
+														<div>{{item.newOrderPrice}}</div>
+														<div>{{item.buyerOrderPrice}}</div>
+												</div>
+												<div :class="item.uplowStatus ==1 ? 'colorg' : 'colorr' ">
+														<!--1涨  2跌-->
+														<div>{{item.addPrice}}</div>
+														<div>{{item.uplowPrice}}</div>
+												</div>
+										</div>
+										<div class="li_bottom" v-show="numFlag== index">
+												<div @click="mairu(index)">买入</div>
+												<div @click="maichu(index)">卖出</div>
+												<div @click="market(item.investorsCode)">行情</div>
+												<div>预约</div>
+												<div @click="zhiDing(item.investorsCode)">{{text}}</div>
+										</div>
+								</li>
+						</ul>
+						<div class="wusju" v-show="arr.length == 0">
+								<img src="../../assets/img/state/buyTime@2x.png" alt="">
+								<p>您当前还未购买时间</p>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import { Toast } from 'mint-ui';
+
+		export default {
+				data() {
+						return {
+								numFlag:null,
+								token:"",
+								text:'置顶',
+								arr:[],
+						}
+				},
+				mounted(){
+						this.token = localStorage.getItem('userName');
+						this.getChiC();
+				},
+
+				methods:{
+						//点击买入
+						mairu(index){
+								// console.log(index);
+								this.$router.push('/business/wbuy');
+								let odjS = {
+										investorsCode:this.arr[index].investorsCode,  //发行人码
+										newOrderPrice:this.arr[index].newOrderPrice,  //最新价格
+										buyerOrderNum:this.arr[index].buyerOrderNum   //可卖数量
+								};
+								this.$emit('ievent',odjS);
+						},
+						maichu(index){
+								// console.log(index);
+								this.$router.push('/business/wmai');
+								let odjS = {
+										investorsCode:this.arr[index].investorsCode,  //发行人码
+										newOrderPrice:this.arr[index].newOrderPrice,  //最新价格
+										buyerOrderNum:this.arr[index].buyerOrderNum   //可卖数量
+								};
+								this.$emit('ievent',odjS);
+						},
+						//显示隐藏
+						clickList(index){
+								console.log(index);
+								if(this.numFlag == index){
+										this.numFlag = null
+								}else{
+										this.numFlag = index
+								}
+						},
+						// 持仓接口
+						getChiC(){
+								this.$axios.post(url+'/miao/queryAllPositionProduct.do',this.$qs.stringify({
+										token:this.token,
+										languageType:3,
+								})).then((res) => {
+										console.log(res.data);
+										this.arr = res.data.LIST
+								}).catch((err) => {
+										console.log(err)
+								})
+						},
+				    //取消置顶
+						zhiDing(code){
+								if(this.text == "取消置顶"){
+										this.text = "置顶"
+								}else{
+										this.text = "取消置顶";
+										this.$axios.post(url+'/miao/updatePositionTop.do',this.$qs.stringify({
+												token:this.token,
+												investorsCode:code,
+										})).then((res) => {
+												if(res.data.status == 0){
+														Toast({
+																message: '置顶成功',
+																position: 'bottom',
+																duration: 1000
+														});
+												}
+												console.log(res.data);
+										}).catch((err)=>{
+												Toast({
+														message: '网络错误',
+														position: 'bottom',
+														duration: 1000
+												});
+										});
+								}
+						},
+						//点击行情跳转
+						market(index){
+							this.$router.push({ path:'/faxing',query:{code:index}})//行情
+						}
+				},
+				// props: ['datalist', 'flag']
+		}
+</script>
+
+<style scoped lang="scss">
+		$red: #ff5558;
+		$green: #4BCE7C;
+		.wusju{
+				text-align: center;
+				img{
+						margin-top: .45rem;
+						width:1.2rem ;
+						height: 1.2rem;
+				}
+				p{
+						color: #aaa;
+						font-size: .12rem;
+				}
+		}
+		.colorg{
+				color: #38f321;
+		}
+		.colorr{
+				color: red;
+		}
+		.tablist {
+				border-top: 4px solid #eee;
+				margin-top:.1rem;
+				.table {
+						width: 100%;
+						.tr {
+								display: flex;
+								height: .5rem;
+								line-height: .5rem;
+								border-bottom:1px solid #ccc;
+								> div {
+										width:25%;
+										text-align: center;
+										font-size: .13rem;
+										color: #999;
+								}
+						}
+						>ul {
+								box-sizing:border-box;
+								>li{
+										.li_top{
+												display: flex;
+												justify-content: space-between;
+												align-items: center;
+												padding: .1rem 0;
+												box-sizing:border-box;
+												border-bottom:1px solid #ccc;
+												>div{
+														width:25%;
+														height:.5rem;
+														display: flex;
+														flex-direction: column;
+														justify-content: space-around;
+														align-items: center;
+												}
+										}
+										.li_bottom{
+												display: flex;
+												justify-content: space-between;
+												align-items: center;
+												height:.4rem;
+												line-height:.4rem;
+												border-bottom:1px solid #ccc;
+												border-top:1px solid #ccc;
+												>div{
+														flex:1;
+														text-align: center;
+														height:100%;
+														&:not(:nth-of-type(1)){
+																position:relative;
+																&:before{
+																		position:absolute;
+																		content:'';
+																		width:1px;
+																		height:50%;
+																		left:0;
+																		top:.1rem;
+																		background:#ccc;
+																}
+														}
+												}
+										}
+								}
+						}
+				}
+		}
+</style>

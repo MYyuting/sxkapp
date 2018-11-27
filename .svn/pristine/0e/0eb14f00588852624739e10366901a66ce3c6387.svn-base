@@ -1,0 +1,207 @@
+<template>
+		<!--修改登录密码-->
+		<div class="password">
+				<my-head :text="til"></my-head>
+				<ul>
+						<li>
+								<div>原手机号</div>
+								<span>{{phone}}</span>
+						</li>
+						<li>
+								<div>验证码</div>
+								<div>
+										<input type="number" v-model="yzmCode" v-on:input ="inputFunc">
+										<button :disabled="disabled" @click="getyzm">{{btnyzm}}</button>
+								</div>
+						</li>
+				</ul>
+				<div class="Hint">登陆密码由<span>8～16位</span>的<span>数字</span>和<span>字母</span>组成</div>
+				<ul>
+						<li>
+								<div>设置新密码</div>
+								<input type="password" placeholder="请设置登录密码" v-model="paswd1" v-on:input ="inputFunc">
+						</li>
+						<li>
+								<div>确认新密码</div>
+								<input type="password" placeholder="再次输入以确认" v-model="paswd2" v-on:input ="inputFunc">
+						</li>
+				</ul>
+				<div class="btn">
+						<button :class="disabled ? 'active1' : '' " @click="mimaOK" :disabled="true">确认修改</button>
+						<p>修改后将退出登陆，请使用新密码重新登陆</p>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+		import { Toast } from 'mint-ui';
+		export default {
+				name: "XGloginMM",
+				data(){
+						return{
+								yzmCode:'',
+								btnyzm:'获取验证码',
+								phone:'18612332388',
+								til:["修改登录密码"],
+								paswd1:'',
+								paswd2:'',
+								disabled:false,
+						}
+				},
+				methods:{
+						//获取验证码
+						getyzm(){
+								let _this=this;
+								this.$axios({
+										method:'get',
+										url:'/api/api/user/getCode',
+										params:{
+												clientPhone:this.phone
+										}
+								}).then(function (res) {
+										console.log(res.data);
+										_this.verCode = res.data.verCode
+								})
+						},
+						//输入
+						inputFunc(){
+								if(this.paswd1 != '' && this.paswd2 != '' && this.yzmCode != ''){
+										this.disabled = true
+								}
+						},
+						//确认修改
+						mimaOK(){
+								let _this = this;
+								if(this.paswd1  == this.paswd2){
+										let patrn=/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+										if(patrn.test(this.paswd1)){
+												this.$axios.post('/api/api/user/changePwd',this.$qs.stringify({
+														mobile:_this.phone,
+														newPwd:_this.paswd1,
+														validateCode:_this.yzmCode
+												}),{
+														headers:{'Content-Type':'application/x-www-form-urlencoded'}
+												}).then((res) => {
+														console.log(res.data);
+														switch (res.data.status) {
+																case '0':
+																		Toast({
+																				message: res.data.message,
+																				position: 'middle',
+																				duration: 2000
+																		});
+																		break;
+																case '103':
+																		Toast({
+																				message: res.data.message,
+																				position: 'middle',
+																				duration: 2000
+																		});
+																		break;
+																case '201':
+																		Toast({
+																				message: res.data.message,
+																				position: 'middle',
+																				duration: 2000
+																		});
+																		break;
+																case '105':
+																		Toast({
+																				message: res.data.message,
+																				position: 'middle',
+																				duration: 2000
+																		});
+																		break;
+														}
+												})
+										}else{
+												Toast({
+														message: '密码格式有误',
+														position: 'middle',
+														duration: 2000
+												});
+										}
+								}else{
+										Toast({
+												message: '两次密码不一致',
+												position: 'middle',
+												duration: 2000
+										});
+								}
+
+						},
+				},
+				components:{
+						"my-head":Head
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		$color:#FF5558;
+		.password{
+				background: #f6f6f6;
+				height: 100%;
+		}
+		ul{
+				border-bottom: 4px solid #f6f6f6;
+		}
+		ul li{
+				background: #fff;
+				display:flex ;
+				justify-content: space-between;
+				align-items: center;
+				height: .6rem;
+				padding: 0 .15rem;
+				border-bottom: 1px solid #eee;
+				div:nth-child(2){
+						width: 50%;
+						text-align: right;
+				}
+				input{
+						outline: none;
+						width: 40%;
+						border: none;
+						text-align: right;
+				}
+				button{
+						width: .87rem;
+						height: .3rem;
+						border: 1px solid $color;
+						background: #fff;
+						color: $color;
+						font-size: .12rem;
+						border-radius: 4px;
+				}
+		}
+		.Hint{
+				font-size: .12rem;
+				line-height: .5rem;
+				padding: 0 .15rem;
+				span{
+						color: $color;
+				}
+		}
+		.btn{
+				padding: 0 .15rem;
+				text-align: center;
+				button{
+						width: 100%;
+						margin-top: .5rem;
+						height: .48rem;
+						background: #D6D6D6;
+						color: #ffffff;
+						border: none;
+						border-radius: 4px;
+						&.active1{
+								background: $color;
+						}
+				}
+				p{
+						line-height: 3;
+						font-size: .12rem;
+						color: $color;
+				}
+		}
+</style>

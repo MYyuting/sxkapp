@@ -1,0 +1,52 @@
+<template>
+    <!--帮助-->
+		<div class="help">
+				<my-head :text="til"></my-head>
+				<div class="content">
+						<div class="rule">
+								<div>
+										<span class="iconfont icon-home_normal"></span>
+										交易规则
+								</div>
+								<div>
+										<span class="iconfont icon-home_normal"></span>
+										约见规则
+								</div>
+						</div>
+
+
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+    export default {
+        name: "Help",
+				data(){
+        		return{
+        				til:["帮助中心"],
+						}
+				},
+				methods:{
+
+				},
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.rule{
+				height: .8rem;
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 4px solid #F3F3F3;
+				div{
+						width: 50%;
+						height: 80%;
+						text-align: center;
+				}
+		}
+</style>

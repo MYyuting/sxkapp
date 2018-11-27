@@ -1,0 +1,58 @@
+<template>
+		<div class="head_nav">
+				<div class="nav_left">
+						<slot name="head_left"></slot>
+				</div>
+				<div class="nav_center">
+						<slot name="head_center"></slot>
+				</div>
+				<div class="nav_right">
+						<slot name="head_right"></slot>
+				</div>
+		</div>
+</template>
+
+<script>
+		export default {
+				name: "head-nav"
+		}
+</script>
+
+<style scoped lang="scss">
+		$color: #ff5558;
+		.head_nav {
+				background: $color;
+				height: .5rem;
+				/*position: relative;*/
+				> div {
+						box-sizing: border-box;
+						height: 100%;
+						line-height: .5rem;
+						color: #fff;
+						position: absolute;
+						top: 0;
+						padding: 0 .12rem;
+				}
+				.nav_left {
+						width: 25%;
+						left: 0;
+						font-size: .24rem;
+				}
+				.nav_center {
+						width: 50%;
+						left: 25%;
+						text-align: center;
+						font-size: .16rem;
+				}
+				.nav_right {
+						width: 25%;
+						right: 0;
+						text-align: right;
+						font-size: .14rem;
+						.iconfont{
+								font-size: .24rem;
+						}
+				}
+
+		}
+</style>

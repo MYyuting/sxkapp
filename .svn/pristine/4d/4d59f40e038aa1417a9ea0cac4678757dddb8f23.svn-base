@@ -1,0 +1,217 @@
+<template>
+    <!--投票上新详情页-->
+		<div class="TouPiao">
+				<Head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">{{issuserArr.issuerName}}</span>
+						<span class="iconfont icon-paiHangBang_Star" slot="head_right" @click="topR"></span>
+				</Head>
+
+				<div id="mescroll" class="mescroll">
+						<!--内容上-->
+						<div class="con-top">
+								<div class="con-top-left">
+										<img :src="issuserArr.headPortraitImgPath" alt="">
+										<div class="left-con">
+												<p style="font-weight: bold">{{issuserArr.issuerName}} <i class="iconfont icon-fans"></i><i class="iconfont icon-touPiao"></i></p>
+												<p><img src="../../assets/img/home/star@2x.png" alt="">
+														<span> {{issuserArr.userTeam.starlightNum}}</span>
+												</p>
+												<button @click="song">送星光</button>
+										</div>
+								</div>
+								<div class="con-top-right">
+										<div>投票上新</div>
+										<p><span>排名</span><b>4</b></p>
+								</div>
+						</div>
+						<!--内容下-->
+						<div class="nav">
+								<p v-for="(item,index) in tabList"
+									 :class="{active:(currentIndex == index)}"
+								@click="tabClick(index)">{{item}}</p>
+						</div>
+						<!--简介-->
+						<div v-show="currentIndex==0">
+								<Introduction></Introduction>
+						</div>
+						<!--时间商品-->
+						<div v-show="currentIndex==1">
+								<timeCom></timeCom>
+						</div>
+						<!--动态-->
+						<div v-show="currentIndex==2">
+								<DongTai></DongTai>
+						</div>
+						<!--新闻-->
+						<div v-show="currentIndex==3">
+								<Journalism></Journalism>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/public/headNav'
+		import DongTai from '@/components/public/dongtai'
+		import timeCom from '@/components/public/timeCom'
+		import Introduction from '@/components/public/introduction'
+		import Journalism from '@/components/public/Journalism'
+		import { Toast } from 'mint-ui';
+    export default {
+        name: "toupiao",
+				data(){
+        		return {
+								tabList:['简介', '时间商品', '动态', '新闻'],
+								currentIndex:0,
+								listIndex:null,
+								id:'',
+								token:'',
+								issuserArr:{},
+						}
+				},
+				mounted(){
+        		this.token = sessionStorage.getItem('userName');
+        		console.log(this.$route.params.index);
+        		this.id = this.$route.params.index;
+        		this.dataGet();
+				},
+				methods:{
+						back(){
+								this.$router.go(-1)
+						},
+						topR(){
+								this.$router.push('/xgph');
+						},
+						tabClick(index){
+								this.currentIndex =index
+						},
+						//本ye数据
+						dataGet(){
+								this.$axios.post('/api/api/issuerDatabase/findIssuerDatabase',this.$qs.stringify({
+										token:this.token,
+										id:this.id,
+								})).then((res) => {
+										console.log(res.data);
+										this.issuserArr = res.data.issuerDatabase
+								})
+						},
+						song(){
+								Toast({
+										message: '不能自己送给自己哦',
+										position: 'bottom',
+										duration: 3000
+								});
+						}
+				},
+				components:{
+        		Head,
+						DongTai,
+						Introduction,
+						timeCom,
+						Journalism,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		$color:#ff5558;
+		.display{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+		}
+		.con-top{
+				@extend .display;
+				border-bottom: 1px solid #eee;
+				height: 1.1rem;
+				padding: 0 .15rem;
+				.con-top-left{
+						@extend .display;
+						>img{
+								width: .7rem;
+								height: .7rem;
+								border-radius: 50%;
+								margin-right: .1rem;
+						}
+						.left-con{
+								.iconfont{
+										font-size: .2rem;
+								}
+								.icon-fans{
+										color: $color;
+								}
+								.icon-touPiao{
+										color: #F5A623;
+								}
+								img{
+										width: .12rem;
+										height: .12rem;
+								}
+								p{
+										font-size: .16rem;
+										color: $color;
+										line-height: .2rem;
+										span{
+												font-size: .12rem;
+												color: #9013FE;
+												line-height: .14rem;
+										}
+								}
+								button{
+										font-size: .09rem;
+										color: $color;
+										margin-top: 5px;
+										width: .59rem;
+										height: .2rem;
+										border-radius: 5px;
+										border: 1px solid $color;
+										background: #fff;
+								}
+						}
+				}
+				.con-top-right{
+						box-shadow: 0 2px 6px 0 rgba(0,0,0,0.10);
+						border-radius: 3px;
+						width: 1.4rem;
+						height: .7rem;
+						line-height: .35rem;
+						text-align: center;
+						p{
+								@extend .display;
+								justify-content: center;
+								color: $color;
+								span{
+										color: #BCBCBC;
+								}
+								b{
+										margin-left: .1rem;
+										font-size: .24rem;
+								}
+						}
+				}
+
+		}
+		/*菜单*/
+		.nav{
+				text-align: center;
+				border-bottom: 1px solid #ddd;
+				@extend .display;
+				justify-content: space-around;
+				height: .36rem;
+				p{
+						display: block;
+						padding: 8px 0;
+						&.active{
+								border-bottom: 2px solid $color;
+								color: $color;
+						}
+				}
+		}
+		.mescroll{
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+</style>

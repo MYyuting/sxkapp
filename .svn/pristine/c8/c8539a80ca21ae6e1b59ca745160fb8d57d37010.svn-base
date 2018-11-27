@@ -1,0 +1,401 @@
+<template>
+		<div class="dynamic_temp">
+				<div class="temp_content_top">
+						<div class="temp_content_left">
+								<el-input v-model="input1"  v-on:input="change" placeholder="发行人姓名或代码"></el-input>
+								<div class="sousuo" id="ss" v-show="flag">
+										<p v-for="(item,index) in arrList" @click="clickLIST(index)">
+												<span>{{item.investorsName}}</span>
+												<span>{{item.investorsCode}}</span>
+										</p>
+								</div>
+								<el-input v-model="input2" placeholder="价格" suffix-icon="iconfont icon-RMB" class="price"></el-input>
+								<el-input v-model="input3" placeholder="数量" suffix-icon="el-icon-sort-up " class="amount"></el-input>
+								<div>可卖 - 秒</div>
+								<el-button type="danger" style="width:100%;" @click="mairuClick">买入时间</el-button>
+						</div>
+						<div class="temp_content_right">
+								<el-tabs v-model="activeName" @tab-click="handleClick">
+										<el-tab-pane label="五档" name="first">
+												<ul class="sell">
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+												</ul>
+												<br>
+												<ul class="buy">
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+												</ul>
+										</el-tab-pane>
+										<el-tab-pane label="明细" name="second">明细列表</el-tab-pane>
+								</el-tabs>
+						</div>
+				</div>
+				<div class="temp_content_bottom">
+						<tabListToBuy></tabListToBuy>
+				</div>
+
+				<mt-popup
+						v-model="popupVisible"
+						popup-transition="popup-fade"
+						position="bottom">
+						<div class="pay-tool">
+								<div class="pay-tool-title border-bottom">
+										<span class="el-icon-back" @click="backHandle"></span>
+										<span>请输入交易密码</span>
+										<span class="el-icon-close" @click="backHandle"></span>
+								</div>
+								<div class="pay-tool-content">
+										<div class="pay-tool-inputs">
+												<div class="item" v-for="i in items">
+														<span class="icon_dot" v-if="password[i]"></span>
+												</div>
+										</div>
+										<div class="pay-tool-link">
+												<router-link class="link" to="/getP">忘记密码？</router-link>
+										</div>
+								</div>
+								<div class="pay-tool-keyboard">
+										<!--键盘-->
+										<ul>
+												<li @click="keyUpHandle($event)" v-for="val in keys">{{ val }}</li>
+												<li class="del" @click="delHandle"><span class="icon-del"><i class="el-icon-close"></i></span></li>
+										</ul>
+								</div>
+						</div>
+				</mt-popup>
+		</div>
+</template>
+
+<script>
+		const keys = () => [1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0];
+		import tabListToBuy from './tabListToBuy'
+		import { Toast,Popup } from 'mint-ui'
+		export default {
+				name: "dynamic_temp",
+				data() {
+						return {
+								flag:false,
+								input1: '',
+								input2: '',
+								input3: '',
+								activeName: 'first',
+								token:'',
+								arrList:'',
+								investorsCode:'',
+								items: [0, 1, 2, 3, 4, 5],
+								keys: keys(),
+								password: [],
+								popupVisible:false,
+						}
+				},
+				mounted(){
+						this.token = sessionStorage.getItem('userName');
+
+				},
+				methods: {
+						handleClick(tab, event) {
+								console.log(tab, event);
+						},
+						//搜索框
+						change(){
+								if(this.input1){
+										this.flag = true;
+								}else{
+										this.flag = false;
+								}
+								this.$axios.post('/api/miao/productSearch.do',this.$qs.stringify({
+										param:this.input1,
+										token:this.token
+								})).then((res) => {
+										console.log(res.data);
+										this.arrList = res.data.LIST
+								}).catch((err)=>{
+										alert('网络错误')
+								})
+						},
+						clickLIST(index){
+								console.log(this.arrList[index]);
+								this.input2 = this.arrList[index].price;
+								this.input1 = this.arrList[index].investorsName;
+								this.flag = false;
+								this.investorsCode = this.arrList[index].investorsCode
+						},
+				    //		买入
+						mairuClick(){
+								if(this.input1 !='' ){
+										if(this.input2 != ''){
+												if(this.input3 != ''){
+														this.popupVisible = true
+												}else{
+														Toast({
+																message: '数量不能为空',
+																position: 'middle',
+																duration: 2000
+														});
+												}
+										}else {
+												Toast({
+														message: '价格不能为空',
+														position: 'middle',
+														duration: 2000
+												});
+										}
+								}else {
+										Toast({
+												message: '发行人不能为空',
+												position: 'middle',
+												duration: 2000
+										});
+								}
+						},
+						backHandle () {
+								this.clearPasswordHandle();  // 返回时清除password
+								// this.$emit('backFnc') // 返回上级
+								this.popupVisible = false
+						},
+						keyUpHandle (e) {
+								console.log(e.currentTarget.innerText);
+								let text = e.currentTarget.innerText;
+								let len = this.password.length;
+								if (!text || len >= 6) return;
+								this.password.push(text);
+								this.ajaxData();
+						},
+						//删除密码
+						delHandle () {
+								if (this.password.length <= 0) return false;
+								this.password.pop();
+						},
+						//请求接口买入
+						ajaxData () {
+								if (this.password.length >= 6) {
+										//必须注释
+										let waps = parseInt(this.password.join(' ').replace(/\s/g, ''));
+										console.log(waps);
+										this.$axios.post('/api/miao/orderReservations.do',
+												this.$qs.stringify({
+														token:this.token,
+														investorsCode:this.investorsCode,   //发行人代码
+														buyerOrderPrice:this.input2,   //价钱
+														buyerOrderNum: this.input3,     // 数量
+														userPayWord: this.$md5('waps'),      // 密码
+												}),{
+														headers:{'Content-Type':'application/x-www-form-urlencoded'}
+												}).then((res) => {
+														//输入密码隐藏
+														this.popupVisible = false;
+														console.log(res)
+										}).catch((err) => {
+												console.log(err)
+										});
+								}
+						},
+						clearPasswordHandle: function () {
+								this.password = []
+						}
+				},
+				components:{
+						tabListToBuy,
+				}
+		}
+</script>
+<style>
+		.el-input__inner{
+				background: #f5f5f5;
+				border: none;
+				text-align: center;
+		}
+		.el-tabs__header{
+				margin: 0 0 10px;
+		}
+		.temp_content_right{
+				flex-grow: 1;
+				padding: 0 .1rem;
+		}
+		.el-tabs__item:hover{
+				color: #ff5558;
+		}
+		.el-tabs__item.is-active{
+				color: #ff5558;
+		}
+		.el-tabs__active-bar{
+				background-color: #ff5558;
+		}
+</style>
+<style scoped lang="scss">
+		#ss{
+				height: 1.2rem;
+				overflow: auto;
+		}
+		#ss{
+				p{
+						line-height: .33rem;
+				}
+		}
+		.sousuo{
+				position: absolute;
+				width: 88%;
+				top: .5rem;
+				z-index: 999;
+				background: #fff;
+				border: 1px solid #ddd;
+				p{
+						display: flex;
+						justify-content: space-between;
+						border-bottom: 1px solid #ddd;
+						padding: 0 .1rem;
+				}
+		}
+		.dynamic_temp {
+				.temp_content_top {
+						display: flex;
+						flex-wrap: wrap;
+						box-sizing: border-box;
+				}
+				.temp_content_left {
+						position: relative;
+						width: 55%;
+						padding: .1rem .1rem 0;
+						box-sizing:border-box;
+						.el-input {
+								height: .4rem;
+								font-size:.14rem;
+								&:nth-of-type(1) {
+										margin-bottom: 10px;
+								}
+								&:nth-of-type(2) {
+										margin-bottom: .24rem;
+								}
+						}
+						> div {
+								height: .4rem;
+								text-align: center;
+								line-height: .45rem;
+						}
+						.amount{
+								margin-top: .1rem;
+						}
+				}
+				.temp_content_right {
+						width: 40%;
+						box-sizing:border-box;
+						padding:0 .1rem 0;
+						overflow:auto;
+						.buy,.sell{
+								li{
+										display: flex;
+										justify-content: space-between;
+										align-items: center;
+										span{
+												font-size:.12rem;
+										}
+								}
+						}
+				}
+				.temp_content_bottom {
+						width: 100%;
+				}
+		}
+
+		.mint-popup-bottom{
+				width: 100%;
+				background: #fff;
+				z-index: 9999;
+		}
+
+		.pay-tool {
+				/*position: relative;*/
+				height: 3.8rem;
+				background-color: #fff;
+				overflow: hidden;
+				box-sizing: border-box;
+				&-title {
+						font-size: .16rem;
+						padding: 0 .15rem;
+						height: .6rem;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+				}
+				&-content {
+						padding: 0 .15rem;
+						.pay-tool-inputs {
+								width: 100%;
+								height: .52rem;
+								margin: .1rem auto 0;
+								border: 1px solid #b9b9b9;
+								box-shadow: 0 0 1px #e6e6e6;
+								display: flex;
+								.item {
+										width: 16.66666666%;
+										height: .52rem;
+										border-right: 1px solid #b9b9b9;
+										line-height: .52rem;
+										text-align: center;
+										&:last-child {
+												border-right: none;
+										}
+										.icon_dot {
+												display: inline-block;
+												width: 0.2rem;
+												height: 0.16rem;
+												background: url("../../assets/img/home/password@2x.png") no-repeat;
+												background-size: cover;
+										}
+								}
+						}
+						.pay-tool-link {
+								height: .35rem;
+								padding: .15rem 0 0;
+								text-align: right;
+								.link {
+										color: #FF5558;
+								}
+						}
+				}
+				.pay-tool-keyboard {
+						/*position: absolute;*/
+						/*left: 0;*/
+						/*bottom: 0;*/
+						width: 100%;
+						/*height: 2.35rem;*/
+						ul {
+								width: 100%;
+								display: flex;
+								flex-wrap: wrap;
+								li {
+										width: 33%;
+										height: .5rem;
+										line-height: .5rem;
+										text-align: center;
+										border-right: 1px solid #aeaeae;
+										border-bottom: 1px solid #aeaeae;
+										font-size: 0.2rem;
+										font-weight: bold;
+										&:nth-child(1), &:nth-child(2), &:nth-child(3) {
+												border-top: 1px solid #eee;
+										}
+										&:nth-child(3), &:nth-child(6), &:nth-child(9), &:nth-child(12) {
+												border-right: none;
+										}
+										&:nth-child(10), &:nth-child(11), &:nth-child(12) {
+												border-bottom: none;
+										}
+										&:nth-child(10), &:nth-child(12), &:active {
+												background-color: #d1d4dd;
+										}
+										&:nth-child(12):active {
+												background-color: #fff;
+										}
+								}
+						}
+				}
+		}
+</style>

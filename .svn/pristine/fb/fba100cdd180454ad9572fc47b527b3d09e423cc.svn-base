@@ -1,0 +1,45 @@
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import Vue from 'vue'
+import 'babel-polyfill'
+import App from './App'
+import VueRouter from 'vue-router'
+import router from './router'
+import axios from 'axios'
+import swiperJs from '../static/mescroll/swiper.min'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+require('swiper/dist/css/swiper.css')
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import VueClipboard from 'vue-clipboard2'
+// 引入echarts
+import echarts from 'echarts'
+
+
+Vue.use(VueClipboard);
+Vue.use(VueAwesomeSwiper);
+Vue.prototype.$echarts = echarts;
+Vue.prototype.$axios = axios;
+Vue.use(VueRouter);
+Vue.use(ElementUI);
+Vue.config.productionTip = false;
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
+});
+
+let scrollTop = 0;
+router.beforeEach((route, redirect, next) => {
+  //检测登录信息是否过期
+  //if( ! app.$store.state.userInfo) return app.$router.push({path: '/login'})
+  if (redirect.path === '/') {
+    scrollTop = document.getElementById('app').scrollTop;
+  }
+  document.title = route.name;
+
+  next();
+});

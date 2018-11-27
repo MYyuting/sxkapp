@@ -1,0 +1,50 @@
+<template>
+    <!--时间商品-->
+		<div class="timeCom">
+				<ul>
+						<li>
+								<p>下周可以来片场探班哦</p>
+								<p class="address">地点：北京西单大悦城，时间：2018/5/7，中午11-12点</p>
+								<p class="time">
+										<span>下架时间：2018-05-06</span>
+										<span>价格：1000s</span>
+								</p>
+						</li>
+						<li>
+								<p>下周可以来片场探班哦</p>
+								<p class="address">地点：北京西单大悦城，时间：2018/5/7-2018/5/10，每天中午11点-12点，地点：北京西单大悦城，时间：2018/5/10，每天中午11点-12点，地点：北京西单大悦城，每天中午11点-12点<span>展开</span></p>
+								<p class="time">
+										<span>下架时间：2018-05-06</span>
+										<span>价格：1000s</span>
+								</p>
+						</li>
+				</ul>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "timeCom"
+    }
+</script>
+
+<style scoped lang="scss">
+		.timeCom{
+				li{
+						padding:  .15rem;
+						border-bottom: 1px solid #ddd;
+						p:not(:nth-child(1)){
+								margin-top: .1rem;
+						}
+						.address{
+								position: relative;
+								font-size: .12rem;
+								color: #999;
+						}
+						.time span{
+								font-size: .12rem;
+								margin-right: .3rem;
+						}
+				}
+		}
+</style>

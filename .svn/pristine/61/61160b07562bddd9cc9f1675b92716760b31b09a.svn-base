@@ -1,0 +1,170 @@
+<template>
+    <!--帮助-->
+		<div class="help">
+				<my-head :text="til"></my-head>
+				<div class="content">
+						<div class="rule">
+								<router-link to="trading" tag="div">
+										<span class="iconfont icon-home_normal"></span>
+										交易规则
+								</router-link>
+								<router-link to="" tag="div">
+										<span class="iconfont icon-rule_meeting"></span>
+										约见规则
+								</router-link>
+						</div>
+						<ul>
+								<li v-for="(item,index) in userHelp">
+										<div class="list1" @click="showClick(index)">
+												<div>
+														<span :class="iconArr[index]"></span>{{item.typeName}}
+												</div>
+												<div>
+														<i :class="i==index ? 'el-icon-arrow-up':'el-icon-arrow-down'"></i>
+												</div>
+										</div>
+										<ul v-if="i==index">
+												<li v-for="(item1,index) in item.userHelpDescList" @click="list2Click(index)">
+														<i :class="index == ii? 'el-icon-arrow-down':'el-icon-arrow-right'"></i>{{item1.helpTitle}}
+														<div class="list2" v-show="index == ii">
+																{{item1.helpContent}}
+														</div>
+												</li>
+										</ul>
+								</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+    export default {
+        name: "Help",
+				data(){
+        		return{
+        				til:["帮助中心"],
+								i:333,
+								iconArr:['iconfont icon-Question_count','iconfont icon-Question_charge','iconfont icon-Question_meeting','iconfont icon-Question_using'],
+								ii:-1,
+								userHelp:[],
+						}
+				},
+				mounted(){
+						this.getJs();
+				},
+				methods:{
+        		//获取本页的数据接口
+        		getJs(){
+								this.$axios.get(url+'/api/userHelp/findUserHelp')
+										.then((res) => {
+												console.log(res.data);
+												this.userHelp = res.data.userHelpTypeList;
+												console.log(this.userHelp)
+										})
+										.catch((err) => {
+												console.log(err)
+										})
+						},
+						showClick(index){
+								this.ii =-1;
+								if(this.i == index){
+										this.i = -1
+								}else{
+										this.i = index
+								}
+						},
+						list2Click(index){
+								this.ii =index
+						}
+				},
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.rule{
+				height: .8rem;
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 4px solid #F3F3F3;
+				align-items: center;
+				div{
+						width: 50%;
+						text-align: center;
+						position: relative;
+						span{
+								font-size: .3rem;
+								vertical-align: middle;
+								color: #FF5558;
+						}
+						&::after{
+								position: absolute;
+								content: "";
+								height: .4rem;
+								right: 0;
+								border-left: 1px solid #eee;
+						}
+				}
+
+				div+div{
+						span{
+								color: #009fe8;
+						}
+				}
+		}
+		.content>ul>li{
+				.list1{
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						height: .6rem;
+				}
+				ul{
+						width: 95%;
+						margin: auto;
+						li{
+								line-height: .4rem;
+						}
+						i{
+								margin-right: .06rem;
+								color: #999;
+						}
+				}
+				.list2{
+						margin-left: .2rem;
+						color: #999;
+				}
+				padding: 0 .15rem;
+				border-bottom: 4px solid #eee;
+				.iconfont{
+						font-size: .3rem;
+						vertical-align: middle;
+						margin-right: 5px;
+				}
+				&:nth-child(1){
+						.iconfont{
+								color: #FF5558;
+						}
+				}
+				&:nth-child(2){
+						.iconfont{
+								color: #f5a623;
+						}
+				}
+				&:nth-child(3){
+						.iconfont{
+								color: #009fe8;
+						}
+				}
+				&:nth-child(4){
+						.iconfont{
+								color: #F15BE5;
+						}
+				}
+		}
+
+
+</style>

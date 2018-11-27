@@ -1,0 +1,150 @@
+<template>
+    <div class="tablist" v-show="datalist.length == 0">
+      <div class="table">
+        <div class="tr">
+          <div>发行人</div>
+          <div>星光数量 <img src="../../assets/img/homePage/icon_dropDown@2x.png" alt=""></div>
+          <div>涨跌 <img src="../../assets/img/homePage/icon_dropDown@2x.png" alt=""></div>
+        </div>
+        <div class="tr" v-for="(item,index) in datalist">
+          <div>
+            <figure>
+              <div><img src="../../assets/img/home/home1.png" alt=""></div>
+
+              <figcaption v-if="!flag">
+                <p>金钟国 <button class="fen" v-if="">粉</button></p>
+                <small>000001</small>
+              </figcaption>
+
+              <figcaption v-else :class="[index==0 ? 'red' : '']">
+                <div>金钟国 <button class="fen" v-if="">粉</button></div>
+              </figcaption>
+
+            </figure>
+          </div>
+          <div>
+            <div v-if="flag">
+              <span :class="[index==0 ? 'red' : '']">23542</span>
+              <img src="../../assets/img/home/star@2x.png" alt="">
+            </div>
+            <div v-else-if="false">0.5元/秒</div>
+            <div v-else class="fontbold" :class="[true ? 'red' : 'green']">5.67</div>
+          </div>
+          <div>
+            <div v-if="flag" :class="[index==0 ? 'red' : '']">1</div>
+            <button v-else  :class="[true ? 'bgred' : 'bggreen']">+10.26%</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "tab-list",
+      data(){
+        return {
+
+        }
+      },
+      props:['datalist','flag']
+    }
+</script>
+
+<style scoped lang="scss">
+  $red: #ff5558;
+  $green:#4BCE7C;
+    .tablist{
+				border-top:4px solid #ccc;
+      .table{
+        width:100%;
+        .tr:nth-of-type(1){
+          display: flex;
+          height:.3rem;
+          line-height:.3rem;
+          >div{
+            font-size:.1rem;
+            color:#999;
+          }
+          >div:nth-of-type(1){
+            width:36%;
+            text-align: left;
+          }
+          >div:nth-of-type(2){
+            width:40%;
+            text-align: center;
+          }
+          >div:nth-of-type(3){
+            width:24%;
+            text-align: center;
+          }
+        }
+        .tr:not(:nth-of-type(1)){
+          display: flex;
+          >div:nth-of-type(1){
+            height:.6rem;
+            width:36%;
+            figure{
+              height:inherit;
+              display: flex;
+              align-items: center;
+              figcaption{
+                height:.4rem;
+                margin-left:.1rem;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                small{
+                  margin-top:.12rem;
+                }
+                button{
+                  color:#fff;
+                  background:$red;
+                  border-radius:3px;
+                  border:0;
+                  padding:0 2px;
+                  float:right;
+                  font-size:.1rem;
+                  margin-left:2px;
+                }
+              }
+              img{width:.4rem;}
+            }
+          }
+          >div:nth-of-type(2){
+            text-align: center;
+            font-size:.18rem;
+            line-height:.6rem;
+            width:40%;
+            img{height:.16rem;vertical-align: middle}
+          }
+          >div:nth-of-type(3){
+            text-align: center;
+            font-size:.2rem;
+            font-weight:bold;
+            width:24%;
+            line-height:.6rem;
+            button{
+              width:.8rem;
+              height:.32rem;
+              line-height:.32rem;
+              text-align: center;
+              font-size:.14rem;
+              color:#fff;
+              border:0;
+            }
+            .bgred{
+              background:$red;
+            }
+            .bggreen{
+              background:$green
+            }
+          }
+        }
+        .tr{
+          border-bottom:1px solid #999;
+          padding:0 .1rem;
+        }
+      }
+    }
+</style>

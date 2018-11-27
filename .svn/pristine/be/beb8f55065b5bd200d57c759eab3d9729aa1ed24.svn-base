@@ -1,0 +1,16 @@
+<template>
+    <!--简介 详情-->
+		<div class="introduction">
+				简介
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "introduction"
+    }
+</script>
+
+<style scoped>
+
+</style>

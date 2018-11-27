@@ -1,0 +1,8 @@
+
+var url = 'http://xsk.quanxiankaibo.com';
+// var url = '/api';
+
+
+export {
+	url
+}

@@ -1,0 +1,199 @@
+<template>
+		<!--列表行情榜，星光榜-->
+		<div class="PaiList">
+				<ul>
+						<li v-for="(item,index) in arrList">
+								<span v-show="index != 0 ">{{index+1}}</span>
+								<div>
+										<img :src="item.imgUrl" alt="">
+										<div>
+												<p>{{item.til}} <i :class="item.iconTil"></i></p>
+												<p>{{item.hao}}</p>
+										</div>
+								</div>
+								<span class="fudu">{{item.zhang}} </span>
+								<img v-show="index == 0 " src="../../assets/img/home/star@2x.png" alt="">
+								<button :class="num ==index ? 'active ' : ''" @click="clickBtn(index)">{{item.btnText}}</button>
+						</li>
+				</ul>
+				<div class="tilX">
+						<span>排名</span>
+						<span>发行人</span>
+						<span>本周涨幅</span>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "PaiList",
+				data(){
+						return{
+								arrList:[
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:"金钟国",
+												iconTil:'',
+												hao:"000001",
+												zhang:"",
+												btnText:"加自选",
+										},
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:"金钟国",
+												iconTil:'iconfont icon-fans',
+												hao:"000001",
+												zhang:"+42.26%",
+												btnText:"加自选",
+										},
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:"金钟国",
+												iconTil:'iconfont icon-fans',
+												hao:"000001",
+												zhang:"+42.26%",
+												btnText:"加自选",
+										},
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:"金钟国",
+												iconTil:'iconfont icon-fans',
+												hao:"000001",
+												zhang:"+42.26%",
+												btnText:"加自选",
+										}
+								],
+								num:null
+						}
+				},
+				methods:{
+						clickBtn(index){
+								if (this.arrList[index].btnText == '加自选') {
+										this.arrList[index].btnText = '取消';
+										this.num = index
+								}else{
+										this.arrList[index].btnText = '加自选';
+										this.num = null
+								}
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.tilX{
+				box-sizing: border-box;
+				position: absolute;
+				top: 1.8rem;
+				width: 100%;
+				left: 0;
+				padding: 0 .15rem;
+				line-height: .24rem;
+				font-size: .12rem;
+				color: #999;
+				border-bottom: 1px solid #ddd;
+				span:nth-child(1){
+						margin-right: .2rem;
+				}
+				span:nth-child(2){
+						margin-right: 35%;
+				}
+		}
+		.PaiList{
+				position: relative;
+				li:first-child{
+						margin-bottom: .24rem;
+						height: 1.8rem;
+						background: url("../../assets/img/paiHangBang_topImgBg@2x.png") no-repeat;
+						background-size: 100% 100%;
+						position: relative;
+						>img{
+								width: .1rem;
+								height: .1rem;
+								position: absolute;
+								top: .98rem;
+								right: 1.33rem;
+						}
+						>div{
+								width: 52%;
+								position: absolute;
+								display: flex;
+								bottom: .45rem;
+								right: .25rem;
+								>img{
+										width: .6rem;
+										height: .6rem;
+										border-radius: 50%;
+										border: 2px solid #fff;
+										margin-right: .25rem;
+								}
+								div p:first-child{
+										font-size: .16rem;
+										line-height: .24rem;
+								}
+						}
+						p{
+								color: #fff;
+						}
+						button{
+								position: absolute;
+								right: .7rem;
+								bottom: .4rem;
+								margin-top: .05rem;
+								width: .58rem;
+								height: .24rem;
+								border: 1px solid #F8e71c;
+								border-radius: 4px;
+								background: rgba(0,0,0,0);
+								font-size: .1rem;
+								color: #F8e71c;
+								&.active{
+										border: 1px solid  #50E3C2;
+										color:  #50E3C2;
+								}
+						}
+				}
+				li:not(:first-child){
+						padding: 0 .15rem;
+						display: flex;
+						height: .6rem;
+						justify-content: space-between;
+						align-items: center;
+						border-bottom: 1px solid #ddd;
+						>div{
+								display: flex;
+								align-items: center;
+								width: 1.4rem;
+								>img{
+										width: .4rem;
+										height: .4rem;
+										border-radius: 50%;
+										margin-right: .1rem;
+								}
+								div i{
+										font-size: .17rem;
+										color: #FF5558;
+								}
+						}
+						.fudu{
+								color: #FF5558 ;
+								img{
+										width: .14rem;
+										height: .14rem;
+								}
+						}
+						button{
+								width: .58rem;
+								height: .24rem;
+								border-radius: 3px;
+								background: #F5A623 ;
+								color: #fff;
+								font-size: .1rem;
+								border: none;
+								&.active{
+										background:  #BCBCBC;
+								}
+						}
+				}
+		}
+</style>

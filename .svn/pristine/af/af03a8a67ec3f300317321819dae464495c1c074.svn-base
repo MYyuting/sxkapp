@@ -1,0 +1,97 @@
+<template>
+		<div class="dynamic_temp">
+				<ul class="temp_content_top">
+						<li>
+								<div>持仓成本</div>
+								<div>233434.00</div>
+						</li>
+						<li>
+								<div>持仓收益</div>
+								<div>233434.00</div>
+						</li>
+						<li>
+								<div>持仓市值</div>
+								<div>233434.00</div>
+						</li>
+				</ul>
+				<div class="temp_content_bottom">
+						<tabListToBuy></tabListToBuy>
+				</div>
+		</div>
+</template>
+
+<script>
+		import tabListToBuy from './tabListToBuy'
+		export default {
+				name: "position_temp",
+				data() {
+						return {
+								input1: '',
+								input2: '',
+								input3: '',
+								activeName: 'first'
+						}
+				},
+				mounted(){
+						var token=sessionStorage.getItem("userName");
+						console.log(token);
+						this.$axios.get('/api/miao/queryTotalWorth.do',this.$qs.stringify({
+								token:token
+						}),{
+								headers:{'Content-Type':'application/x-www-form-urlencoded'}
+						}).then((res)=>{
+							console.log("持仓")
+								console.log(res)
+						})
+				},
+				methods: {
+						handleClick(tab, event) {
+								console.log(tab, event);
+						}
+				},
+				components:{
+						tabListToBuy,
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		.dynamic_temp {
+				.temp_content_top {
+						display: flex;
+						box-sizing: border-box;
+						justify-content: space-between;
+						align-items: center;
+						height:.8rem;
+						li:not(:nth-of-type(1)){
+								position:relative;
+								&:before{
+										position:absolute;
+										left:0;
+										width:1px;
+										height:60%;
+										background:#ccc;
+										content:'';
+								}
+						}
+						>li{
+								flex:1;
+								display: flex;
+								height:100%;
+								flex-direction: column;
+								align-items: center;
+								justify-content: space-around;
+								>div:nth-of-type(1){
+										color:#999;
+								}
+								>div:nth-of-type(2){
+										font-size:.16rem;
+										font-weight: bold;
+								}
+						}
+				}
+				.temp_content_bottom {
+						width: 100%;
+				}
+		}
+</style>

@@ -1,0 +1,78 @@
+<template>
+		<!--明细-->
+		<div class="mingxi">
+				<my-head :text="til"></my-head>
+				<div class="list">
+						<ul>
+								<li>
+										<div class="leftList">
+												<span>￥</span>
+												<span>+10000.00</span>
+										</div>
+										<div class="rightList">
+												<p>充值</p>
+												<span>2018-05-02 12:25</span>
+										</div>
+								</li>
+								<li>
+										<div class="leftList">
+												<span>￥</span>
+												<span>+10000.00</span>
+										</div>
+										<div class="rightList">
+												<p>充值</p>
+												<span>2018-05-02 12:25</span>
+										</div>
+								</li>
+								<li>
+										<div class="leftList">
+												<span>￥</span>
+												<span>+10000.00</span>
+										</div>
+										<div class="rightList">
+												<p>充值</p>
+												<span>2018-05-02 12:25</span>
+										</div>
+								</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+	export default {
+		name: "mingxi",
+			data(){
+					return{
+							til:["充值明细"],
+
+					}
+			},
+			components:{
+					"my-head":Head
+			}
+	}
+</script>
+
+<style scoped lang="scss">
+		.list ul li{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height: .6rem;
+				padding: 0 .15rem;
+				.leftList{
+						color: #00BB37;
+				}
+				.rightList{
+						*{font-size: .12rem;text-align: right}
+						p{
+								color: #00BB37;
+						}
+						span{
+								color: #9B9B9B;
+						}
+				}
+		}
+</style>

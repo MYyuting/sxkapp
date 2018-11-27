@@ -1,0 +1,375 @@
+<template>
+    <!--申购详情页-->
+		<div class="shenG-con">
+				<Head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">莫文蔚</span>
+						<span class="iconfont icon-paiHangBang_Star" slot="head_right" @click="sxph(dataMy.investorsName,dataMy.investorsAvatar)"></span>
+				</Head>
+
+				<div id="mescroll" class="mescroll">
+						<div class="con-top">
+								<div class="shu-left">
+										<div>
+												<img :src="'http://xsk.quanxiankaibo.com/'+dataMy.investorsAvatar" alt="">
+												<div>
+														<p class="name-til">{{dataMy.investorsName}}</p>
+														<div><img src="../../assets/img/home/star@2x.png" alt="">{{dataMy.starlightNum}}</div>
+														<button @click="songXg">送星光</button>
+												</div>
+										</div>
+										<p><span>申购时间</span> {{dataMy.investorsPresellDate}}</p>
+										<p><span>上市时间</span> {{dataMy.investorsPublishDate}}</p>
+								</div>
+								<ul class="shu-right">
+										<li><span>发行价</span> <span>{{dataMy.investorsFixPrice}}</span></li>
+										<li><span>发行总量</span> <span>{{dataMy.investorsTotalNum}}s</span></li>
+										<li><span>申购上限</span> <span>{{dataMy.investorStaggingNum}}s</span></li>
+										<li><span>上限资金</span> <span>{{dataMy.investorsFixPrice*dataMy.investorStaggingNum}}</span></li>
+										<li><span>所属板块</span> <span>一人</span></li>
+										<li><span>发行代码</span> <span>{{dataMy.investorsCode}}</span></li>
+								</ul>
+						</div>
+
+						<!--tab-->
+						<div class="nav">
+								<p v-for="(item,index) in tabList"
+									 :class="{active:(currentIndex == index)}"
+									 @click="tabClick(index)">{{item}}</p>
+						</div>
+						<!--简介-->
+						<div v-show="currentIndex==0">
+								<Introduction :investors="dataMy"></Introduction>
+						</div>
+						<!--时间商品-->
+						<div v-show="currentIndex==1">
+								<timeCom></timeCom>
+						</div>
+						<!--动态-->
+						<div v-show="currentIndex==2">
+								<DongTai :datalist="dongTaiJson"></DongTai>
+						</div>
+						<!--新闻-->
+						<div v-show="currentIndex==3">
+								<Journalism></Journalism>
+						</div>
+
+				</div>
+
+				<!--底部-->
+				<footer class="footer">
+						<ul>
+								<router-link to="/business/wbuy" tag="li">
+										<i class="iconfont icon-buy_normal"></i>
+										<p>申购</p>
+								</router-link>
+								<router-link to="" tag="li">
+										<i class="iconfont icon-favorite_normal"></i>
+										<p>加自选</p>
+								</router-link>
+						</ul>
+				</footer>
+				<!--弹框-->
+				<div class="el-motai" v-show="alert1">
+						<div>
+								<div>
+										<p>送给  <span class="til-name">2222</span></p>
+										<input type="number" v-model="xingNum">
+										<div class="img-k">
+												<img src="../../assets/img/home/star@2x.png" alt="">
+												<span class="shu"> {{user_num}} 可用</span>
+										</div>
+										<div class="btn-el">
+												<button class="quxiao" @click="quxiao">取消</button>
+												<button class="queren" @click="queren">确认</button>
+										</div>
+								</div>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/public/headNav'
+		import xiantu from '@/components/public/xiantu'
+		import MeScroll from "../../../static/mescroll/mescroll.min"
+		import DongTai from '@/components/public/dongtai'
+		import timeCom from '@/components/public/timeCom'
+		import Introduction from '@/components/public/introduction'
+		import Journalism from '@/components/public/Journalism'
+		import { MessageBox ,Toast} from 'mint-ui';
+    export default {
+        name: "shenGXQ",
+				data(){
+						return {
+								tabList:['简介', '时间商品', '动态', '新闻'],
+								currentIndex:0,
+								alert1:false,
+						    xingNum:'',
+								token:'',
+								user_num:'',
+								userId:this.$route.query.id,
+								dongTaiJson:'',  //动态数据
+								dataMy:{},  // 本页数据
+						}
+				},
+				mounted(){
+						this.token = sessionStorage.getItem('userName');
+						this.getshu();
+
+				},
+				methods:{
+						back(){
+								this.$router.go(-1)
+						},
+						sxph(name,img){
+								this.$router.push({path: '/xgph', query: {id: this.$route.query.investorsId,name:name,img:img}});
+						},
+						tabClick(index){
+								this.currentIndex =index;
+								if(index == 2){
+										this.dongTai();
+								}
+						},
+						//本页数据
+						getshu(){
+								this.$axios.post(url+'/miao/queryInvestorsInfo.do',this.$qs.stringify({
+										token:this.token,
+										languageType:3,
+										investorsCode:this.$route.query.code
+								})).then((res) => {
+										console.log(res.data)
+										this.dataMy = res.data.OBJECT;
+								})
+						},
+						//获取动态
+						dongTai(){
+								this.$axios.post(url+'/sxz/api/findSxzRecordPageList',this.$qs.stringify({
+										token:this.token,
+										pageNumber:1,//5
+										pageSize:1,//2
+										userid:this.$route.query.id
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.dongTaiJson = res.data
+										}else{
+												Toast({
+														message: res.data.message,
+												});
+										}
+
+								})
+						},
+						//加自选
+						jiazx(){
+								alert(2)
+						},
+						// 点击送星光
+						songXg(){
+								// this.issuerDatabaseId = this.dataList[index].id;
+								this.alert1 = true;
+								this.$axios.post(url+'/api/user/getUserInfo',this.$qs.stringify({
+										token:this.token
+								})).then((res) => {
+										// console.log(res.data.data.starlight_num);
+										this.user_num = res.data.data.starlight_num;
+								})
+						},
+						//取消送星光
+						quxiao(){
+								this.alert1 = false;
+								this.xingNum = '';
+						},
+						//确认送星光
+						queren(){
+								this.$axios.post(url+'/api/user/updateStarlightNum',this.$qs.stringify({
+										token:this.token,
+										starlightNum:this.xingNum,
+										issuerDatabaseId:this.issuerDatabaseId,
+								})).then((res) => {
+										console.log(res);
+										Toast({
+												message: res.data.message,
+												position: 'bottom',
+												duration: 2000
+										});
+								})
+						}
+				},
+				components:{
+        		Head,
+						xiantu,
+						DongTai,
+						Introduction,
+						timeCom,
+						Journalism,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: .5rem;
+				height: auto;
+		}
+		.shenG-con{
+				height: 100%;
+				position: relative;
+				/*padding-bottom: .5rem;*/
+		}
+		$color:#ff5558;
+		.con-top{
+				*{
+						font-size: .12rem;
+				}
+				display: flex;
+				justify-content: space-between;
+				padding: .1rem 0 .1rem .15rem;
+				.shu-left{
+						flex-grow: 1;
+						>div{
+								display: flex;
+								margin-bottom: .1rem;
+								>img{
+										width: .6rem;
+										height: .6rem;
+										border-radius: 50%;
+										margin-right: .15rem;
+								}
+								>div{
+										.name-til{
+												font-size: .15rem;
+										}
+										color: $color ;
+										img{
+												width: .15rem;
+												margin-right: 5px;
+										}
+										>div{
+												display: flex;
+												align-items: center;
+												height: .25rem;
+												color: #9013FE;
+										}
+										button{
+												color: $color;
+												border-radius: 5px;
+												border: 1px solid $color;
+												background: #fff;
+												font-size: .1rem;
+										}
+								}
+						}
+						p span:nth-child(1){
+								color: #999;
+						}
+				}
+				.shu-right{
+						flex-grow: 1;
+						display: flex;
+						flex-direction: column;
+						justify-content: space-between;
+						li span:nth-child(1){
+								color: #999;
+						}
+				}
+		}
+
+		.nav{
+				text-align: center;
+				border-bottom: 1px solid #ddd;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				height: .36rem;
+				p{
+						display: block;
+						padding: 8px 0;
+						&.active{
+								border-bottom: 2px solid $color;
+								color: $color;
+						}
+				}
+		}
+		.footer{
+				position: fixed;
+				z-index: 1;
+				background: #fff;
+				bottom: 0;
+				height: .5rem;
+				width: 100%;
+				ul{
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						text-align: center;
+				}
+				li{
+						width: 35%;
+						color: $color;
+						.iconfont{
+								font-size: .28rem;
+						}
+				}
+		}
+		.el-motai{
+				position: fixed;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				background: rgba(0,0,0,.4);
+				>div{
+						width: 100%;
+						height: 100%;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						>div{
+								border-radius: 5px;
+								width: 60%;
+								overflow: hidden;
+								background: #fff;
+								text-align: center;
+						}
+						p{
+								line-height: 3;
+						}
+						.til-name{
+								color: #FF5558;
+						}
+				}
+				.img-k{
+						height: .35rem;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						img{
+								width: .15rem;
+								margin-right: 5px;
+						}
+						color: #9013FE;
+				}
+				input{
+						height: .25rem;
+						border-radius: 4px;
+						border: 1px solid #aaa;
+				}
+				input::placeholder{
+						text-align: center;
+				}
+				.btn-el{
+						display: flex;
+						button{
+								width: 50%;
+								height: .35rem;
+								background: #fff;
+								border: 1px solid #ccc;
+						}
+				}
+		}
+</style>

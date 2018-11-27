@@ -1,0 +1,368 @@
+<template>
+		<!--送星光排行榜-->
+    <div class="xgph">
+				<Head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">星光榜</span>
+						<span slot="head_right">Top10</span>
+				</Head>
+
+				<div class="content-r">
+						<div class="tab-w">
+								<div class="tab-l">
+										<img class="touimg" src="../../assets/img/home/home1.png" alt="">
+										<span> 莫文蔚 </span>
+										<i class="iconfont icon-touPiao"></i>
+										<!--<i class="iconfont icon-fans"></i>-->
+										<img class="xingimg" src="../../assets/img/home/star@2x.png" alt="">
+										52,003
+								</div>
+								<div class="tab-r">
+										<span v-for="(item,index) in tabarr" :class="index==indexN ? 'acti' : ''"
+										@click="tabClick(index)">{{item}}</span>
+								</div>
+						</div>
+						<!--list-->
+						<div class="PaiList">
+								<ul>
+										<li v-for="(item,index) in arrList">
+												<span v-show="index != 0 ">{{index+1}}</span>
+												<div>
+														<img :src="'http://xsk.quanxiankaibo.com/'+item.userTeam.userAvatar" alt="">
+														<div>
+																<p>{{item.userTeam.userName}}</p>
+														</div>
+												</div>
+												<p class="ic-shu">
+														<img class="ximg" src="../../assets/img/home/star@2x.png" alt="">
+														<span class="fudu">{{item.consumeStarlightNum}} </span>
+												</p>
+												<button :class="item.userTeam.attentionStatus !=1 ? 'active ' : ''"
+																@click="clickBtn(index)">
+														{{item.userTeam.attentionStatus == 1 ? '关注' : '取消'}}
+												</button>
+										</li>
+								</ul>
+								<div>
+										<img src="" alt="">
+								</div>
+								<div class="tilX">
+										<span>排名</span>
+										<span>用户</span>
+										<span>消费星光</span>
+								</div>
+						</div>
+				</div>
+
+
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/public/headNav'
+		import { Toast,Popup } from 'mint-ui'
+    export default {
+        name: "xgpaihang",
+				data(){
+        		return {
+        				gzi:1,
+        				tabarr:['本周','上周','总榜'],
+								token:'',
+								arrList:[],
+								indexN:0,
+						}
+				},
+				mounted(){
+        		this.token = sessionStorage.getItem('userName');
+        		this.getData();
+						console.log(this.$route.query.id);
+				},
+				methods:{
+						back(){
+								this.$router.go(-1);
+						},
+						//点击切换
+						tabClick(index){
+								this.indexN = index;
+								this.getData();
+						},
+						//本页数据列表
+						getData(){
+								this.$axios.post(url+'/api/userStarlightDetails/findUserStarlightDetails',this.$qs.stringify({
+										token:this.token,
+										operatingType:this.indexN,
+										tInvestorsId:this.$route.query.id,
+										// tInvestorsId:'ea2e6193446341be9caee1bd755edsfs',
+								})).then((res) => {
+										console.log(res.data);
+										switch (res.data.status) {
+												case '106':
+														Toast({
+																message: res.data.message,
+														});
+														break;
+												case '0':
+														this.arrList = res.data.userStarlightDetailsList;
+														console.log(this.arrList);
+														break;
+												default:
+														Toast({
+																message: res.data.message,
+														});
+										}
+
+								})
+						},
+						// 点击关注
+						clickBtn(index){
+								let userId = this.arrList[index].userTeam.userId;
+								console.log(this.arrList[index].userTeam.attentionStatus);
+								if(this.arrList[index].userTeam.attentionStatus == 1){
+										this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
+												token:this.token,
+												attentionUserId:userId,  //被关注人的userId
+												attentionStatus:0,      //0取消   1 关注
+										})).then((res) => {
+												console.log(res.data);
+												if(res.data.status == 0){
+														this.arrList[index].userTeam.attentionStatus = 0;
+														Toast({
+																message: '关注成功',
+																position: 'bottom',
+																duration: 1000
+														});
+												}else {
+														Toast({
+																message: res.data.message,
+																position: 'bottom',
+																duration: 1000
+														});
+												}
+										}).catch((err) => {
+												console.log(err);
+										})
+								}else{
+										this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
+												token:this.token,
+												attentionUserId:userId,  //被关注人的userId
+												attentionStatus:1,      //0取消   1 关注
+										})).then((res) => {
+												console.log(res.data);
+												if(res.data.status == 0){
+														this.arrList[index].userTeam.attentionStatus = 1;
+														Toast({
+																message: '取消关注',
+																position: 'bottom',
+																duration: 2000
+														});
+												}else{
+														Toast({
+																message: res.data.message,
+																position: 'bottom',
+																duration: 2000
+														});
+												}
+										}).catch((err) => {
+												console.log(err)
+										})
+								}
+						},
+				},
+				components:{
+        		Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.content-r{
+				position: relative;
+		}
+		.tab-w{
+				position: absolute;
+				width: 100%;
+				box-sizing: border-box;
+				z-index: 22;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: .08rem .15rem;
+				background: rgba(0,0,0,.5);
+		}
+		.tab-l{
+				width: 55%;
+				display: flex;
+				align-items: center;
+				color: #fff;
+				font-size: .12rem;
+				i{
+						font-size: .18rem;
+				}
+				.icon-touPiao{
+						color: #F5A623;
+						margin-right: 6px;
+				}
+				.xingimg{
+						width: .15rem;
+						height: .15rem;
+						margin-right: 5px;
+				}
+		}
+		.touimg{
+				width: .3rem;
+				height: .3rem;
+				border-radius: 50%;
+				margin-right: 8px;
+		}
+		.tab-r{
+				width: 45%;
+				display: flex;
+				justify-content: space-around;
+				color: #ccc;
+				span{
+						padding: 5px 0;
+				}
+				span.acti{
+						color: #fff;
+						border-bottom: 1px solid #fff;
+				}
+		}
+		.tilX{
+				box-sizing: border-box;
+				position: absolute;
+				top: 1.8rem;
+				width: 100%;
+				left: 0;
+				padding: 0 .15rem;
+				line-height: .24rem;
+				font-size: .12rem;
+				color: #999;
+				border-bottom: 1px solid #ddd;
+				span:nth-child(1){
+						margin-right: .35rem;
+				}
+				span:nth-child(2){
+						margin-right: 35%;
+				}
+		}
+		.PaiList{
+				position: relative;
+				li:first-child{
+						.ximg{
+								width: .13rem;
+								height: .13rem;
+						}
+						overflow: hidden;
+						margin-bottom: .24rem;
+						height: 1.8rem;
+						background: url("../../assets/img/paiHangBang_topImgBg@2x.png") no-repeat;
+						background-size: 100% 100%;
+						position: relative;
+						.ic-shu{
+								position: absolute;
+								left: 2.45rem;
+								top: .94rem;
+						}
+						>img{
+								width: .1rem;
+								height: .1rem;
+								position: absolute;
+								top: .98rem;
+								right: 1.33rem;
+						}
+						>div{
+								width: 52%;
+								position: absolute;
+								display: flex;
+								bottom: .45rem;
+								right: .25rem;
+								>img{
+										width: .6rem;
+										height: .6rem;
+										border-radius: 50%;
+										border: 2px solid #fff;
+										margin-right: .25rem;
+								}
+								div p:first-child{
+										font-size: .15rem;
+										line-height: .24rem;
+										white-space:nowrap;
+										overflow: hidden;
+										width: 1rem;
+								}
+						}
+						p{
+								color: #fff;
+						}
+						button{
+								position: absolute;
+								right: .7rem;
+								bottom: .4rem;
+								margin-top: .05rem;
+								width: .6rem;
+								height: .24rem;
+								border: 1px solid #F8e71c;
+								border-radius: 4px;
+								background: rgba(0,0,0,0);
+								font-size: .1rem;
+								color: #F8e71c;
+								&.active{
+										border: 1px solid  #50E3C2;
+										color:  #50E3C2;
+								}
+						}
+				}
+				.ximg{
+						width: .15rem;
+						height: .16rem;
+						vertical-align: middle;
+				}
+				li:not(:first-child){
+						padding: 0 .15rem;
+						display: flex;
+						height: .6rem;
+						justify-content: space-between;
+						align-items: center;
+						border-bottom: 1px solid #ddd;
+						>div{
+								display: flex;
+								align-items: center;
+								width: 1.4rem;
+								>img{
+										width: .4rem;
+										height: .4rem;
+										border-radius: 50%;
+										margin-right: .1rem;
+								}
+								div i{
+										font-size: .17rem;
+										color: #FF5558;
+								}
+								p{
+										width: 1rem;
+										white-space: nowrap;
+										overflow: hidden;
+								}
+						}
+						.fudu{
+								color: #FF5558 ;
+								img{
+										width: .14rem;
+										height: .14rem;
+								}
+						}
+						button{
+								width: .58rem;
+								height: .24rem;
+								border-radius: 3px;
+								background: #F5A623 ;
+								color: #fff;
+								font-size: .1rem;
+								border: none;
+								&.active{
+										background:  #BCBCBC;
+								}
+						}
+				}
+		}
+</style>

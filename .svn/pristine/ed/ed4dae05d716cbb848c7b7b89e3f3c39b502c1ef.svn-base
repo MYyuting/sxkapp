@@ -1,0 +1,22 @@
+<template>
+    <!--新闻 详情-->
+		<div class="journalism">
+				<Xlist></Xlist>
+		</div>
+</template>
+
+<script>
+		import Xlist from  '@/components/index/Xlist'
+    export default {
+        name: "Journalism",
+				components:{
+        		Xlist
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.journalism{
+				padding: 0 .15rem;
+		}
+</style>

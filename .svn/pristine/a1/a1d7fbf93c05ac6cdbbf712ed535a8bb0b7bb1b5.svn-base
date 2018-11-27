@@ -1,0 +1,74 @@
+<template>
+    <!--消息-->
+		<div class="news">
+				<my-head :text="til"></my-head>
+				<div class="newsCon">
+						<ul v-for="item in dataArr">
+								<li class="top">
+										<div>{{item.til}}</div>
+										<span>{{item.time}}</span>
+								</li>
+								<li class="bottom">{{item.con}}</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+    export default {
+        name: "news",
+				data(){
+        		return{
+        				til:["消息"],
+								dataArr:[
+										{
+												til:"投票上新开始啦！快去支持你喜欢的名人吧！",
+												time:"5分钟前",
+												con:"申购券活动结束，开始派发奖励啦！！"
+										},
+										{
+												til:"昨日李宗盛大涨29.87%",
+												time:"15分钟前",
+												con:"李宗盛连续十日上涨，累计涨幅超过105%"
+										},
+										{
+												til:"昨日莫文蔚涨停10%",
+												time:"2018-05-07",
+												con:""
+										}
+								]
+						}
+				},
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.newsCon{
+				padding: 0 .15rem;
+				ul{
+						padding: .13rem 0;
+						border-bottom: 1px solid #eee;
+						.top{
+								display: flex;
+								justify-content: space-between;
+								div{
+										width: 2.6rem;
+								}
+								span{
+										font-size: .12rem;
+										color: rgba(0,0,0,0.40);
+										text-align: right;
+								}
+						}
+						.bottom{
+								font-size: .12rem;
+								line-height: .24rem;
+								color: rgba(0,0,0,0.40);
+						}
+				}
+		}
+</style>

@@ -1,0 +1,120 @@
+<template>
+		<div class="tablist"> <!-- v-show="datalist.length == 0" -->
+				<div class="table">
+						<div class="tr">
+								<div>市值(￥)</div>
+								<div>持有/可卖(s)</div>
+								<div>现价/成本(￥)</div>
+								<div>盈亏(￥)</div>
+						</div>
+						<ul>
+								<li  v-for="(item,index) in 2">
+										<div class="li_top">
+												<div>
+														<div>金钟国</div>
+														<div>12314.21</div>
+												</div>
+												<div>
+														<div>金钟国</div>
+														<div>124324.21</div>
+												</div>
+												<div>
+														<div>金钟国</div>
+														<div>123324.21</div>
+												</div>
+												<div>
+														<div>金钟国</div>
+														<div>124324.21</div>
+												</div>
+										</div>
+										<div class="li_bottom">
+												<div>买入</div>
+												<div>卖出</div>
+												<div>行情</div>
+												<div>预约</div>
+												<div>置顶</div>
+										</div>
+								</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		export default {
+				data() {
+						return {}
+				},
+				props: ['datalist', 'flag']
+		}
+</script>
+
+<style scoped lang="scss">
+		$red: #ff5558;
+		$green: #4BCE7C;
+		.tablist {
+				border-top: 4px solid #ccc;
+				margin-top:.1rem;
+				.table {
+						width: 100%;
+						.tr {
+								display: flex;
+								height: .5rem;
+								line-height: .5rem;
+								border-bottom:1px solid #ccc;
+								> div {
+										width:25%;
+										text-align: center;
+										font-size: .1rem;
+										color: #999;
+								}
+						}
+						>ul {
+								box-sizing:border-box;
+								>li{
+										.li_top{
+												display: flex;
+												justify-content: space-between;
+												align-items: center;
+												height:.7rem;
+												box-sizing:border-box;
+												border-bottom:1px solid #ccc;
+												>div{
+														width:25%;
+														height:100%;
+														display: flex;
+														flex-direction: column;
+														justify-content: space-around;
+														align-items: center;
+												}
+										}
+										.li_bottom{
+												display: flex;
+												justify-content: space-between;
+												align-items: center;
+												height:.4rem;
+												line-height:.4rem;
+												border-bottom:1px solid #ccc;
+												>div{
+														flex:1;
+														text-align: center;
+														height:100%;
+														&:not(:nth-of-type(1)){
+																position:relative;
+																&:before{
+																		position:absolute;
+																		content:'';
+																		width:1px;
+																		height:50%;
+																		left:0;
+																		top:.1rem;
+																		background:#ccc;
+																}
+														}
+												}
+										}
+								}
+						}
+				}
+		}
+</style>

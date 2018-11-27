@@ -1,0 +1,130 @@
+<template>
+  <div class="pageall">
+    <div class="index_contents">
+      <router-view></router-view>
+    </div>
+    <div class="foot_nav">
+      <div @click="tapHome">
+        <div>
+          <img src="./../assets/img/bottomBar/home_normal@2x.png" v-show="flagHome">
+          <img src="./../assets/img/bottomBar/home_selected@2x.png" v-show="!flagHome">
+        </div>
+        <div class="cpt" :class="[flagHome == false ? 'red' : 'gray']">首页</div>
+      </div>
+      <div @click="tapQuotation">
+        <div>
+          <img src="./../assets/img/bottomBar/market_normal@2x.png" v-show="flagQuotation">
+          <img src="./../assets/img/bottomBar/market_selected@2x.png" v-show="!flagQuotation">
+        </div>
+        <div class="cpt" :class="[flagQuotation == false ? 'red' : 'gray']">行情</div>
+      </div>
+      <div @click="tapBusiness">
+        <div>
+          <img src="./../assets/img/bottomBar/charge_normal@2x.png" v-show="flagBusiness">
+          <img src="./../assets/img/bottomBar/charge_selected@2x.png" v-show="!flagBusiness">
+        </div>
+        <div class="cpt" :class="[flagBusiness == false ? 'red' : 'gray']">买卖</div>
+      </div>
+      <div @click="tapMine">
+        <div>
+          <img src="./../assets/img/bottomBar/my_normal@2x.png" v-show="flagMine">
+          <img src="./../assets/img/bottomBar/my_selected@2x.png" v-show="!flagMine">
+        </div>
+        <div class="cpt" :class="[flagMine == false ? 'red' : 'gray']">我的</div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    name: 'index',
+    data() {
+      return {
+        flagHome: true,
+        flagQuotation: true,
+        flagBusiness: true,
+        flagMine: true
+      }
+    },
+    mounted(){
+      // console.log(this.$router.history.current.path)
+      if(this.$router.history.current.path.indexOf("/index") != -1) this.flagHome = false;
+      if(this.$router.history.current.path.indexOf("/quotation") != -1) this.flagQuotation = false;
+      if(this.$router.history.current.path.indexOf("/business") != -1 ) this.flagBusiness = false;
+      if(this.$router.history.current.path.indexOf("/mine") != -1 ) this.flagMine = false;
+    },
+    methods: {
+      tapHome() {
+        this.flagHome = false;
+        this.flagQuotation = true;
+        this.flagBusiness = true;
+        this.flagMine = true;
+        this.$router.push("/index")
+      },
+      tapQuotation() {
+        this.flagHome = true;
+        this.flagQuotation = false;
+        this.flagBusiness = true;
+        this.flagMine = true;
+        this.$router.push("/quotation")
+      },
+      tapBusiness() {
+        this.flagHome = true;
+        this.flagQuotation = true;
+        this.flagBusiness = false;
+        this.flagMine = true;
+        this.$router.push("/business")
+      },
+      tapMine() {
+        this.flagHome = true;
+        this.flagQuotation = true;
+        this.flagBusiness = true;
+        this.flagMine = false;
+        this.$router.push("/mine")
+      }
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+  $color: #ff5558;
+  $gray:#333;
+  .pageall {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .index_contents {
+      height:1rem;
+      flex-grow: 1;
+    }
+    .foot_nav {
+      background: #fff;
+      z-index: 9;
+      height: .5rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /*padding: 0 .2rem;*/
+      border-top: 1px solid $color;
+      > div {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        img {
+          height: .34rem;
+        }
+        .cpt {
+          font-size: .1rem;
+        }
+      }
+    }
+  }
+  .red{
+    color:$color;
+  }
+  .gray{
+    color:#333;
+  }
+</style>

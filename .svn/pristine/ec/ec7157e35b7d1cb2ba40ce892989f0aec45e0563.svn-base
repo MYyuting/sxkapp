@@ -1,0 +1,110 @@
+<template>
+		<div class="dynamic_temp">
+				<div class="temp_content_top">
+						<div class="temp_content_left">
+								<el-input v-model="input1" placeholder="发行人姓名或代码"></el-input>
+								<el-input v-model="input2" placeholder="价格" suffix-icon="iconfont icon-RMB" class="price"></el-input>
+								<el-input v-model="input3" placeholder="数量" suffix-icon="el-icon-sort-up " class="amount"></el-input>
+								<div>可卖 - 秒</div>
+								<el-button type="danger" style="width:100%;" >买入时间</el-button>
+						</div>
+						<div class="temp_content_right" >
+								<el-tabs v-model="activeName" @tab-click="handleClick">
+										<el-tab-pane label="五档" name="first">
+												<ul class="sell">
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+														<li><span>卖5</span><span>-</span><span>-</span></li>
+												</ul>
+												<br>
+												<ul class="buy">
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+														<li><span>买5</span><span>-</span><span>-</span></li>
+												</ul>
+										</el-tab-pane>
+										<el-tab-pane label="明细" name="second">明细列表</el-tab-pane>
+								</el-tabs>
+						</div>
+				</div>
+				<div class="temp_content_bottom">
+						<tabListToBuy></tabListToBuy>
+				</div>
+		</div>
+</template>
+
+<script>
+		import tabListToBuy from './tabListToBuy'
+		export default {
+				name: "dynamic_temp",
+				data() {
+						return {
+								input1: '',
+								input2: '',
+								input3: '',
+								activeName: 'first'
+						}
+				},
+				methods: {
+						handleClick(tab, event) {
+								console.log(tab, event);
+						}
+				},
+				components:{
+						tabListToBuy,
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		.dynamic_temp {
+				.temp_content_top {
+						display: flex;
+						flex-wrap: wrap;
+						box-sizing: border-box;
+				}
+				.temp_content_left {
+						width: 55%;
+						padding: .1rem .1rem 0;
+						box-sizing:border-box;
+						.el-input {
+								height: .4rem;
+								font-size:.14rem;
+								&:nth-of-type(1) {
+										margin-bottom: .1rem;
+								}
+								&:nth-of-type(2) {
+										margin-bottom: .24rem;
+								}
+						}
+						> div {
+								height: .4rem;
+								text-align: center;
+								line-height: .3rem;
+						}
+				}
+				.temp_content_right {
+						width: 45%;
+						box-sizing:border-box;
+						padding:.1rem .1rem 0;
+						overflow:auto;
+						.buy,.sell{
+								li{
+										display: flex;
+										justify-content: space-between;
+										align-items: center;
+										span{
+												font-size:.12rem;
+										}
+								}
+						}
+				}
+				.temp_content_bottom {
+						width: 100%;
+				}
+		}
+</style>

@@ -1,0 +1,116 @@
+<template>
+		<!--修改手机号-->
+		<div class="XiuGai">
+				<my-head :text="til"></my-head>
+				<!--修改手机号-->
+				<div class="setPhone">
+						<ul>
+								<li>
+										<div>原手机号</div>
+										<span>13012345622</span>
+								</li>
+								<li>
+										<div>原手机号验证码</div>
+										<div>
+												<input type="number">
+												<button>获取验证码</button>
+										</div>
+								</li>
+						</ul>
+						<ul>
+								<li>
+										<div>新手机号</div>
+										<input type="text" placeholder="请输入你的手机号">
+								</li>
+								<li>
+										<div>新手机号验证码</div>
+										<div>
+												<input type="number">
+												<button>获取验证码</button>
+										</div>
+								</li>
+						</ul>
+						<div class="btn">
+								<button>确认修改</button>
+								<p>更换后，新手机号将作为登录账号</p>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+	import Head from '@/components/mine/headMe'
+	export default {
+		name: "xiugaiphone",
+	  data(){
+			return{
+				til:["修改手机号"]
+			}
+	  },
+	  components:{
+		  "my-head":Head
+	  }
+	}
+</script>
+
+<style scoped lang="scss">
+		$color:#FF5558;
+		.XiuGai{
+				background: #f6f6f6;
+				height: 100%;
+		}
+		.setPhone{
+				ul{
+						border-bottom: 4px solid #f6f6f6;
+				}
+				ul li{
+						background: #fff;
+						display:flex ;
+						justify-content: space-between;
+						align-items: center;
+						height: .6rem;
+						padding: 0 .15rem;
+						border-bottom: 1px solid #eee;
+						div:nth-child(2){
+								width: 50%;
+								text-align: right;
+						}
+				}
+				input{
+						outline: none;
+						width: 40%;
+						border: none;
+				}
+				input::placeholder{
+						text-align: right;
+				}
+				li button{
+						width: .87rem;
+						height: .3rem;
+						border: 1px solid $color;
+						background: #fff;
+						color: $color;
+						font-size: .12rem;
+						border-radius: 4px;
+				}
+				.btn{
+						padding: 0 .15rem;
+						text-align: center;
+						button{
+								width: 100%;
+								margin-top: .5rem;
+								height: .48rem;
+								background: #D6D6D6;
+								color: #ffffff;
+								border: none;
+								border-radius: 4px;
+						}
+						p{
+								line-height: 3;
+								font-size: .12rem;
+								color: $color;
+						}
+				}
+		}
+
+</style>

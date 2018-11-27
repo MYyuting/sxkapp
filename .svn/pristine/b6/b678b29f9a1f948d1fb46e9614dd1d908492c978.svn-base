@@ -1,0 +1,204 @@
+<template>
+    <div class="mine">
+        <!--头部-->
+        <div class="nav">
+		        <div class="left"><img src="../../assets/img/news/shez.png" alt="">大石头Oo</div>
+            <div class="img" @click="setting"><img src="../../assets/img/news/shez.png" alt=""></div>
+        </div>
+        <!--中间部分-->
+        <div id="mescroll" class="mescroll">
+            <!--没有登陆-->
+            <div class="head" v-show="false">
+              <button>登录 / 注册</button>
+            </div>
+            <!--登陆状态-->
+            <div class="head1">
+              <!--资产-->
+              <div class="Assets">
+                <div class="til">
+                  <span class="el-icon-document"></span>
+                  <p>总资产</p>
+                  <label>CNY</label>
+                </div>
+                <div class="Number" >458999.00</div>
+                <div><span>可用余额：</span> <span>88888.00</span></div>
+                <div><span>已购市值：</span> <span>88888.00</span></div>
+                <div><span>冻结金额：</span> <span>88888.00</span></div>
+              </div>
+              <!--消费星光-->
+              <div class="Assets">
+                <div class="til">
+                  <span class="el-icon-document"></span>
+                  <p>累计消费星光</p>
+                  <img src="../../assets/img/news/giveStar@2x.png" alt="">
+                </div>
+                <div class="Number" >458999.00</div>
+                <div><span>可用星光：</span> <span>88888.00</span></div>
+                <div><span>累计获得：</span> <span>88888.00</span></div>
+              </div>
+            </div>
+            <div class="tab">
+                <div @click="recharge"><i class="el-icon-sold-out"></i> 账户充值</div>
+                <div @click="forward"><i class="el-icon-news"></i> 账户提现</div>
+            </div>
+            <!--列表-->
+            <div class="MineList">
+                <div>
+                    <div>
+                        <i class="el-icon-time"></i>消费的时间
+                    </div>
+                    <div class="el-icon-arrow-right"></div>
+                </div>
+                <div>
+                    <div>
+                        <i class="el-icon-question"></i>帮助中心
+                    </div>
+                    <div class="el-icon-arrow-right"></div>
+                </div>
+                <div>
+                    <div>
+                        <i class="el-icon-phone-outline"></i>联系我们
+                    </div>
+                    <div class="el-icon-arrow-right"></div>
+                </div>
+                <div>
+                    <div>
+                       <i class="el-icon-printer"></i>邀请好友
+                    </div>
+                    <div class="el-icon-arrow-right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import MeScroll from "../../../static/mescroll/mescroll.min"
+    export default {
+        name: "index",
+        methods:{
+            recharge(){
+            		this.$router.push("/recharge")
+            },
+						forward(){
+				        this.$router.push("/forward")
+						},
+			      setting(){
+				        this.$router.push("/setting")
+            }
+        }
+    }
+</script>
+
+<style scoped lang="scss">
+  $color:#ff5558;
+  .mine{
+    height: 100%;
+  }
+  /*mescroll滚动的区域*/
+  .mescroll {
+    position: fixed;
+    top: .5rem;
+    bottom: .5rem;
+    height: auto;
+  }
+  .nav{
+		height: .5rem;
+		background: $color;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		color: #fff;
+		font-size: .16rem;
+		padding: 0 .21rem;
+		  .left img{
+				  width: .3rem;
+				  height: .3rem;
+				  border-radius: 50%;
+				  border: 1px solid red;
+				  margin-right: .1rem;
+		  }
+		.img img{
+		  width: .24rem;
+		  height: .24rem;
+		}
+  }
+  .head{
+    background: $color;
+    padding: .6rem 0;
+    text-align: center;
+    button{
+      color: $color;
+      background: #fff;
+      padding: .1rem .3rem;
+      border: none;
+    }
+  }
+  .tab{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    border-bottom: 5px solid #eee;
+    padding: .16rem 0;
+    div{
+      width: 50%;
+      font-size: .16rem;
+    }
+    div:nth-child(1){
+      border-right: 1px solid #aaa;
+    }
+  }
+  .MineList{
+    >div{
+      display: flex;
+      padding: .15rem;
+      font-size: .15rem;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      i{
+        margin-right: .1rem;
+        font-size: .15rem;
+      }
+    }
+  }
+
+  .head1{
+    padding: .1rem .3rem;
+    background: $color;
+    .Assets{
+      background: linear-gradient(to right , #e8ebf6, #bac7fe);;
+      border-radius: 5px;
+      margin-bottom: .2rem;
+      padding: .1rem .2rem;
+      >div{
+        line-height: 2;
+        display: flex;
+        font-size: .15rem;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .til{
+        font-size: .15rem;
+        span{
+          color: blue;
+          font-size: .15rem;
+        }
+        p{
+          font-weight: bold;
+        }
+        img{
+          width: .3rem;
+          height: .3rem;
+        }
+      }
+      .Number{
+        display: block;
+        text-align: center;
+        font-size: .16rem;
+        font-weight: 600;
+        line-height: 2;
+      }
+    }
+  }
+
+</style>

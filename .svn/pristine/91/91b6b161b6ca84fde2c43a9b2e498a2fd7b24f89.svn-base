@@ -1,0 +1,93 @@
+<template>
+    <!--list-->
+		<div>
+				<div class="home_s" v-for="item in list">
+						<div>
+								<img :src="item.imgUrl" alt="">
+								<div class="home_text"><p>{{item.til}}</p><p>{{item.bianhao}}</p></div>
+						</div>
+						<div>{{item.zhang}}</div>
+						<button>{{item.num}}</button>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "listCon",
+				data(){
+        		return {
+        				list:[
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:'金钟国',
+												bianhao:'100000',
+												zhang:'5.65',
+												num: '+10.26%'
+										},
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:'金钟国',
+												bianhao:'100000',
+												zhang:'5.65',
+												num: '+10.26%'
+										},
+										{
+												imgUrl:require('../../assets/img/home/home1.png'),
+												til:'金钟国',
+												bianhao:'100000',
+												zhang:'5.65',
+												num: '+10.26%'
+										}
+								]
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.home_s{
+				border-bottom: 1px solid #ddd;
+				padding: 0 .15rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height:.6rem;
+				>div:nth-child(1){
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						img{
+								width: .4rem;
+								height: .4rem;
+								border-radius: 50%;
+								margin-right: .1rem;
+						}
+				}
+				.home_text{
+						p:nth-child(2){
+								font-size: .12rem;
+						}
+						p:nth-child(1){
+								margin-bottom: .05rem;
+						}
+				}
+				>div:nth-child(2){
+						font-size: .18rem;
+						color: #ff5558;
+						&.colod{
+								color: #4BCE7C;
+						}
+				}
+				button{
+						width: .8rem;
+						height: .32rem;
+						background: #ff5558;
+						border: none;
+						color: #fff;
+						&.tbcor{
+								background: #4BCE7C;
+						}
+				}
+		}
+</style>

@@ -1,0 +1,233 @@
+<template>
+		<form action="" @submit.prevent="submit">
+				<div class="addynamic">
+						<headnav>
+								<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+								<span class="" slot="head_center">发布动态</span>
+								<span  slot="head_right" ><input type="submit" class="wstyle"  value="发布"/></span>
+						</headnav>
+						<div class="addynamic_content">
+								<div class="hweight">
+										<textarea name="wtextarea" id="textarea" v-model="inputText.wtextarea" placeholder="最多输入200字"></textarea>
+								</div>
+								<!--长按删除钮出来-->
+								<div class="bothImg" >
+										<p class="pImgs" v-for="(item,index) in warr">
+												<img :src="'http://xsk.quanxiankaibo.com/'+item" alt=""   :class="{wImg:wpath==''}" />
+												<!--点击按钮删除图片-->
+												<span class="iconfont icon-deleteImage" v-if="wchide"></span>
+										</p>
+								</div>
+								<div class="content_bottom">
+										<label>
+												<input
+														class="file"
+														name="wfile"
+														type="file"
+														accept="image/png,image/gif,image/jpeg"
+														@change="update($event)"
+														style="display:none;"
+												/>
+												<span class="iconfont icon-photo"></span>
+										</label>
+										<span class="iconfont icon-face"></span>
+								</div>
+						</div>
+				</div>
+		</form>
+
+</template>
+
+<script>
+		import headnav from './../public/headNav'
+		import { Toast } from 'mint-ui';
+		export default {
+				name: "addynamic",
+				data(){
+						return{
+								inputText:{},
+								files:'',
+								wpath:"",
+								warr:[],
+								wchide:false,
+								attid:[],
+								sjoin:""
+						}
+				},
+				components:{
+						headnav,
+				},
+				methods: {
+						back(){
+								this.$router.go(-1)
+						},
+						update(event){
+								console.log(event);
+								if(event.target.files.length>0){
+										this.files = event.target.files[0];//提交的图片
+										console.log(this.files)
+										let file = event.target.files[0];
+//					        var wfiles=event.target.files
+//					        console.log("ddddd")
+//					        console.log(wfiles)
+										let param = new FormData(); //创建form对象
+										param.append('file',file,file.name);//通过append向form对象添加数据
+										param.append('chunk','0');//添加form表单中其他数据
+										console.log(param.get('file')); //FormData私有类对象，访问不到，可以通过get判断值是否传
+										let config = {
+												headers:{'Content-Type':'multipart/form-data'}
+										};  //添加请求头
+										this.$axios.post('api/portal/attachment/appupload',param,config)
+												.then(res=>{
+														this.wpath=res.data.path
+														this.warr.push(this.wpath)
+														this.attid.push(res.data.attachment)
+														var sjoin=this.attid.join(",")
+														console.log(sjoin);
+														this.sjoin=sjoin
+												})
+								}
+					    	
+						},
+						submit(){
+								var token=sessionStorage.getItem("userName");
+								console.log("文本内容"+this.inputText.wtextarea);
+								//1.如果只提交文字 type=1 字和图都为空时不能提交  有字时 没图可以提交
+								//2.如果文字和图片都提交  type=2 都不可为空
+								var wtype=null;
+								if(this.inputText.wtextarea==undefined &&this.warr==""){
+										console.log("空");
+										let instance = Toast('内容不能为空');
+										setTimeout(() => {
+												instance.close();
+										}, 2000);
+								}else{
+										if(this.inputText.wtextarea!=undefined&&this.warr==""){
+												wtype=1
+										}else if(this.inputText.wtextarea!=undefined &&this.warr!=""){
+												wtype=2
+										}else if(this.warr!=""&& this.inputText.wtextarea==undefined ){
+												wtype=3
+												this.inputText.wtextarea=""
+										}
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: "/api/sxz/api/save",
+												data: this.$qs.stringify({
+														type:wtype,
+														text:this.inputText.wtextarea,
+														attid:this.sjoin,
+														token:token
+												})
+										})
+												.then(res=> {
+														console.log(res);
+														console.log(wtype)
+														if(res.data.isOk==true){
+																let instance1 = Toast('平台审核成功后将自动发布该时间商品');
+																setTimeout(() => {
+																		instance1.close();
+																		this.$router.push("/quotation/dynamic")
+																}, 2000);
+														}
+												})
+												.catch(err=>{
+														console.log(err);
+												});
+
+							
+								}
+						},
+				},
+				mounted(){
+			   
+				}
+				
+		}
+</script>
+
+<style scoped lang="scss">
+		form{
+				height: 100%;
+				box-sizing:border-box;
+
+}
+		.bothImg{
+				padding:.32rem  .1rem 0 .1rem;
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				img{
+						width: .72rem;
+						height: .72rem;
+				}
+		}
+		.hweight{
+				box-sizing:border-box;
+		}
+		.wImg{
+				height: 0;
+
+}
+		.pImgs{
+				position: relative;
+				width: .72rem;
+				height: .72rem;
+				margin-left: .14rem;
+				margin-bottom:.18rem;
+				img{
+						display: block;
+				}
+				span{
+						font-size:.2rem;
+						color:#606364;
+						position: absolute;
+						top: 0;
+						left:.0rem;
+				}
+		}
+		.addynamic{
+				display: flex;
+				flex-direction:column;
+				background:#eee;
+				height:100%;
+				
+				.addynamic_content{
+						flex-grow:1;
+						padding-bottom:.55rem;
+						position:relative;
+						height:100%;
+						box-sizing:border-box;
+						textarea{
+								border:0;
+								background:#eee;
+								width:100%;
+								padding:.2rem .3rem;
+								outline:none;
+								color:#333;
+								resize:none;
+								box-sizing:border-box;
+						}
+						.content_bottom{
+								width: 100%;
+								height:.5rem;
+								line-height:.5rem;
+								padding:0 .12rem;
+								box-sizing:border-box;
+								background: #fff;
+								position: absolute;
+								bottom: 0;
+								left: 0;
+								span{
+										font-size:.5rem;
+								}
+						}
+				}
+		}
+		.wstyle{
+				background:transparent;
+				border:none;
+				color: #fff;
+		}
+</style>

@@ -1,0 +1,111 @@
+<template>
+    <div name="Xlist">
+        <div class="list" v-for="item in text">
+            <div>
+								<img :src="item.informationImgPath" alt="">
+						</div>
+            <a @click="clickLink(item.goUrl)" class="text">
+                <p>{{item.title}}</p>
+                <span>{{item.informationSource}}</span>
+            </a>
+        </div>
+				<div class="noArr" v-show="text.length == 0">
+						<span>暂无数据</span>
+				</div>
+				<div class="noArr noArr1" v-show="text.length > 0">
+						<span>暂无更多数据</span>
+				</div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "Xlist",
+				props:['text'],
+				data(){
+        		return {
+        				newList:[
+										// {
+										// 		informationImgPath:require("../../assets/img/home/home1.png"),
+										// 		title:'万元现金等你拿 | 第一期成交额活动正式启动！',
+										// 		informationSource:'腾讯新闻'
+										// }
+								]
+						}
+				},
+				mounted(){
+        		// console.log(this.text)
+				},
+				methods:{
+        		clickLink(src){
+        				this.$router.push({
+										path:'/webview',
+										query:{
+												url:src
+										}
+								})
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.noArr{
+				padding: .3rem 0;
+				text-align: center;
+				color: #999;
+		}
+		.noArr span{
+				position: relative;
+				font-size: .13rem;
+		}
+		.noArr span:after,.noArr span:before{
+				position: absolute;
+				content: '';
+				width: .4rem;
+				top: .1rem;
+				border-bottom: 1px solid #999;
+		}
+		.noArr span:before{
+				left: -.5rem;
+		}
+		.noArr span:after{
+				right: -.5rem;
+		}
+		.noArr1{
+				padding: 0;
+				margin-top: .2rem;
+		}
+		$color:#333;
+		.list{
+				display: flex;
+				padding:  0 0 .15rem;
+				justify-content: space-between;
+				div{
+						width: .9rem;
+						height: .9rem;
+						margin-right: 1.3%;
+						text-align: center;
+						overflow: hidden;
+						vertical-align: middle;
+						img{
+								max-width: 100%;
+								max-height: 100%;
+						}
+				}
+				a{
+						text-decoration: none;
+						display: flex;
+						color: #333;
+						width: 1rem;
+						overflow: hidden;
+						flex-grow: 1;
+						flex-direction: column;
+						justify-content: space-between;
+						span{
+								color: #BCBCBC;
+								font-size: .12rem;
+						}
+				}
+		}
+</style>

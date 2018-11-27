@@ -1,0 +1,300 @@
+<template>
+    <!--注册下一步-->
+		<div class="getyzm">
+				<div class="nav">
+						<div class="text1" @click="back"><i class="el-icon-arrow-left"></i></div>
+						<div class="text"></div>
+				</div>
+				<div class="fill fill1">
+						<h2>输入验证码</h2>
+						<p>请输入收到的验证码</p>
+						<div>
+								<input type="number" ref="input1" v-on:input ="inputFunc" placeholder="请输入短信验证码" v-model="yzm">
+						</div>
+						<p class="getM">
+								<button class="getM" @click="chongGet" :disabled="disabled">{{yzmtxt}}</button>
+						</p>
+				</div>
+				<div class="fill">
+						<h2>设置登陆密码</h2>
+						<p>登陆密码由<span>8～16位</span>的<span>数字</span>和<span>字母</span>组成</p>
+						<div>
+								<input type="password" ref="input1" v-on:input ="inputFunc" placeholder="请设置登录密码" v-model="passwd1">
+						</div>
+						<div>
+								<input type="password" ref="input1" v-on:input ="inputFunc" placeholder="再次输入以确认" v-model="passwd2">
+						</div>
+						<button class="btnlogin" @click="zcdl" :class="flag ? 'colour' : '' " :disabled="!flag">注册并登录</button>
+						<div class="check">
+								<input id="1" type="checkbox" v-model="check" @click="inputFunc" ref="check">
+								<label for="1"></label>
+								<span>注册即同意 <span>《星时空用户使用协议》</span></span>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import { Toast } from 'mint-ui';
+    export default {
+        name: "getYzm",
+				data(){
+						return{
+								yzmtxt:"获取验证码",
+								flag:false,
+								time:0,
+								check:true,
+								phone:this.$route.query.phone,
+								// phone:'18612332388',
+								yaoqm:this.$route.query.yaoqm,
+								passwd1:'',
+								passwd2:'',
+								yzm:'',
+								disabled:false,
+								verCode:'',
+						}
+				},
+				mounted(){
+        		// this.chongGet();
+        		console.log(this.phone);
+        		console.log(this.yaoqm);
+				},
+				methods:{
+						back(){
+								this.$router.back(-1)
+						},
+						//获取验证码
+						send(){
+								let _this=this;
+								_this.disabled=true;
+								_this.time=60;
+								let it=setInterval(()=> {
+										_this.time--;
+										if(_this.time==0){
+												//  时间走完
+												_this.yzmtxt='获取验证码';
+												_this.disabled=false;
+												clearInterval(it)//用了定时器一定要清楚
+										}else {
+												_this.yzmtxt=`${_this.time}S重新发送`;
+												// this.btn='59s'
+												_this.disabled=true
+										}
+								},1000)
+						},
+						chongGet(){
+								let _this=this;
+								// this.time=10;
+								this.send();
+								this.$axios({
+										method:'get',
+										url:url+'/api/user/getCode',
+										params:{
+												clientPhone:this.phone
+										}
+								}).then(function (res) {
+										console.log(a);
+										console.log(res.data);
+										_this.verCode = res.data.verCode
+								})
+						},
+						//注册登录
+						zcdl(){
+								let _this=this;
+
+										//判断密码是否一致
+										if(this.passwd1 == this.passwd2){
+												let patrn=/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;
+												//判断密码为8-16位
+												if (patrn.test(this.passwd1)) {
+														this.$axios.post(url+'/api/user/doAdd',this.$qs.stringify({
+																mobile:_this.phone,  //用户名或手机号
+																passwd:_this.passwd1,  //密码
+																validateCode:_this.yzm,   //验证码
+																inviterUserMobile:_this.yaoqm,    //邀请人手机号
+														}),{
+																headers:{'Content-Type':'application/x-www-form-urlencoded'}
+														}).then((res)=>{
+																console.log(res.data);
+																switch(res.data.status)
+																{
+																		case '0':
+																				Toast({
+																						message: '注册成功',
+																						position: 'middle',
+																						duration: 1000
+																				});
+																				setTimeout(function () {
+																						_this.$router.push('/signin')
+																				},400);
+																				break;
+																		case '202':
+																				Toast({
+																						message: res.data.message,
+																						position: 'middle',
+																						duration: 2000
+																				});
+																				break;
+																		case '201':
+																				Toast({
+																						message: res.data.message,
+																						position: 'middle',
+																						duration: 2000
+																				});
+																				break
+																}
+														}).catch(error =>{
+																		console.log(error)
+														})
+
+												} else {
+														Toast({
+																message: '密码格式有误',
+																position: 'middle',
+																duration: 2000
+														});
+												}
+										}else{
+												Toast({
+														message: '两次密码不一致',
+														position: 'middle',
+														duration: 2000
+												});
+										}
+
+
+
+						},
+						getlogin(){
+
+						},
+						inputFunc(){
+								if(this.$refs.input1.value !="" && this.$refs.check.checked){
+										this.flag = true
+								}else{
+										this.flag = false
+								}
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.nav{
+				display: flex;
+				height: .5rem;
+				padding: 0 .15rem;
+				justify-content: space-between;
+				align-items: center;
+				.text1{
+						font-size: .2rem;
+				}
+		}
+		.fill1 {
+				.getM{
+						text-align: right;
+						font-size: .13rem;
+				}
+				button{
+						background: #fff;
+						border: none;
+				}
+
+		}
+		.fill{
+				width: 2.85rem;
+				margin: auto;
+				h2{
+						font-size: .18rem;
+						margin: .31rem 0 0;
+						color: #000;
+				}
+				p{
+						font-size: .12rem;
+						margin: .17rem 0;
+						span{
+								color: #ff5558;
+						}
+				}
+				div{
+						height: .5rem;
+						display: flex;
+						margin-bottom: .1rem;
+						align-items: center;
+						border: 1px solid #aaa;
+						-webkit-border-radius: 2px;
+						-moz-border-radius: 2px;
+						border-radius: 2px;
+						input{
+								flex-grow: 1;
+								height: 70%;
+								text-indent: 10px;
+								border: none;
+								outline: none;
+						}
+						input::placeholder{
+								text-align: left;
+						}
+				}
+				.btnlogin{
+						width: 100%;
+						height: .44rem;
+						color: #fff;
+						background: #D6D6D6 ;
+						border-radius: 3px;
+						border: none;
+						font-size: .16rem;
+						margin-top: .55rem;
+				}
+				.colour{
+						background: #ff5558;
+				}
+				.check{
+						position: relative;
+						margin-top: .1rem;
+						display: block;
+						font-size: .13rem;
+						justify-content: left;
+						border: none;
+						input{
+								width: .18rem;
+								height: .18rem;
+								visibility: hidden;
+						}
+						span span{
+								color: #ff5558;
+						}
+				}
+				label{
+						cursor: pointer;
+						position: absolute;
+						width: .15rem;
+						height: .15rem;
+						top: 0;
+						left: 2px;
+						background: #eee;
+						border:1px solid #aaa;}
+				input:checked+label{
+						background-color: #FF5558;
+						border: 1px solid #FF5558;
+				}
+				input:checked+label::after{
+						content: '';
+						position: absolute;
+						width: 9px;
+						height: 5px;
+						background: transparent;
+						top: 2px;
+						left: 2px;
+						border: 3px solid #fff;
+						border-top: none;
+						border-right: none;
+						-webkit-transform: rotate(-45deg);
+						-moz-transform: rotate(-45deg);
+						-o-transform: rotate(-45deg);
+						-ms-transform: rotate(-45deg);
+						transform: rotate(-45deg);
+				}
+		}
+
+</style>

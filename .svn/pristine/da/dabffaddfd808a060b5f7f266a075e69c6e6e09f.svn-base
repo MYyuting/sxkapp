@@ -1,0 +1,25 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex);
+
+
+const store = new Vuex.Store({
+	state: {
+		isLogin: false
+	},
+	mutations :{
+		changeLogin(state,status){
+			state.isLogin = status;
+		}
+	},
+
+	actions :{
+		loginAction({commit}){
+			commit('changeLogin',true);
+		}
+	}
+});
+
+
+export default store
+

@@ -1,0 +1,131 @@
+<template>
+    <!--时间商品-->
+		<div class="timeCom">
+				<ul>
+						<li v-for="(item,index) in dataList">
+								<p>{{item.til}}</p>
+								<p class="address" :class="item.flag ? '' : 'active'">{{item.address}}</p>
+								<span class="zhan" v-show="item.address.length >=68"
+											@click="zhankai(index)">{{item.flag ? '展开' : '收起'}}</span>
+								<p class="time">
+										<span>下架时间：{{item.time}}</span>
+										<span>价格：{{item.price}}s</span>
+								</p>
+								<button @click="yueClick(index)">预约</button>
+						</li>
+				</ul>
+
+
+		</div>
+</template>
+
+<script>
+		import { Toast } from 'mint-ui'
+    export default {
+        name: "timeCom",
+				data(){
+        		return {
+								showBtn:false,
+								dataList:[
+										{
+												til:"下周可以来片场探班哦",
+												address:"地点：北京西单大悦城，时间：2018/5/7，中午11-12点",
+												time:"2018-05-06",
+												price:"1000",
+												flag:true,
+										},
+										{
+												til:"下周可以来片场探班哦",
+												address:"地点：北京西单大悦城，时间：2018/5/7-2018/5/10，每天中午11点-12点，地点：北京西单大悦城，时间：2018/5/10，每天中午11点-12点，地点：北京西单大悦城，每天中午11点-12点",
+												time:"长期有效",
+												price:"100",
+												flag:true,
+										},
+										{
+												til:"shans周可以来片场探班哦",
+												address:"地点：北京西单大悦城，时间：2018/5/7-2018/5/10，每天中午11点-12点，地点：北京西单大悦城，时间：2018/5/10，每天中午11点-12点，地点：北京西单大悦城，每天中午11点-12点",
+												time:"2018-05-09",
+												price:"100",
+												flag:true,
+										},
+								]
+						}
+				},
+				mounted(){
+
+				},
+				computed:{
+
+				},
+				methods:{
+						zhankai(index){
+								this.dataList[index].flag = !this.dataList[index].flag;
+						},
+						yueClick(index){
+								let price = this.dataList[index].price;
+								if(price>100){
+
+								}else{
+										Toast({
+												message: '您持有的时间不足',
+												position: 'middle',
+												duration: 3000,
+												className:'tishi'
+										});
+								}
+						}
+				}
+    }
+</script>
+<style>
+		.tishi span{
+				margin: .05rem;
+		}
+</style>
+<style scoped lang="scss">
+
+		.timeCom{
+				li{
+						position: relative;
+						padding:  .15rem;
+						border-bottom: 1px solid #ddd;
+						p:not(:nth-child(1)){
+								margin-top: .1rem;
+						}
+						.address{
+								font-size: .12rem;
+								display: -webkit-box;
+								-webkit-box-orient: vertical;
+								-webkit-line-clamp: 2;// 限制快级元素的文本行数
+								overflow: hidden;
+								color: #999;
+								&.active{
+										-webkit-line-clamp: 100;// 限制快级元素的文本行数
+								}
+						}
+						.zhan{
+								text-align: right;
+								display: block;
+								background: #fff;
+								right: 0;
+								color: #54e4ff;
+						}
+						.time span{
+								font-size: .12rem;
+								margin-right: .3rem;
+						}
+						button{
+								position: absolute;
+								top: 8px;
+								width: .5rem;
+								height: .22rem;
+								border: 1px solid #FF5558;
+								color: #FF5558;
+								font-size: .12rem;
+								background: #fff;
+								right: .1rem;
+								border-radius: 4px;
+						}
+				}
+		}
+</style>

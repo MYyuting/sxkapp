@@ -1,0 +1,86 @@
+<template>
+		<!--明细-->
+		<div class="mingxi">
+				<my-head :text="til"></my-head>
+				<div style="height: 50%;flex-grow: 1">
+						<v-Loadmore :top-method="loadTop" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore" :autoFill="false">
+								<ul>
+										<li v-for="item in list">{{item}}</li>
+								</ul>
+						</v-Loadmore>
+				</div>
+				<!--<List>-->
+						<!--<div slot="left">-->
+								<!--<span>￥</span>-->
+								<!--<span>+10000.00</span>-->
+						<!--</div>-->
+						<!--<div slot="right">-->
+								<!--<p>充值</p>-->
+								<!--<span>2018-05-02 12:25</span>-->
+						<!--</div>-->
+				<!--</List>-->
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+		import List from '@/components/mine/list/tixian'
+		import { Loadmore } from 'mint-ui';
+	export default {
+		name: "mingxi",
+			data(){
+					return{
+							til:["充值明细"],
+							pageNo:1,  //页数
+							pageSize:10,
+							allLoaded: false, //是否可以上拉属性，false可以上拉，true为禁止上拉，就是不让往上划加载数据了
+							list:[1,2],
+							token:'',
+					}
+			},
+			mounted(){
+					this.token = sessionStorage.getItem('userName')
+			},
+			methods:{
+					loadTop() {
+					// ...// 加载更多数据
+							this.pageNo=1;
+							this.$refs.loadmore.onTopLoaded();
+							this.loadFrist();
+					},
+					loadBottom() {
+							// 上拉加载
+							// this.allLoaded = true;// 若数据已全部获取完毕
+							this.$refs.loadmore.onBottomLoaded();// 固定方法，查询完要调用一次，用于重新定位
+					},
+					loadFrist(){
+							this.$axios.post(url+'/miao/newOrderRecord.do',this.$qs.stringify({
+									token:this.token,
+									languageType:3,
+									currentPage:this.pageNo,     //页数
+									pageSize:this.pageSize*this.pageNo,        //页数大小
+							})).then(res => {
+									console.log(res)
+							})
+					}
+			},
+			components:{
+					"my-head":Head,
+					List,
+					'v-Loadmore':Loadmore
+			}
+	}
+</script>
+<style lang="scss">
+		.mint-loadmore,.mint-loadmore-content{
+				height: 100%;
+		}
+		.mingxi{
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				ul{
+						height: 100%;
+				}
+		}
+</style>

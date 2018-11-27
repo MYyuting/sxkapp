@@ -1,0 +1,505 @@
+<template>
+		<div class="wbtm">
+				<div class="issuser" v-for="(item,index) in datalist">
+						<div class="left_img" :style="{backgroundImage: 'url('+item.avatar+')'}" @click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">
+								<!--<img :src="item.avatar" alt=""-->
+										 <!--@click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">-->
+						</div>
+						<div class="right_content">
+								<div class="right_title" @click="Homepage(item.uid,item.avatar,item.userName,item.isOfficialService,item.tInvestorsCode)">
+										<span class="right_title_name">
+												<span :class="item.isOfficialService == 0? 'colH' : ''">{{item.userName}}</span>
+												<img v-show="item.isFans == 1" src="../../assets/img/tip/fans@2x.png" alt="">
+										</span>
+										<span class="right_time">{{item.grTime}}</span>
+								</div>
+								<div  class="right_matter" @click="details(item.id)" >
+										<div class="right_matter_content">
+												{{item.grText}}
+										</div>
+										<div class="right_matter_img">
+												<div class="img" v-for="(item1,indexa) in item.imgPaths" :style="{'background-image': 'url(' + item1 + ')'}" @click.stop="imgView(item1)">
+														<!--<img :src="'http://xsk.quanxiankaibo.com'+item1.path" alt="">-->
+												</div>
+										</div>
+								</div>
+								<div class="right_bottom">
+										<!--如果是发行人是星 用户是心-->
+										<!--心-->
+										<div v-show="item.isOfficialService!=3" class="right_start1" @click="giveLikeTap(index)">
+												<img v-if="item.isFlag=='true'" src="./../../assets/img/news/like_selected@2x.png" alt="">
+												<img v-if="item.isFlag=='false'"  src="./../../assets/img/news/like_normal@2x.png" alt="">
+												<span>{{item.pListNum}}</span>
+										</div>
+										<!--星-->
+										<div v-show="item.isOfficialService==3" class="right_start" @click="songBtn(index)">
+												<img src="./../../assets/img/home/star@2x.png" alt="">
+												<span>{{item.starlightNum}}
+														<!--<i>({{item.sendstarlightNum}})</i>-->
+												</span>
+										</div>
+										<!--评论-->
+										<router-link :to="{path: '/wdynamic', query: {wid:item.id, }}" tag="div" class="right_message" >
+												<img src="./../../assets/img/news/comment@2x.png" alt="">
+												<span>{{item.cListNum}}</span>
+										</router-link>
+										<div v-show="item.isBen != 'false'" class="lerse" @click="wdel(index)">
+												<img src="./../../assets/img/news/deleteNews@2x.png" alt="">
+										</div>
+								</div>
+						</div>
+				</div>
+				<!--弹框-->
+				<div class="el-motai" v-show="alertS" @touchmove.prevent>
+						<div>
+								<div>
+										<p>送给  <span class="til-name">{{issuerName}}</span></p>
+										<input type="number" v-model="xingNum">
+										<div class="img-k">
+												<img src="../../assets/img/home/star@2x.png" alt="">
+												<span class="shu"> {{user_num}} 可用</span>
+										</div>
+										<div class="btn-el">
+												<button class="quxiao" @click="quxiao">取消</button>
+												<button class="queren" @click="queren">确认</button>
+										</div>
+								</div>
+						</div>
+				</div>
+
+				<!--图片查看-->
+				<div id="imgShow" v-show="imgShow" @click="motai">
+						<div>
+								<img :src="imgUrlShow" alt="">
+						</div>
+				</div>
+		</div>
+</template>
+<script>
+		import { MessageBox } from 'mint-ui';
+		import { Toast } from 'mint-ui';
+		export default {
+				name: "issuser",
+				props:['datalist','whide'],
+				data(){
+						return{
+								flag:false,
+								token:'',
+								arrLike:[],
+								arrLike1:[],
+								xiabiao:"",
+								alertS:false,
+								index:'',
+								tInvestorsId:'',
+								xingNum:'',
+								user_num:0,
+								id:'',
+								issuerName:'',
+								product:'',
+								imgShow:false,
+								imgUrlShow:'',
+						}
+				},
+				watch:{
+					  datalist:function(){
+								this.product = this.datalist;
+								console.log(this.product);
+						}
+				},
+				mounted(){
+						this.token = localStorage.getItem('userName');
+						setTimeout(()=>{
+								for(var item of this.datalist){
+										this.arrLike.push(false);
+										this.arrLike1.push(true)
+								}
+						},800)
+				},
+				methods:{
+						//点击跳转详情页面
+						details(id){
+								this.$router.push({
+										path:'/wdynamic',
+										query: {wid:id, }
+								})
+						},
+						//点击图片查看
+						imgView(url){
+								this.imgShow = true;
+								this.imgUrlShow = url;
+						},
+							//		模态图片框
+						motai(){
+								this.imgShow = false;
+						},
+						//送星光弹出
+						songBtn(index){
+								this.index = index;
+								this.tInvestorsId = this.product[index].tInvestorsId;
+								this.issuerName = this.product[index].userName;
+								this.alertS = true;
+
+								this.id = this.product[index].id;
+								this.$axios.post(url+'/api/user/getUserInfo',this.$qs.stringify({
+										token:this.token
+								})).then((res) => {
+									console.log(res.data);
+									this.user_num = res.data.data.starlight_num; //可用星光
+								})
+						},
+						//取消投票
+						quxiao(){
+								this.alertS = false;
+								this.xingNum = '';
+						},
+						//确认投票
+			      queren(){
+								this.$axios.post(url+'/api/user/updateStarlightNum',this.$qs.stringify({
+									token:this.token,
+									starlightNum:this.xingNum,// 星光数
+									tInvestorsId:this.tInvestorsId,//发行人id
+									recordId:this.id,
+									voteNewId:'',  //只有0传
+									operatingType:'2',//0:投票赠送、1申购赠送、2发行人动态赠送、
+								})).then((res) => {
+										console.log(res.data);
+										switch (res.data.status)
+										{
+												case '0':
+														this.product[this.index].starlightNum += parseInt(this.xingNum);
+														Toast({
+																message: '赠送成功',
+																duration: 1000
+														});
+														break;
+												default:
+														Toast({
+																message: res.data.message,
+																duration: 1000
+														});
+										}
+										this.alertS = false;
+										this.xingNum = '';
+								}).catch((err) => {
+										console.log(err);
+								})
+			      },
+						//删除
+						wdel(index){
+								MessageBox.confirm('确定删除这条动态吗?',"").then(action => {
+										var token=localStorage.getItem("userName");
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: url+"/sxz/api/delRecord",
+												data: this.$qs.stringify({
+														token:token,
+														id:this.datalist[index].id
+												})
+										})
+												.then(res=> {
+														if(res.data.status==0){
+																this.datalist.splice(index,1)
+														}else{
+																//否则提示
+																var msga=res.data.message;
+																Toast({
+																		message:msga,
+																});
+														}
+												})
+												.catch(err=>{
+														console.log(err);
+												});
+								}, action => {
+										console.log("取消")
+								})
+						},
+						//点赞
+						giveLikeTap(index){
+								//根据后台给的是否点赞判断
+								var isFlag=this.datalist[index].isFlag
+								var pList=this.datalist[index].pList
+								var token=localStorage.getItem("userName");
+								//isFlag=='false' 未点赞 发送isLove=1 要点赞
+								if(isFlag=='false'){
+										//数据
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: url+"/sxz/api/savePraise",
+												data: this.$qs.stringify({
+														token:token,
+														rid:this.datalist[index].id,
+														isLove:1
+												})
+										}).then(res=> {
+												if(res.data.status==0){
+														console.log("点赞111")
+														this.datalist[index].isFlag='true';
+														this.datalist[index].pListNum = this.datalist[index].pListNum+1;
+														console.log(this.datalist)
+												}else{
+														var msga=res.data.message
+														Toast({
+																message:msga,
+														});
+												}
+										}).catch(err=>{
+												console.log(err);
+										});
+										//isFlag=='true' 点赞 发送isLove=0 取消点赞
+								}else if(isFlag=='true'){
+										//数据
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: url+"/sxz/api/savePraise",
+												data: this.$qs.stringify({
+														token:token,
+														rid:this.datalist[index].id,
+														isLove:0
+												})
+										}).then(res=> {
+												console.log(res)
+												if(res.data.status==0){
+														console.log("取消点赞22")
+														this.datalist[index].isFlag='false'
+														this.datalist[index].pListNum=this.datalist[index].pListNum - 1
+														console.log(this.datalist)
+												
+												}else{
+														var msga=res.data.message;
+														Toast({
+																message:msga,
+														});
+												}
+										}).catch(err=>{
+												console.log(err);
+										});
+								}
+						},
+						//送星
+
+
+						//		点击进人主页
+						Homepage(id,ater,name,isNum,code){
+								if(isNum == 3){
+										this.$router.push({
+												path:'/faxing',
+												query: {
+														code:code,
+												}
+										})
+								}else{
+										this.$router.push({
+												path:'/geren',
+												query: {
+														id:id,
+														userImg:ater,
+														name:name,
+												}
+										})
+								}
+
+						}
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		$color:#ff5558;
+		#imgShow{
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: #333;
+				z-index: 2222;
+				div{
+						overflow-y: auto;
+						height: 100%;
+						display: flex;
+						align-items: center;
+						img{
+								width: 100%;
+						}
+				}
+		}
+		.issuser{
+				display: flex;
+				justify-content:center;
+				align-items: flex-start;
+				padding:.15rem .18rem 0 .1rem;
+				border-bottom: 1px solid #ddd;
+				box-sizing: border-box;
+				.left_img{
+						width:.5rem;
+						height: .5rem;
+						border-radius:50% ;
+						margin-right: .15rem;
+						overflow: hidden;
+						background-position: 100% 35%;
+						background-size: cover;
+						img{
+								max-width: 100%;
+								min-height: 100%;
+						}
+				}
+				.right_content{
+						width: 2.6rem;
+						flex-grow: 1;
+						/*padding-left: .1rem;*/
+						.right_title{
+								.right_title_name{
+										font-size:.16rem;
+										color:$color;
+										font-weight:bold;
+										height: .26rem;
+										.colH{
+												color:#333;
+												font-weight:normal;
+										}
+										img{
+												width:.2rem;
+												display: inline-block;
+												vertical-align: top;
+										}
+								}
+								.right_time{
+										float:right;
+										font-size:.14rem;
+										color:#999;
+								}
+						}
+						.right_matter{
+								.right_matter_content{
+										padding:.1rem 0;
+										line-height:1.4;
+								}
+								.right_matter_img{
+										width: 2.6rem;
+										display: flex;
+										flex-wrap: wrap;
+										.img{
+												width: .84rem;
+												height: .84rem;
+												margin:0 1px;
+												margin-bottom: .02rem;
+												background-size: cover;
+												background-repeat: no-repeat;
+												background-position: center;
+												overflow: hidden;
+												img{
+														max-width: 100%;
+														min-height: 100%;
+												}
+										}
+								}
+						}
+						.right_bottom{
+								/*width: 2.6rem;*/
+								height:.5rem;
+								line-height:.5rem;
+								>div{
+										display: inline-block;
+								}
+								.right_start{
+										img{width:.16rem;}
+										span{
+												color:#9A29FE;
+										}
+								}
+								.right_start1{
+										img{width:.24rem;height: .24rem;}
+								}
+								.right_message{
+										margin-left:.35rem;
+										img{width:.24rem;}
+										span{
+												color:#999;
+										}
+								}
+								.lerse{
+										float:right;
+										img{
+												width: .26rem;
+										}
+								}
+						}
+				}
+		}
+		.wbtm{
+				margin-bottom: -.1rem;
+		}
+		.el-motai{
+				position: fixed;
+				z-index: 9999;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				background: rgba(0,0,0,.4);
+				>div{
+						width: 100%;
+						height: 100%;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						>div{
+								border-radius: 5px;
+								width: 60%;
+								overflow: hidden;
+								background: #fff;
+								text-align: center;
+						}
+						p{
+								line-height: 3;
+						}
+						.til-name{
+								color: #FF5558;
+						}
+				}
+				.img-k{
+						height: .35rem;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						img{
+								width: .15rem;
+								margin-right: 5px;
+						}
+						color: #9013FE;
+				}
+				input{
+						height: .25rem;
+						border-radius: 4px;
+						border: 1px solid #aaa;
+				}
+				input::placeholder{
+						text-align: center;
+				}
+				.btn-el{
+						display: flex;
+						button{
+								width: 50%;
+								height: .35rem;
+								background: #fff;
+								border: 1px solid #ccc;
+						}
+				}
+		}
+</style>
+<style>
+		.mint-msgbox-confirm{
+				color:#FF5558
+		}
+		.mint-msgbox-cancel{
+				color:#AAAAAA
+		
+		}
+		.mint-msgbox-message {
+				color: #333;
+		}
+</style>

@@ -1,0 +1,421 @@
+<template>
+  <div >
+  	<form @submit.prevent="myPublish">
+	  	<!--头部-->
+			<div class="nav">
+				<div class="text1" @click="back"><i class="el-icon-arrow-left"></i></div>
+				<div class="til">发布时间商品</div>
+				<div class="text " ><input type="submit" class="wstyle"  value="发布" /></div>
+			</div>
+			<div class="wheight"></div>
+		  <!--表单-->
+	  	<div class="whPriceBox">
+   			<div class="wprice dis2 wborder">
+   				<div><span>价格</span><span>（秒）</span></div>
+   				<div><input type="number"  v-model="inputobj.wnumber" placeholder="2000"/></div>
+   			</div>
+   	
+   			<div class="wprice dis2 wborder">
+   				<div><span>下架时间</span></div>
+   				<div class="wTimeImg" @click="whTimeTap">
+   					<span>{{wLong}}</span>
+   					<span><img src="../../assets/img/home/dropDown_selected@2x.png" alt="" /></span>
+   				</div>
+   				<!--三角popup-->
+   				<div class="wding"  v-if="cwhite">
+					  <ul>
+					  	<li @click="Select($event)">长期有效</li>
+					  	<li @click="open('picker1')">选择一个时间</li>
+					  </ul>
+					</div>
+					<!--白-->
+					<div class="sanjiao" v-if="cwhite"></div>
+   			</div>
+   			<!--三角popup end-->
+   			
+   			<div class="wprice1 dis2 wborder">
+   				<div><span>标题</span></div>
+   				<div class="wTimeImg1">
+   					<input type="text" @focus="wfocus"  @blur="wblur" placeholder="时间商品的标题(最多50字)" name="wtitle" v-model="inputobj.wtitle" maxlength="50"/>
+   					<span v-if="wdel" @click="wdelete"><img src="../../assets/img/FaXingRen/closeAddNewsOrService@2x.png" /></span>
+   				</div>
+   			</div>
+   			<div class="remark  dis2">
+   				<p>备注 （非必填）</p>
+   			</div>
+   			<div class="remark dis2">
+   					<textarea name="wtext" v-model="inputobj.wtext" class="inputLeft"  placeholder="在此写下时间商品的备注，比如时间、地点、形式，等等"></textarea>
+   			</div>
+   			
+  	  </div>
+	  </form>
+	  <!--点击body隐藏-->
+  	 <div class="s" @click="whTimeTap1" v-if="cwhite1"></div>
+			  <mt-datetime-picker
+      ref="picker1"
+      type="date"
+      v-model="value1"
+      year-format="{value} 年"
+      month-format="{value} 月"
+      date-format="{value} 日"
+      :startDate="startDate"
+      :endDate="endDate"
+      @confirm="handleChange">
+    </mt-datetime-picker>
+  </div>
+  
+</template>
+
+<script>
+import { DatetimePicker } from 'mint-ui';
+import { Toast } from 'mint-ui';
+  export default {
+    data() {
+      return {
+        			wdel:false,
+        			wtitle:"",
+        			cwhite:false,
+        			cwhite1:false,
+        			wLong:"长期有效",
+        			pickerVisible:true,
+        			value: null,
+				      value1: null,
+				      //show: true,
+				      startDate: new Date('2014/01/01') ,
+				      endDate: new Date("2019/01/01"),
+        			whTime:"",
+        			inputobj:{}
+				      
+      }
+    },
+    components:{
+    	 DatetimePicker:DatetimePicker.name
+    },
+		mounted(){
+      
+		},
+    methods:{
+		    	openPicker() {
+		        this.$refs.picker.open();
+		      },
+					back(){
+							this.$router.back(-1)
+					},
+					//聚焦时删除按钮显示
+					wfocus(){
+						this.wdel=true
+					},
+					//失去焦点时按钮隐藏
+					wblur(){
+						this.wdel=false
+					},
+					wdelete(){
+						if(this.inputobj.wtitle!=""){
+							this.inputobj.wtitle=""
+							this.wdel=false
+						}
+					},
+					//点击显示时间
+					whTimeTap(){
+						this.cwhite=!this.cwhite
+						this.cwhite1=!this.cwhite1
+					},
+					//点击body隐藏
+					whTimeTap1(){
+						this.cwhite=false
+						this.cwhite1=false
+					},
+					Select(e){
+						console.log(e.target.innerHTML)
+						this.wLong=e.target.innerHTML
+						this.cwhite=false
+						this.cwhite1=false
+					},
+					open(picker) {
+		        this.$refs[picker].open();
+		        this.cwhite=false
+						this.cwhite1=false
+		      },
+			    handleChange(value) {
+		       value.toLocaleString()
+			      var wtime=value.toLocaleString()
+			      var wtime1=wtime.substr(0,9).toString()
+			      var arr=wtime1.split("/")
+			      console.log(arr)
+			      var nian=arr[0]+"年"
+			      var yue=""
+			      var ri=""
+			      //["2016","1","1"]
+			     	if(arr[1]<=9){
+			     		yue="0"+arr[1]+"月"
+			     	}
+			     	if(arr[2]<=9){
+			     		ri="0"+arr[2]+"日"
+			     	}
+			     	if(arr[1]>=10){
+			     		yue=arr[1]+"月"
+			     	}
+			     	if(arr[2]>=10){
+			     		ri=arr[2]+"日"
+			     	}
+		 				this.wTime=nian+yue+ri
+	      		this.wLong=this.wTime
+
+	     	},
+	     	//提交发布
+	     	myPublish(){
+	     		
+	     		if(this.inputobj.wnumber==undefined||this.inputobj.wtitle==undefined){
+	     			Toast({
+		          message: '信息不完整 ',
+		          position: 'bottom'
+		        });
+	     		}else{
+	     			//提交发布
+	     				var token=localStorage.getItem("userName");
+			      	this.$axios({
+									  headers:{'Content-Type':'application/x-www-form-urlencoded'},
+								      method: "POST",
+								      url: url+"/api/investors/saveInvestorsServerProject",
+								      data: this.$qs.stringify({
+													token:token,
+													seconds:this.inputobj.wnumber,//秒
+													name:this.inputobj.wtitle,//标题
+													content:this.inputobj.wtext,//内容备注
+													isLongEffective:this.wLong=='长期有效'?0:1,//下架时间，0为长期有效、1有固定时间
+													longEffectiveTime:this.wLong=='长期有效'?'':this.wLong,//固定时间
+								      })
+								    })
+								     .then(res=> {
+								     		if(res.data.status==0){
+									        console.log(res)
+								     				Toast({
+										          message: '平台审核成功后将自动发布该时间商品 ' ,
+										          position: 'bottom'
+										        });
+										        this.$router.push("/wusermsg")
+								     		}else{
+                  			//否则提示
+								     			var msga=res.data.message;
+													Toast({
+									          message:msga,
+									        });
+									        console.log(res)
+								     		}
+								     })
+								     .catch(err=>{
+								       console.log(err);
+								     });
+	     			
+	     			
+	     		
+	     		}
+	     	}
+			}
+  }
+</script>
+
+<style scoped lang="scss">
+@charset "utf-8";
+$wi:100%;
+$b:1px solid blue;
+$f:flex;
+$co:column;
+$ar:space-around;
+$be:space-between;
+$c:center;
+$w:wrap;
+$r:right;
+$l:left;
+$bai:#fff;
+.colm{
+    flex-direction: $co;
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+}
+.dis{
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+}
+.dis2{
+    display: $f;
+    justify-content: $be;
+    align-items: $c;
+}
+.dis1{
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+    flex-wrap:$w;
+}
+.dicenter{
+    display: $f;
+    justify-content: $c;
+    align-items: $c;
+}
+  .nav{
+				height: .5rem;
+				display: flex;
+				background: #ff5558;
+				justify-content: space-between;
+				padding: 0 .1rem;
+				box-sizing: border-box;
+				align-items: center;
+				color: #fff;
+				font-size: 0.14rem;
+				position: fixed;
+				width: 100%;
+				left: 0;
+				top: 0;
+				.text1{
+						font-size: .18rem;
+						i{
+							font-size: .24rem;
+						}
+				}
+				.til{
+						font-size: .16rem;
+				}
+		}
+		.wheight{
+			height: .5rem;
+		}
+		.wstyle{
+			background:transparent;
+			border:none;
+			color: #fff;
+		}
+		.whPriceBox{
+			padding-left:.2rem;
+			box-sizing: border-box;
+		}
+		.wprice{
+			height:.6rem;
+			padding-right: .2rem;
+			
+		}
+		.wprice1{
+			height:.6rem;
+			padding-right: .16rem;
+		}
+		.wborder{
+			border-bottom: .01rem solid #EDEDEE;
+		}
+		.wTimeImg{
+			img{
+				width: .13rem;
+				height: .16rem;
+				margin-left: .04rem;
+			}
+		}
+		.wTimeImg1{
+			img{
+				width: .16rem;
+				height: .16rem;
+				margin-left: .06rem;
+			}
+		}
+	input{
+		text-align: right;
+		border:none;
+		outline: none;
+		font-size: .14rem;
+		
+	}	
+	.remark{
+		p{
+			padding: .22rem 0 ;
+			width: 94%;	
+			color: #BCBCBC;
+		font-size: .14rem;
+		}
+		textarea{
+			border:none;
+			outline: none;
+			width: 94%;	
+			font-weight: normal;
+		  font-family: "微软雅黑";
+			font-size: .14rem;
+			line-height: .24rem;
+		}
+	}
+	input::-webkit-input-placeholder{ /*WebKit browsers*/
+		text-align: right;
+		color: #BCBCBC;
+		font-size: .14rem;
+	}
+	.inputLeft{
+		text-align: left;
+	}
+	.inputLeft::-webkit-input-placeholder{ /*WebKit browsers*/
+		text-align:left;
+		color: #BCBCBC;
+		font-weight: normal;
+		font-family: "微软雅黑";
+		font-size: .14rem;
+		line-height: .24rem;
+		
+	}
+/*dingw*/
+.wding{
+	position: fixed;
+	right: .1rem;
+	top: 1.66rem;
+	width: 1.1rem;
+	height: .7rem;
+	border:.01rem solid #EDEDEE;
+	background: #fff;
+	box-shadow: 0 0 .1rem #E2E2E2;
+	z-index: 2222;
+	ul{
+		padding: 0 .1rem;
+		li{
+			line-height: .34rem;
+			height:.34rem;
+		}
+		li:nth-child(1){
+			border-bottom: .01rem solid #EDEDEE;
+
+			text-align: center;
+		}
+	}
+}
+.sanjiao{
+	/*content: "";*/
+	box-shadow: .01rem .01rem .1rem  #E2E2E2;
+	position: absolute;
+	top: 1.6rem;
+	right:.50rem;
+	transform: rotate(-135deg);
+	border-left: .1rem solid transparent;
+	border-right: .1rem solid #fff;
+	border-top: .1rem solid transparent;
+	border-bottom: .1rem solid #fff;
+	z-index: 2
+	
+}
+.wding:after{
+	content: "";
+	position: absolute;
+	transform: rotate(-135deg);
+	top:-.07rem;
+	right: 34.6%;
+	border-left: .1rem solid transparent;
+	border-right: .1rem solid #fff;
+	border-top: .1rem solid transparent;
+	border-bottom: .1rem solid #fff;
+	z-index: 4444;
+	
+}
+.s{
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background:transparent;
+	left:0;
+	top:0;
+	z-index: 1;
+}
+</style>

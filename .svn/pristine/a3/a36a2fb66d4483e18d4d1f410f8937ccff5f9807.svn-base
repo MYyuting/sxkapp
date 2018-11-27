@@ -1,0 +1,28 @@
+<template>
+		<div class="nav">
+				<div class="text text1" @click="back"><i class="el-icon-arrow-left"></i></div>
+				<div class="">充值</div>
+				<div class="text">明细</div>
+		</div>
+</template>
+
+<script>
+	export default {
+		name: "headred",
+	  methods:{
+		  back(){
+			  this.$router.replace("/mine")
+		  },
+	  }
+	}
+</script>
+
+<style scoped lang="scss">
+		.nav{
+				height: .5rem;
+				display: flex;
+				justify-content: space-between;
+				padding: 0 .1rem;
+				align-items: center;
+		}
+</style>

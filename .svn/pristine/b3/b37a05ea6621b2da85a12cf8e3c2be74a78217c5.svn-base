@@ -1,0 +1,16 @@
+<template>
+    <!--详情 动态-->
+		<div class="dongtai">
+				动态
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "dongtai"
+    }
+</script>
+
+<style scoped>
+
+</style>

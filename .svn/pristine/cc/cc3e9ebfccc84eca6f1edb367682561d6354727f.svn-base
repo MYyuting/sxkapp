@@ -1,0 +1,128 @@
+<template>
+    <!--登录-->
+		<div class="signIn">
+				<div class="nav">
+						<div class="text1" @click="back"><i class="el-icon-arrow-left"></i></div>
+						<div class="text" @click="register">注册</div>
+				</div>
+				<div class="img">
+						<img src="../../assets/img/login_logo.svg" alt="">
+				</div>
+				<div class="fill">
+						<div>
+								<img src="../../assets/img/account.svg" alt="">
+								<input type="text" ref="input1" v-on:input ="inputFunc" placeholder="请输入手机号">
+								<span>+86&nbsp;</span>
+						</div>
+						<div>
+								<img src="../../assets/img/password.svg" alt="">
+								<input type="text" ref="input2" v-on:input ="inputFunc" placeholder="请输入密码">
+						</div>
+				</div>
+				<div class="btn">
+						<button :class="{'colour':flag}">登录</button>
+						<p>忘记登录密码？</p>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "SignIn",
+				data(){
+        		return{
+        				texe:["","注册"],
+								flag:false
+						}
+				},
+				methods:{
+						back(){
+								this.$router.back(-1)
+						},
+						inputFunc(){
+								if(this.$refs.input1.value!="" &&this.$refs.input2.value !=""){
+										this.flag =true
+								}else{
+										this.flag =false
+								}
+						},
+						register(){
+								this.$router.push("/register")
+						}
+				},
+				components:{}
+    }
+</script>
+
+<style scoped lang="scss">
+		.nav{
+				display: flex;
+				height: .5rem;
+				padding: 0 .15rem;
+				justify-content: space-between;
+				align-items: center;
+				.text{
+						color: #ff5558;
+						font-size: .16rem;
+				}
+				.text1{
+						font-size: .2rem;
+				}
+		}
+		.img{
+				text-align: center;
+				img{
+						width: 1rem;
+						height: 1rem;
+				}
+		}
+		.fill{
+				margin-top: .27rem;
+				div{
+						width: 2.85rem;
+						height: .5rem;
+						margin: 0 auto .1rem;
+						display: flex;
+						align-items: center;
+						border: 1px solid #aaa;
+						-webkit-border-radius: 2px;
+						-moz-border-radius: 2px;
+						border-radius: 2px;
+						img{
+								width: .4rem;
+								height: .4rem;
+						}
+						input{
+								flex-grow: 1;
+								height: 70%;
+								border: none;
+						}
+						span{
+								font-size: .16rem;
+								color: #bcbcbc;
+						}
+				}
+		}
+		.btn{
+				text-align: center;
+				margin-top: .55rem;
+				button{
+						width: 2.85rem;
+						height: .44rem;
+						border-radius: 3px;
+						color: #ffffff;
+						background: #D6D6D6;
+						border: none;
+				}
+				.colour{
+						background: #ff5558;
+				}
+				p{
+						margin: .18rem auto 0;
+						width: 2.85rem;
+						text-align: right;
+						color: #ff5558;
+						font-size: .13rem;
+				}
+		}
+</style>

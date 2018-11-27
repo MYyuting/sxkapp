@@ -1,0 +1,206 @@
+<template>
+		<!--设置-->
+		<div class="setting">
+				<my-head :text="til"></my-head>
+				<!--实名认证-->
+				<ul v-show="flagShow">
+						<li  @click="shiming">
+								<span>实名认证</span>
+								<div>
+										<span class="text"></span>
+										<i class="el-icon-arrow-right"></i>
+								</div>
+						</li>
+				</ul>
+				<!--实名认证完成-->
+				<div v-show="flaga">
+						<div class="wanXm" v-show="!flagShow">
+								<p>证件认证后不可更改，如需帮助请联系service@xsk.com</p>
+								<ul>
+										<li>
+												<span>真实姓名</span>
+												<div>
+														<span class="text">{{datasm.identify_name}}</span>
+												</div>
+										</li>
+										<li>
+												<span>身份证号</span>
+												<div>
+														<span class="text">{{datasm.identify_card_number}}</span>
+												</div>
+										</li>
+								</ul>
+						</div>
+				</div>
+				<!--列表-->
+				<ul class="list" v-show="flaga">
+						<li v-for="(item,index) in list" @click="set(index)">
+								<span>{{item.til}}</span>
+								<div>
+										<span class="text">{{index == 0 ? tel : ''}}</span>
+										<i class="el-icon-arrow-right"></i>
+								</div>
+						</li>
+				</ul>
+				<!--未登陆状态-->
+				<div class="welo">
+						<ul>
+								<li v-for="(item,index) in list1">
+										<span>{{item.til}}</span>
+										<div>
+												<span class="text">{{item.phone}}</span>
+												<i class="el-icon-arrow-right"></i>
+										</div>
+								</li>
+						</ul>
+						<div class="btn" v-show="!flaga">
+								<button class="qudl" @click="qudl">去登录</button>
+						</div>
+						<div v-show="flaga" class="tuichu" style="text-align: center" @click="tuichuL">退出登录</div>
+				</div>
+		</div>
+</template>
+
+<script>
+	import Head from '@/components/mine/headMe'
+	import { Toast } from 'mint-ui';
+	export default {
+		name: "settings",
+			data(){
+					return{
+						til:["设置"],
+							list:[
+									{
+										  til:"修改手机号",
+											phone:'',
+											url:"/gphone"
+									},
+									{
+									  til:"修改登录密码",
+									  phone:"",
+									  url:"/gmima"
+								  },
+									{
+									  til:"修改支付密码",
+									  phone:"",
+									  url:"/gzfmm",
+								  }
+							],
+							list1:[
+									{
+											til:"通知设定",
+											phone:"已开启",
+											url:""
+									},{
+											til:"清除缓存",
+											phone:"1M",
+											url:""
+									}
+							],
+							tel:'',
+							token:'',
+							flaga:true,
+							datasm:'',
+							flagShow:true,
+					}
+			},
+			mounted(){
+					this.token = localStorage.getItem('userName');
+					this.tel = localStorage.getItem('phone');
+					if(!this.token){
+							this.flaga = false
+					}else {
+							this.$axios.post(url+'/api/userIdentify/findTUserIdentify',this.$qs.stringify({
+									token:this.token,
+							})).then((res) => {
+									console.log(res.data);
+									if(res.data.status == 0){
+											this.datasm = res.data.data;
+											this.flagShow = false;
+									}else{
+											this.flagShow = true;
+									}
+							})
+					}
+
+			},
+			methods:{
+					set(index){
+							this.$router.push(this.list[index].url);
+					},
+					qudl(){
+							this.$router.push('/signin')
+					},
+			//		实名
+					shiming(){
+							this.$router.push('/authen')
+					},
+					// 退出登录
+					tuichuL(){
+			  localStorage.removeItem('userName');
+							if(!localStorage.getItem('userName')){
+									Toast({
+											message: '退出登录成功',
+											position: 'middle',
+									});
+									this.$router.push('/mine')
+							}
+					},
+
+			},
+	  components:{
+		  "my-head":Head
+	  }
+	}
+</script>
+
+<style scoped lang="scss">
+		.setting{
+				background: #f6f6f6;
+				height: 100%;
+		}
+
+		ul{
+				background: #fff;
+				padding: 0 .15rem;
+		}
+		li{
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 1px solid #f3f3f3;
+				align-items: center;
+				height: .6rem;
+				.text{
+						color: #9B9B9B;
+				}
+		}
+		.wanXm{
+				border-bottom: 3px solid #f2f2f2;
+				p{
+						line-height: .5rem;
+						text-align: center;
+						font-size: .1rem;
+				}
+		}
+		.welo,.tuichu{
+				border-top: 3px solid #f3f3f3;
+		}
+		.btn{
+				padding: 0 .15rem;
+				margin-top: .5rem;
+		}
+		.qudl{
+				width: 100%;
+				border-radius: 4px;
+				border: none;
+				height: .5rem;
+				background: #ff5558;
+				color: #fff;
+		}
+		.tuichu{
+				height: .6rem;
+				line-height: .6rem;
+				background: #fff;
+				text-align: center;
+		}
+</style>

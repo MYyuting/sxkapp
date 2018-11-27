@@ -1,0 +1,111 @@
+<template>
+    <div class="shengou">
+        <div>
+						<div class="tilt">
+								<span>正在申购</span>
+								<div class="tilt_time">
+										<i class="iconfont icon-timeRunning"></i>
+										<p>02天15时40分16秒</p>
+								</div>
+						</div>
+						<div class="home_s">
+								<div @click="shen">
+										<img src="../../assets/img/home/home1.png" alt="">
+										<div class="home_text"><p>金钟国</p><p>100000</p></div>
+								</div>
+								<div>
+										0.5元/秒
+								</div>
+								<div>
+										<button @click="shenGouBtn">申购</button>
+								</div>
+						</div>
+				</div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "homeS",
+				methods:{
+						shenGouBtn(){
+								this.$router.push('/business')
+						},
+						shen(){
+								//申购详情
+								this.$router.push('/shengou')
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+  .shengou{
+    padding:.12rem;
+    border-bottom:4px solid #eee;
+    height:.9rem;
+  }
+  .home_s{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height:.6rem;
+    >div:nth-child(1){
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      img{
+        height: .4rem;
+        margin-right: .1rem;
+      }
+    }
+    .home_text{
+				p:nth-child(2){
+						font-size: .12rem;
+				}
+				p:nth-child(1){
+						margin-bottom: .1rem;
+				}
+		}
+    >div:nth-child(2){
+      font-size: .16rem;
+    }
+    button{
+      padding: .07rem .2rem;
+      background: #ff5558;
+      border: none;
+      color: #fff;
+    }
+  }
+  .tilt{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height:.3rem;
+    >span{
+      border-left: 2px solid #FF5558;
+      padding-left: .1rem;
+    }
+  }
+  .tilt1{
+    padding: .1rem 0;
+    a{
+      color: #999;
+      text-decoration: none;
+    }
+  }
+  .tilt_time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    p {
+      color: #FF5558;
+      font-size:.12rem;
+    }
+    i{
+				font-size: .3rem;
+				color:#FF5558 ;
+		}
+  }
+
+</style>

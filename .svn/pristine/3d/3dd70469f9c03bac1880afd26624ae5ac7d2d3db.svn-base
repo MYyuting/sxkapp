@@ -1,0 +1,224 @@
+<template>
+    <!--邀请好友-->
+		<div class="Invitation">
+				<el-head :text="headTil"></el-head>
+				<div id="mescroll" class="mescroll">
+						<div class="content">
+								<div>
+										<span>成功邀请</span>
+										<p><span>23</span>人</p>
+								</div>
+								<div>
+										<span>累计收益</span>
+										<p><span>5000</span>人</p>
+								</div>
+						</div>
+						<div class="picture">
+								<img src="../../../assets/img/inviteFriend@2x.png" alt="">
+								<p>我的邀请码</p>
+								<div>
+										<span>13012345678</span>
+										<img class="imgCopy" src="../../../assets/img/copyCode.svg" alt="">
+								</div>
+						</div>
+						<div class="tabList">
+								<router-link to="/invitation/one" tag="div">一级推荐人</router-link>
+								<router-link to="/invitation/two" tag="div">二级推荐人</router-link>
+						</div>
+						<div id="upscrollWarp">
+								<router-view></router-view>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+		import MeScroll from "../../../../static/mescroll/mescroll.min"
+		export default {
+        name: "Invitation",
+				data(){
+        		return{
+        				headTil:["邀请好友","规则"],
+								mescroll: null,
+						}
+				},
+				mounted(){
+						var self = this;
+						//创建MeScroll对象,内部已默认开启下拉刷新,自动执行up.callback,刷新列表数据;
+						self.mescroll = new MeScroll("mescroll", {
+								up: {
+										callback: self.upCallback, //上拉回调,此处可简写; 相当于 callback: function (page, mescroll) { getListData(page); }
+										isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+										clearEmptyId: "dataList", //相当于同时设置了clearId和empty.warpId; 简化写法;
+										warpId: "upscrollWarp", //让上拉进度装到upscrollWarp里面
+										empty:{ //配置列表无任何数据的提示
+												warpId:"dataList",
+												// icon : "../res/img/mescroll-empty.png" ,
+                         tip : "亲,暂无相关数据哦~" ,
+//                          btntext : "去逛逛 >" ,
+//                          btnClick : function() {
+//                              alert("点击了去逛逛按钮");
+//                          }
+										},
+								}
+						});
+				},
+				methods:{
+						upCallback: function(page) {
+								// alert('上拉')
+								//联网加载数据
+								var self = this;
+								getListDataFromNet(page.num, page.size, function(curPageData) {
+										//curPageData=[]; //打开本行注释,可演示列表无任何数据empty的配置
+
+										//如果是第一页需手动制空列表 (代替clearId和clearEmptyId的配置)
+										if(page.num == 1) self.pdlist = [];
+
+										//更新列表数据
+										self.pdlist = self.pdlist.concat(curPageData);
+
+										//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+										//mescroll会根据传的参数,自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+										console.log("page.num="+page.num+", page.size="+page.size+", curPageData.length="+curPageData.length+", self.pdlist.length==" + self.pdlist.length);
+
+										//方法一(推荐): 后台接口有返回列表的总页数 totalPage
+										//self.mescroll.endByPage(curPageData.length, totalPage); //必传参数(当前页的数据个数, 总页数)
+
+										//方法二(推荐): 后台接口有返回列表的总数据量 totalSize
+										//self.mescroll.endBySize(curPageData.length, totalSize); //必传参数(当前页的数据个数, 总数据量)
+
+										//方法三(推荐): 您有其他方式知道是否有下一页 hasNext
+										//self.mescroll.endSuccess(curPageData.length, hasNext); //必传参数(当前页的数据个数, 是否有下一页true/false)
+
+										//方法四 (不推荐),会存在一个小问题:比如列表共有20条数据,每页加载10条,共2页.如果只根据当前页的数据个数判断,则需翻到第三页才会知道无更多数据,如果传了hasNext,则翻到第二页即可显示无更多数据.
+										self.mescroll.endSuccess(curPageData.length);
+
+								}, function() {
+										//联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+										self.mescroll.endErr();
+								});
+						},
+						getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
+								//延时一秒,模拟联网
+								setTimeout(function () {
+				//              axios.get("xxxxxx", {
+				//                  params: {
+				//                      num: pageNum, //页码
+				//                      size: pageSize //每页长度
+				//                  }
+				//              })
+				//              .then(function(response) {
+										var data=pdlist1; // 模拟数据: ../res/pdlist1.js
+										var listData=[];//模拟分页数据
+										for (var i = (pageNum-1)*pageSize; i < pageNum*pageSize; i++) {
+												if(i==data.length) break;
+												listData.push(data[i]);
+										}
+										successCallback&&successCallback(listData);//成功回调
+				//              })
+				//              .catch(function(error) {
+				//                  errorCallback&&errorCallback()//失败回调
+				//              });
+								},500)
+						}
+				},
+				components:{
+        		"el-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+		/*!*ios使用sticky样式实现*!
+		.nav-sticky{
+				z-index: 9999;!*需设置zIndex,避免在悬停时,可能会被列表数据遮住*!
+				position: -webkit-sticky;
+				position: sticky;
+				top: 0;!*相对mescroll的div悬停的位置*!
+		}
+		!*android和pc端悬停*!
+		.nav-fixed{
+				z-index: 9999;
+				position: fixed;
+				top: 44px;
+				left: 0;
+				width: 100%;
+		}*/
+		.Invitation *{
+				font-family: PingFangSC-Regular;
+		}
+		.content{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: .2rem .2rem;
+				div{
+						text-align: center;
+						width: 1.6rem;
+						box-shadow: 0 2px 6px 0 rgba(0,0,0,0.08);
+						box-sizing: border-box;
+						height: 1rem;
+						padding: .2rem 0 .25rem;
+						p{
+								color: #888;
+								margin-top: .15rem;
+								span{
+										color: #333;
+										font-size: .24rem;
+										padding-right: 5px;
+								}
+						}
+				}
+		}
+		.picture{
+				padding: 0 .15rem;
+				text-align: center;
+				img{
+						width: 3.37rem;
+						height: 2.86rem;
+				}
+				p{
+						margin-top: .34rem;
+						font-size: .16rem;
+				}
+				div{
+						margin-top: .15rem;
+						line-height: .4rem;
+						text-align: center;
+						position: relative;
+						.imgCopy{
+								width: .4rem;
+								height: .4rem;
+								position: absolute;
+								top: 0;
+								right: 0;
+						}
+						span{
+								font-family: PingFangSC-Semibold;
+								font-size: .24rem;
+						}
+				}
+		}
+		.tabList{
+				margin-top: .15rem;
+				height: .4rem;
+				display: flex;
+				justify-content: space-evenly;
+				align-items: center;
+				div{
+						padding-bottom: .05rem;
+				}
+				.router-link-active{
+						color: #FF5558;
+						border-bottom: 2px solid #FF5558;
+				}
+		}
+</style>

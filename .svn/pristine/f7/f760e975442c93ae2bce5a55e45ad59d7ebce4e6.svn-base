@@ -1,0 +1,81 @@
+<template>
+		<!--修改支付密码-->
+		<div class="zhifu">
+				<my-head :text="til"></my-head>
+				<ul>
+						<li>
+								<div>账号</div>
+								<span>13012345622</span>
+						</li>
+						<li>
+								<div>支付密码</div>
+								<input type="text" placeholder="请设置六位纯数字的支付密码">
+						</li>
+						<li>
+								<div>验证码</div>
+								<div>
+										<input type="number">
+										<button>获取验证码</button>
+								</div>
+						</li>
+				</ul>
+				<div class="btn">
+						<button>确认修改</button>
+						<p>修改后将退出登陆，请使用新密码重新登陆</p>
+				</div>
+		</div>
+</template>
+
+<script>
+	import Head from '@/components/mine/headMe'
+	export default {
+		name: "XGzfmm",
+	  data(){
+		  return{
+			  til:["修改支付密码"]
+		  }
+	  },
+	  components:{
+		  "my-head":Head
+	  }
+	}
+</script>
+
+<style scoped lang="scss">
+		.zhifu{
+				background: #F6F6F6;
+				height: 100%;
+		}
+		$color:#FF5558;
+		ul li{
+				background: #fff;
+				display:flex ;
+				justify-content: space-between;
+				align-items: center;
+				height: .6rem;
+				padding: 0 .15rem;
+				border-bottom: 1px solid #eee;
+				div:nth-child(2){
+						width: 50%;
+						text-align: right;
+						input{
+								width: 35%;
+						}
+				}
+				input{
+						outline: none;
+						width: 50%;
+						border: none;
+						text-align: right;
+				}
+				button{
+						width: .85rem;
+						height: .3rem;
+						border: 1px solid $color;
+						background: #fff;
+						color: $color;
+						font-size: .12rem;
+						border-radius: 4px;
+				}
+		}
+</style>

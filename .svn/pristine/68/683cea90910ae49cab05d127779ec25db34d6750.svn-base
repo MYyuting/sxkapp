@@ -1,0 +1,106 @@
+<template>
+		<div class="dynamic_temp">
+				<ul class="temp_content_top">
+						<li>
+								<div>持仓成本</div>
+								<div>{{arrZ.frozenFund}}</div>
+						</li>
+						<li>
+								<div>持仓收益</div>
+								<div>{{arrZ.positionPrice}}</div>
+						</li>
+						<li>
+								<div>持仓市值</div>
+								<div>{{arrZ.userPurse}}</div>
+						</li>
+				</ul>
+				<div class="temp_content_bottom">
+						<tabListToBuy></tabListToBuy>
+				</div>
+		</div>
+</template>
+
+<script>
+		import tabListToBuy from './tabListToBuy'
+		import { MessageBox } from 'mint-ui';
+		export default {
+				name: "position_temp",
+				data() {
+						return {
+								input1: '',
+								input2: '',
+								input3: '',
+								arrZ:{
+										frozenFund:0.000,
+										positionPrice:0.000,
+										userPurse:0.000
+								},
+								token:'',
+						}
+				},
+				mounted(){
+						this.token= sessionStorage.getItem("userName");
+						console.log(this.token);
+						this.$axios.post(url+'/miao/queryAllPositionProduct.do',this.$qs.stringify({
+								token:this.token,
+								languageType:3,
+						})).then((res)=>{
+								console.log("持仓");
+								console.log(res.data);
+								this.arrZ = res.data.OBJECT;
+								if(res.data.STATUS==3){
+										// MessageBox.alert('用户未登录').then(action => {
+										// 		this.$router.push('/signin')
+										// });
+								}
+						})
+				},
+				methods: {
+
+				},
+				components:{
+						tabListToBuy,
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		.dynamic_temp {
+				.temp_content_top {
+						display: flex;
+						box-sizing: border-box;
+						justify-content: space-between;
+						align-items: center;
+						height:.8rem;
+						li:not(:nth-of-type(1)){
+								position:relative;
+								&:before{
+										position:absolute;
+										left:0;
+										width:1px;
+										height:60%;
+										background:#ccc;
+										content:'';
+								}
+						}
+						>li{
+								flex:1;
+								display: flex;
+								height:100%;
+								flex-direction: column;
+								align-items: center;
+								justify-content: space-around;
+								>div:nth-of-type(1){
+										color:#999;
+								}
+								>div:nth-of-type(2){
+										font-size:.16rem;
+										font-weight: bold;
+								}
+						}
+				}
+				.temp_content_bottom {
+						width: 100%;
+				}
+		}
+</style>

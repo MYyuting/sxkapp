@@ -1,0 +1,972 @@
+<template>
+    <!--发行详情页-->
+		<div class="shenG-con">
+				<Head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">{{investors.investorsName}}</span>
+						<span class="iconfont icon-paiHangBang_Star" slot="head_right" @click="xgbClick(investors.investorsAvatar,investors.investorsName,investors.investorsId)"></span>
+				</Head>
+
+				<div id="mescroll" class="mescroll">
+						<div class="shuju">
+								<ul>
+										<li class="col"><span>{{baseInfo.price}}</span>
+												<span class="iconfont icon-priceUp"></span></li>
+										<li><span>最高</span> <span class="col">{{baseInfo.higestPrice}}</span></li>
+										<li><span>今开</span> <span>{{baseInfo.openPrice}}</span></li>
+										<li class="col"><span class="col">{{baseInfo.addPrice}}</span>
+												<span>{{baseInfo.uplowPrice}}</span>
+										</li>
+										<li><span>最低</span> <span>{{baseInfo.lowestPrice}}</span></li>
+										<li><span>昨收</span> <span>{{baseInfo.closePrice}}</span></li>
+										<li><span>成交量</span> <span>{{baseInfo.turnoverNum}}</span></li>
+										<li><span>换手率</span> <span>{{baseInfo.changPoint}}</span></li>
+										<li><span>涨停价</span> <span>{{baseInfo.higestPrice}}</span></li>
+										<li><span>成交额</span> <span>{{baseInfo.changeMoney}}</span></li>
+										<li><span>流通量</span> <span>{{baseInfo.circulatingTime}}</span></li>
+										<li><span>跌停价</span> <span>{{baseInfo.lowestPrice}}</span></li>
+								</ul>
+						</div>
+						<!--图标-->
+						<!--<xiantu v-if="true" :object="object"></xiantu>-->
+						<div class='fade'>
+								<div class="tabTime">
+										<span v-for="(item,index) in tabList1" :class="[i == index ? 'active' : '']"
+									@click="tabClick1(index)">{{item.til}}</span>
+								</div>
+								<div class="confirm">
+										<div id="myChart" :style="{width: '2.3rem', height: '2.4rem', border:'1px solid #ccc'}"></div>
+										<div class="temp_content_right" >
+												<el-tabs v-model="activeName" @tab-click="handleClick">
+														<el-tab-pane label="五档" name="first">
+																<ul class="sell">
+																		<li v-for="(item,index) in buyList">
+																				<span>买5</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																		</li>
+																		<!--<li><span>卖5</span><span>-</span><span>-</span></li>-->
+																		<!--<li><span>卖5</span><span>-</span><span>-</span></li>-->
+																		<!--<li><span>卖5</span><span>-</span><span>-</span></li>-->
+																		<!--<li><span>卖5</span><span>-</span><span>-</span></li>-->
+																</ul>
+																<br>
+																<ul class="buy">
+																		<li v-for="(item,index) in sellList">
+																				<span>卖5</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																		</li>
+																</ul>
+														</el-tab-pane>
+														<el-tab-pane label="明细" name="second">
+																<ul class="minxi">
+																		<li v-for="item in buyAndSellerList">
+																				<span>{{item.time}}</span><span>{{item.price}}</span><span>{{item.num}}</span>
+																		</li>
+																		<!--<li><span>买5</span><span>-</span><span>-</span></li>-->
+																		<!--<li><span>买5</span><span>-</span><span>-</span></li>-->
+																		<!--<li><span>买5</span><span>-</span><span>-</span></li>-->
+																		<!--<li><span>买5</span><span>-</span><span>-</span></li>-->
+																</ul>
+														</el-tab-pane>
+												</el-tabs>
+										</div>
+								</div>
+						</div>
+						<!--tab-->
+						<div class="nav">
+								<p v-for="(item,index) in tabList"
+									 :class="{active:(currentIndex == index)}"
+									 @click="tabClick(index)">{{item}}</p>
+						</div>
+						<!--简介-->
+						<div v-show="currentIndex==0">
+								<Introduction :investors="investors"></Introduction>
+						</div>
+						<!--时间商品-->
+						<div v-show="currentIndex==1">
+								<timeCom></timeCom>
+						</div>
+						<!--动态-->
+						<div v-show="currentIndex==2">
+								<DongTai></DongTai>
+						</div>
+						<!--新闻-->
+						<div v-show="currentIndex==3">
+								<Journalism></Journalism>
+						</div>
+				</div>
+
+				<!--底部-->
+				<footer>
+						<ul>
+								<router-link to="/business/wbuy" tag="li">
+										<i class="iconfont icon-buy_normal"></i>
+										<p>买入</p>
+								</router-link>
+								<router-link to="/business/wmai" tag="li">
+										<i class="iconfont icon-sell_normal"></i>
+										<p>卖出</p>
+								</router-link>
+								<li @click="jiazx">
+										<i class="iconfont icon-favorite_normal"></i>
+										<p>加自选</p>
+								</li>
+						</ul>
+				</footer>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/public/headNav'
+		import MeScroll from "../../../static/mescroll/mescroll.min"
+		import DongTai from '@/components/public/issuser'
+		import timeCom from '@/components/public/timeCom'
+		import Introduction from '@/components/public/introduction'
+		import Journalism from '@/components/public/Journalism'
+    export default {
+        name: "shenGXQ",
+				data(){
+						return {
+								tabList1:[
+										{
+												til:"1分"
+										},
+										{
+												til:"5分"
+										},
+										{
+												til:"15分"
+										},
+										{
+												til:"30分"
+										},
+										{
+												til:"60分"
+										},
+										{
+												til:"日线"
+										}
+								],
+								tabList:['简介', '时间商品', '动态', '新闻'],
+								currentIndex:0,
+								token:'',
+								object:{},
+								i:0,
+								activeName: 'first',
+								baseInfo:{},  //发行行情
+								buyList:[],  //买5数据
+								sellList:[],  //卖5数据
+								investors:{},  // 发行人信息
+								minitePriceList:[], //分时数据
+								tInvestHisList:[
+										{
+												investorsAllMoney: "265208.2",//日成交额
+												investorsAllNum: "834014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.60",//最高价
+												investorsLowestPrice: "0.30",//最低价
+												investorsOpenPrice: "0.30",//开盘价
+												investorsTodayClosePrice: "0.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "894014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "1.60",//最高价
+												investorsLowestPrice: "1.30",//最低价
+												investorsOpenPrice: "1.30",//开盘价
+												investorsTodayClosePrice: "1.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "814014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.70",//最高价
+												investorsLowestPrice: "0.80",//最低价
+												investorsOpenPrice: "0.90",//开盘价
+												investorsTodayClosePrice: "1.0",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "774014.2",//日成交量
+												investorsClosePrice: "0.50",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.60",//最高价
+												investorsLowestPrice: "0.10",//最低价
+												investorsOpenPrice: "0.40",//开盘价
+												investorsTodayClosePrice: "0.30",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "874014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.70",//最高价
+												investorsLowestPrice: "0.60",//最低价
+												investorsOpenPrice: "0.40",//开盘价
+												investorsTodayClosePrice: "0.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.2",//日成交额
+												investorsAllNum: "784014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.60",//最高价
+												investorsLowestPrice: "0.30",//最低价
+												investorsOpenPrice: "0.30",//开盘价
+												investorsTodayClosePrice: "0.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "844014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "1.60",//最高价
+												investorsLowestPrice: "1.30",//最低价
+												investorsOpenPrice: "1.30",//开盘价
+												investorsTodayClosePrice: "1.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "824014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.70",//最高价
+												investorsLowestPrice: "0.80",//最低价
+												investorsOpenPrice: "0.90",//开盘价
+												investorsTodayClosePrice: "1.0",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "834014.2",//日成交量
+												investorsClosePrice: "0.50",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.60",//最高价
+												investorsLowestPrice: "0.10",//最低价
+												investorsOpenPrice: "0.40",//开盘价
+												investorsTodayClosePrice: "0.30",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "824014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.70",//最高价
+												investorsLowestPrice: "0.60",//最低价
+												investorsOpenPrice: "0.40",//开盘价
+												investorsTodayClosePrice: "0.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.2",//日成交额
+												investorsAllNum: "854014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.60",//最高价
+												investorsLowestPrice: "0.30",//最低价
+												investorsOpenPrice: "0.30",//开盘价
+												investorsTodayClosePrice: "0.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "864014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "1.60",//最高价
+												investorsLowestPrice: "1.30",//最低价
+												investorsOpenPrice: "1.30",//开盘价
+												investorsTodayClosePrice: "1.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "874014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.70",//最高价
+												investorsLowestPrice: "0.80",//最低价
+												investorsOpenPrice: "0.90",//开盘价
+												investorsTodayClosePrice: "1.0",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "834014.2",//日成交量
+												investorsClosePrice: "0.50",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.60",//最高价
+												investorsLowestPrice: "0.10",//最低价
+												investorsOpenPrice: "0.40",//开盘价
+												investorsTodayClosePrice: "0.30",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+										{
+												investorsAllMoney: "265208.42",//日成交额
+												investorsAllNum: "854014.2",//日成交量
+												investorsClosePrice: "0.30",//昨日收盘价
+												investorsCode: 800001,//发行人代码
+												investorsDate: "2016-12-13",//日期
+												investorsHighestPrice: "0.70",//最高价
+												investorsLowestPrice: "0.60",//最低价
+												investorsOpenPrice: "0.40",//开盘价
+												investorsTodayClosePrice: "0.60",//今日收盘价
+												uplow: "0.30",//涨跌幅
+												uplowPrice: "100.00%"//涨跌百分比
+										},
+								],  //日k数据
+								buyAndSellerList:[], // 明细
+								data:[
+										[
+												"2007-05-24",
+												0.84,
+												0.65,
+												1.56,
+												5.52,
+												24000
+										],
+										[
+												"2007-05-24",
+												1.84,
+												1.65,
+												1.66,
+												3.52,
+												24000
+										],
+								],
+						}
+				},
+				mounted(){
+        		this.token = localStorage.getItem('userName');
+			localStorage.setItem('code',this.$route.query.code);
+
+						var arrAll = this.tInvestHisList;
+						let arr=[];
+						let arr2=[];
+						let arr3=[];
+						arrAll.forEach(function (item,index) {
+								console.log(item);
+								for (let i in item) {
+										arr2.push(item[i])
+								}
+								console.log(arr2);
+								for (var i in arr2){
+										if(i==1|| i ==4 ){
+												arr3.push(arr2[i])
+										}else if(i ==5 ||i ==6 ||i ==7 ||i ==8 ){
+												arr3.unshift(arr2[i])
+										}
+								}
+								arr.push(arr3);
+								arr3=[];
+								arr2=[]
+						});
+						console.log(arr);
+						this.data = arr;
+						this.getJSON1();
+
+
+				},
+				methods:{
+        		//getzx是否加自选
+						getzxStatus(){
+								this.$axios.post(url+'/api/userAttention/findUserAttention',this.$qs.stringify({
+										token:this.token,
+										userId:this.investors.investorsUserId,
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data){
+
+										}
+								})
+						},
+        		//加自选
+						jiazx(){
+								this.$axios.post(url+'/api/userAttention/addUserAttention',this.$qs.stringify({
+										token:this.token,
+										attentionUserId:this.investors.investorsUserId,
+										attentionStatus: 1 ,      //0:取消关注、1关注、
+								})).then((res) => {
+										console.log(res.data);
+								})
+						},
+        		// 星光榜
+						xgbClick(img,name,id){
+								this.$router.push({
+										path: '/xgph',
+										query: {
+												imgUrl:img,
+												name:name,
+												id:id,
+										}
+								})
+						},
+						back(){
+								this.$router.go(-1);
+						},
+						tabClick(index){
+								this.currentIndex =index
+						},
+						handleClick(tab, event) {
+								// console.log(tab, event);
+						},
+						tabClick1(index){
+								this.i =index
+						},
+						getJSON1(){
+								this.$axios.post(url+'/miao/publishInformation.do',this.$qs.stringify({
+										token:this.token,
+										pcode:localStorage.getItem('code'),
+								})).then((res) => {
+										this.drawLine();
+										console.log(res.data);
+										this.object = res.data.OBJECT;
+										this.baseInfo = res.data.OBJECT.baseInformation; //行情
+										console.log(this.baseInfo);
+										this.buyList = res.data.OBJECT.buyFiverList;  //买5
+										this.sellList = res.data.OBJECT.sellFilverList;  //卖5
+										this.investors = res.data.OBJECT.investors;   //发行人信息
+										this.buyAndSellerList = res.data.OBJECT.buyAndSellerList; //买卖明细
+										this.tInvestHisList = res.data.OBJECT.tInvestHisList;  // 日k数据
+										if(res.data.OBJECT.tInvestHisList.length > 0){
+												var arrAll = res.data.OBJECT.tInvestHisList;
+												let arr=[];
+												let arr2=[];
+												arrAll.forEach(function (item,index) {
+														console.log(item);
+														for (let i in item) {
+																arr2.push(item[i])
+														}
+														arr.push(arr2);
+														arr2=[]
+												});
+												console.log(arr)
+										}
+
+										this.minitePriceList = res.data.OBJECT.minitePriceList;  //分时数据
+										this.getzxStatus(res.data.OBJECT.investors.investorsUserId);
+								}).catch((err) => {
+										console.log(err)
+								})
+						},
+						splitData(rawData) {
+								console.log(rawData);
+								var categoryData = [];
+								var values = [];
+								var volumes = [];
+								for (var i = 0; i < rawData.length; i++) {
+										categoryData.push(rawData[i].splice(5, 1)[0]);
+										values.push(rawData[i]);
+										console.log(rawData[i]);
+										volumes.push([i, rawData[i][4], rawData[i][0] > rawData[i][1] ? 1 : -1]);
+								}
+								console.log(volumes)
+								return {
+										categoryData: categoryData,
+										values: values,
+										volumes: volumes
+								};
+						},
+
+						calculateMA(dayCount, data) {
+								var result = [];
+								for (var i = 0, len = data.values.length; i < len; i++) {
+										if (i < dayCount) {
+												result.push('-');
+												continue;
+										}
+										var sum = 0;
+										for (var j = 0; j < dayCount; j++) {
+												sum += data.values[i - j][1];
+										}
+										result.push(+(sum / dayCount).toFixed(3));
+								}
+								console.log(result)
+								return result;
+						},
+						//k线绘制
+						drawLine(){
+								let upColor = '#00da3c';
+								let downColor = '#ec0000';
+								let data = this.splitData(this.data);
+								// 基于准备好的dom，初始化echarts实例
+								let myChart = this.$echarts.init(document.getElementById('myChart'))
+								// 绘制图表
+								myChart.setOption({
+										backgroundColor: '#fff',
+										animation: true,
+										tooltip: {
+												trigger: 'axis',
+												axisPointer: {
+														type: 'cross'
+												},
+												backgroundColor: '#fff',
+												borderWidth: 1,
+												borderColor: '#eee',
+												triggerOn:'mousemove|click',
+												textStyle: {    //提示框文字
+														color: '#333',
+														fontSize:12,
+												},
+												position: [-3,-49],
+												extraCssText: 'height:.3rpx;line-height:.3rem;width: 147%;overflow: hidden;',
+												formatter: function (params) {
+														console.log(params);
+														return [
+																'<span>'+'最高:<i>' + params[0].data[1]+'</i></span>',
+																'<span>'+'最低:<i>' + params[0].data[2]+'</i></span>',
+																'<span>'+'今开:<i>' + params[0].data[3]+'</i></span>',
+																'<span>'+'今收: <i>' + params[0].data[4]+'</i></span>',
+														].join('');
+												},
+										},
+										axisPointer: {
+												link: {xAxisIndex: 'all'},
+												type:'line',
+												label: {
+														backgroundColor: '#777'
+												}
+										},
+										//工具栏
+										toolbox: {
+												show:false,
+										},
+										visualMap: {
+												min: 0,
+												max: 10,
+												// 两个手柄对应的数值是 4 和 15
+												range: [4, 12],
+												show: false,
+												seriesIndex: 5,
+												dimension: 2,
+												pieces: [{
+														value: 1,
+														color: downColor
+												}, {
+														value: -1,
+														color: upColor
+												}]
+										},
+										grid: [
+												// 上方k线图表
+												{
+														top: 0,
+														left: 0,
+														right: 0,
+														height: 180,
+														zlevel: 999,
+														borderColor:'#ccc',
+														// borderWidth:1
+												},
+												// 下方柱状图表
+												{
+														left: 0,
+														right: 0,
+														height: 40,
+														// top: 180,
+														bottom:0,
+														zlevel: 999,
+														borderColor:'#ccc',
+														// borderWidth:1
+												}
+										],
+										xAxis: [
+												//上方图表x轴设置
+												{
+														// name: '时间轴',
+														type: 'category',
+														position: 'bottom',
+														griIndex: 0,
+														scale: true,
+														boundaryGap: true,
+														splitLine: {
+																show: true,
+																interval: 3,
+																lineStyle: {
+																		color: ['#ccc']
+																}
+														},
+														axisLine: {
+																show: true,
+																lineStyle: {
+																		color: "#b5b7c2",
+																		width: 1
+																}
+														},
+														axisLabel: {
+																show: false
+														},
+														axisTick: {
+																show: false,
+																alignWithLabel: true
+														},
+														axisPointer: {
+																label: {
+																		show: false
+																}
+														}
+												},//xia方图表x轴设置
+												{
+														type: 'category',
+														gridIndex: 1,
+														position: 'bottom',
+														data: data.categoryData,
+														scale: true,
+														boundaryGap : true,
+														axisLine: {onZero: true},
+														axisTick: {show: false},
+														splitLine: {
+																show: true,
+																interval: 3,
+																lineStyle: {
+																		color: ['#ccc']
+																}
+														},
+														axisLabel: {show: false},
+														splitNumber: 30,
+														min: 'dataMin',
+														max: 'dataMax'
+												}
+										],
+										yAxis: [
+												// 上方图表y轴设置
+												{
+														// name: '报价',
+														scale: true,
+														position: "right",
+														type: 'value',
+														gridIndex: 0,
+														splitNumber: 5,
+														boundaryGap: true,
+														splitLine: {
+																show: true,
+																interval: 3,
+																lineStyle: {
+																		color: ['#ccc']
+																}
+														},
+														axisTick: {
+																show: true,
+																alignWithLabel: true
+														},
+														axisLine: {
+																show: true,
+																lineStyle: {
+																		color: '#ccc'
+																}
+														}
+												},
+												{
+														scale: true,
+														gridIndex: 1,
+														splitNumber: 1,
+														axisLabel: {show: false},
+														axisLine: {show: false},
+														axisTick: {show: false},
+														splitLine: {show: false}
+												}
+										],
+										// 缩放组件，用的inside模式，即动作在表本身发生会导致缩放触发，不会有额外的缩放条
+										dataZoom: [
+												{
+														type: 'inside',
+														xAxisIndex: [0, 1],
+														start: 0,
+														end: 80,
+														// filterMode: 'filter'
+												},
+												{
+														show: false,
+														xAxisIndex: [0, 1],
+														type: 'slider',
+														// top: '70%',
+														start: 0,
+														end: 50,
+														// filterMode: 'empty'
+												}
+										],
+										// 走势图数据
+										series: [
+												// 上方图表数据（k线）
+												{
+														name: 'Dow-Jones index',
+														type: 'candlestick',
+														data: data.values,
+														itemStyle: {
+																normal: {
+																		color: upColor,
+																		color0: downColor,
+																		borderColor: null,
+																		borderColor0: null
+																}
+														},
+														// tooltip: {
+														// 		formatter(param) {
+														// 				// return [
+														// 				// 		'Open: ' + param.data[0] + '',
+														// 				// 		'Close: ' + param.data[1] + '',
+														// 				// 		'Lowest: ' + param.data[2] + '',
+														// 				// 		'Highest: ' + param.data[3] + '<br/>'
+														// 				// ].join('');
+														// 		}
+														// }
+												},
+												{
+														name: 'MA5',
+														type: 'line',
+														data: this.calculateMA(1, data),
+														smooth: true,
+														lineStyle: {
+																normal: {opacity: 0.5}
+														}
+												},
+												{
+														name: 'MA10',
+														type: 'line',
+														data: this.calculateMA(10, data),
+														smooth: true,
+														lineStyle: {
+																normal: {opacity: 0.5}
+														}
+												},
+												{
+														name: 'MA20',
+														type: 'line',
+														data: this.calculateMA(20, data),
+														smooth: true,
+														lineStyle: {
+																normal: {opacity: 0.5}
+														}
+												},
+												{
+														name: 'MA30',
+														type: 'line',
+														data: this.calculateMA(30, data),
+														smooth: true,
+														lineStyle: {
+																normal: {opacity: 0.5}
+														}
+												},
+												{
+														name: 'Volume',
+														type: 'bar',
+														xAxisIndex: 1,
+														yAxisIndex: 1,
+														data: data.volumes
+												}
+										]
+								}, true);
+
+								window.onresize = myChart.resize;
+								myChart.dispatchAction({
+										type: 'brush',
+										areas: [
+												{
+														brushType: 'lineX',
+														coordRange: ['2018-06-02', '2018-06-20'],
+														xAxisIndex: 0
+												}
+										]
+								});
+						},
+
+				},
+				components:{
+        		Head,
+						DongTai,
+						Introduction,
+						timeCom,
+						Journalism,
+				}
+    }
+</script>
+<style>
+		/*#myChart > div:nth-child(2){*/
+				/*height: .3rem!important;*/
+				/*overflow: hidden !important;*/
+
+		/*}*/
+		#myChart > div:nth-child(2) span{
+				margin-right: 8%;
+		}
+		#myChart > div:nth-child(2) span i{color: #ff5558;}
+</style>
+
+<style scoped lang="scss">
+		.fade{
+				padding: 0 .15rem;
+				border-bottom: 1px solid #ddd;
+
+				.el-tabs__header{
+						margin: 0 0 .15rem;
+				}
+				.el-tabs__item{
+						padding: 0 .2rem;
+						height: auto;
+						line-height: .3rem;
+				}
+				.tabTime{
+						border-bottom: 1px solid #ddd;
+						border-top: 1px solid #ddd;
+						height: .36rem;
+						line-height: .36rem;
+						display: flex;
+						justify-content: space-between;
+						.active{
+								padding-bottom: 2px;
+								border-bottom: 1px solid #FF5558;
+								color: #FF5558;
+						}
+				}
+				.confirm{
+						height: 2.5rem;
+						margin-top: .1rem;
+						display: flex;
+						justify-content: space-between;
+				}
+				.temp_content_right{
+						.minxi{
+								li{
+										font-size: .10rem;
+										display: flex;
+										justify-content: space-around;
+								}
+						}
+						.sell{
+								height: .8rem;
+						}
+						.buy li ,.sell li{
+								font-size: .10rem;
+								display: flex;
+								justify-content: space-between;
+								span:not(:nth-child(1)){
+										width: 33%;
+										font-size: .10rem;
+								}
+								span:nth-child(3){
+										text-align: right;
+								}
+						}
+						flex-grow: 1;
+						padding: 0 0rem 0 .1rem;
+				}
+				.el-tabs__item:hover{
+						color: #ff5558;
+				}
+				.el-tabs__active-bar{
+						background-color: #ff5558;
+				}
+		}
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: .5rem;
+				height: auto;
+		}
+		$color:#ff5558;
+		.shuju{
+				ul{
+						padding: .1rem .15rem;
+						display: flex;
+						flex-wrap: wrap;
+						justify-content: space-between;
+						li{
+								min-width: 30%;
+								line-height: .21rem;
+								font-size: .12rem;
+
+						}
+						li:not(:first-child){
+								span:nth-child(1){
+										color: #999;
+								}
+						}
+						li:first-child{
+								span{
+										font-size: .2rem;
+								}
+						}
+						.col{
+								color: #FF5558;
+						}
+						.cor{
+								color: #00BB37;
+						}
+				}
+		}
+
+		.nav{
+				text-align: center;
+				border-bottom: 1px solid #ddd;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				height: .36rem;
+				p{
+						display: block;
+						padding: 8px 0;
+						&.active{
+								border-bottom: 2px solid $color;
+								color: $color;
+						}
+				}
+		}
+		footer{
+				position: fixed;
+				z-index: 22;
+				bottom: 0;
+				height: .5rem;
+				width: 100%;
+				ul{
+						display: flex;
+						align-items: center;
+						text-align: center;
+				}
+				li{
+						width: 34%;
+						color: $color;
+						.iconfont{
+								font-size: .28rem;
+						}
+				}
+		}
+</style>

@@ -1,0 +1,301 @@
+<template>
+		<div class="wbtm">
+				<div class="issuser" v-for="(item,index) in datalist">
+						<div class="left_img">
+								<!--<img src="./../../assets/img/home/home1.png" alt="">-->
+								<img :src="'http://xsk.quanxiankaibo.com'+item.avatar" alt=""
+										 @click="Homepage(item.uid,item.avatar,item.userName)">
+						</div>
+						<div class="right_content">
+								<div class="right_title">
+										<span class="right_title_name"><span>{{item.userName}}</span><img src="./../../assets/img/tip/fans@2x.png" alt=""></span>
+										<span class="right_time">{{item.grTime}}</span>
+								</div>
+								<router-link :to="{path: '/wdynamic', query: {wid:item.id, }}" tag="div"
+														 class="right_matter" @click="dynamic()" >
+										<div class="right_matter_content">
+												{{item.grText}}
+										</div>
+										<div class="right_matter_img">
+												<img :src="'http://xsk.quanxiankaibo.com'+item1.path" alt=""  v-for="(item1,indexa) in item.aList">
+										</div>
+								</router-link>
+								<div class="right_bottom">
+										<!--如果是发行人是星 用户是心-->
+										<!--心-->
+										<div v-if="true" class="right_start1" @click="giveLikeTap(index)">
+												<img v-if="item.isFlag=='true'" src="./../../assets/img/news/like_selected@2x.png" alt="">
+												<img v-if="item.isFlag=='false'"  src="./../../assets/img/news/like_normal@2x.png" alt="">
+												<span>{{item.pListNum}}</span>
+										</div>
+										<!--星-->
+										<div v-if="false" class="right_start" >
+												<img src="./../../assets/img/home/star@2x.png" alt="">
+												<span>2468 <i>(6)</i></span>
+										</div>
+										<!--评论-->
+										<router-link :to="{path: '/wdynamic', query: {wid:item.id, }}" tag="div" class="right_message" >
+												<img src="./../../assets/img/news/comment@2x.png" alt="">
+												<span>{{item.cListNum}}</span>
+										</router-link>
+										<div class="lerse" @click="wdel(index)">
+												<img src="./../../assets/img/news/deleteNews@2x.png" alt="">
+										</div>
+								</div>
+						</div>
+				</div>
+		</div>
+</template>
+<script>
+		import { MessageBox } from 'mint-ui';
+		import { Toast } from 'mint-ui';
+		export default {
+				name: "issuser",
+				props:['datalist','whide'],
+				data(){
+						return{
+								flag:false,
+								arrLike:[],
+								arrLike1:[],
+								xiabiao:""
+						}
+				},
+				mounted(){
+						setTimeout(()=>{
+								for(var item of this.datalist){
+										this.arrLike.push(false);
+										this.arrLike1.push(true)
+								}
+						},800)
+				},
+				methods:{
+						//删除
+						wdel(index){
+								MessageBox.confirm('确定删除这条动态吗?',"").then(action => {
+										var token=sessionStorage.getItem("userName");
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: url+"/sxz/api/delRecord",
+												data: this.$qs.stringify({
+														token:token,
+														id:this.datalist[index].id
+												})
+										})
+												.then(res=> {
+														if(res.data.status==0){
+																this.datalist.splice(index,1)
+														}else{
+																//否则提示
+																var msga=res.data.message;
+																Toast({
+																		message:msga,
+																});
+														}
+												})
+												.catch(err=>{
+														console.log(err);
+												});
+								}, action => {
+										console.log("取消")
+								})
+						},
+						//点赞
+						giveLikeTap(index){
+								//根据后台给的是否点赞判断
+								var isFlag=this.datalist[index].isFlag
+								var pList=this.datalist[index].pList
+								var token=sessionStorage.getItem("userName");
+								//isFlag=='false' 未点赞 发送isLove=1 要点赞
+								if(isFlag=='false'){
+										//数据
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: url+"/sxz/api/savePraise",
+												data: this.$qs.stringify({
+														token:token,
+														rid:this.datalist[index].id,
+														isLove:1
+												})
+										})
+												.then(res=> {
+														if(res.data.status==0){
+																console.log("点赞111")
+																this.datalist[index].isFlag='true'
+																this.datalist[index].pList.length=this.datalist[index].pList.length+1
+																console.log(this.datalist)
+														}else{
+																var msga=res.data.message
+																Toast({
+																		message:msga,
+																});
+														}
+												})
+												.catch(err=>{
+														console.log(err);
+												});
+										//isFlag=='true' 点赞 发送isLove=0 取消点赞
+								}else if(isFlag=='true'){
+										//数据
+										this.$axios({
+												headers:{'Content-Type':'application/x-www-form-urlencoded'},
+												method: "POST",
+												url: url+"/sxz/api/savePraise",
+												data: this.$qs.stringify({
+														token:token,
+														rid:this.datalist[index].id,
+														isLove:0
+												})
+										})
+												.then(res=> {
+														console.log(res)
+														if(res.data.status==0){
+																console.log("取消点赞22")
+																this.datalist[index].isFlag='false'
+																this.datalist[index].pList.length=this.datalist[index].pList.length-1
+																console.log(this.datalist)
+												
+														}else{
+																var msga=res.data.message
+																Toast({
+																		message:msga,
+																});
+														}
+												})
+												.catch(err=>{
+														console.log(err);
+												});
+					     
+								}
+						},
+						//送星
+
+
+						//		点击进人主页
+						Homepage(id,ater,name){
+								this.$router.push({
+										path:'/geren',
+										query: {
+												id:id,
+												userImg:ater,
+												name:name,
+										}
+								})
+						}
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		$color:#ff5558;
+		.issuser{
+				display: flex;
+				justify-content:center;
+				align-items: flex-start;
+				padding:.15rem .2rem .15rem .1rem;
+				border-bottom: 1px solid #ddd;
+				box-sizing: border-box;
+				.left_img{
+						width:.6rem;
+						height: .6rem;
+						border-radius:50% ;
+						margin-right: .1rem;
+						overflow: hidden;
+						img{
+								max-width: 100%;
+								min-height: 100%;
+						}
+				}
+				.right_content{
+						width: 2.6rem;
+						padding-left: .1rem;
+    
+						.right_title{
+								.right_title_name{
+										font-size:.18rem;
+										color:$color;
+										font-weight:bold;
+										height: .26rem;
+										/*>span{
+       		   width: 1.3rem;
+       		   height: .26rem;
+             display: inline-block;
+             border:1px solid red;
+       	}*/
+										img{
+												width:.2rem;
+												display: inline-block;
+												vertical-align: top;
+										}
+								}
+								.right_time{
+										float:right;
+										font-size:.14rem;
+										color:#999;
+								}
+						}
+						.right_matter{
+								.right_matter_content{
+										padding:.1rem 0;
+										line-height:1.4;
+								}
+								.right_matter_img{
+										width: 2.6rem;
+        	
+										img{
+												width: .84rem;
+												height: .84rem;
+												margin:0 1px;
+												margin-bottom: .02rem;
+										}
+								}
+						}
+						.right_bottom{
+								width: 2.6rem;
+								height:.5rem;
+								line-height:.5rem;
+								>div{
+										display: inline-block;
+								}
+								.right_start{
+										img{width:.18rem;}
+										span{
+												color:#9A29FE;
+										}
+								}
+								.right_start1{
+										img{width:.24rem;height: .24rem;}
+								}
+								.right_message{
+										margin-left:.2rem;
+										img{width:.24rem;}
+										span{
+												color:#999;
+										}
+								}
+								.lerse{
+										float:right;
+										img{
+												height:.3rem;
+										}
+								}
+						}
+				}
+		}
+		.wbtm{
+				margin-bottom: -.1rem;
+		}
+</style>
+<style>
+		.mint-msgbox-confirm{
+				color:#FF5558
+		}
+		.mint-msgbox-cancel{
+				color:#AAAAAA
+		
+		}
+		.mint-msgbox-message {
+				color: #333;
+		}
+</style>

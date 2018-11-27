@@ -1,0 +1,211 @@
+<template>
+    <div class="home_page">
+        <My-head></My-head>
+        <div id="mescroll" class="mescroll">
+              <!--轮播banner-->
+            <swiper :options="swiperOption" class="banner">
+                <swiper-slide>
+                    <a href=""><img src="../../assets/img/home/banner.png" alt=""></a>
+                </swiper-slide>
+                <swiper-slide>
+                  <a href=""><img src="../../assets/img/home/banner.png" alt=""></a>
+                </swiper-slide>
+                <div class="swiper-pagination" slot="pagination"></div>
+            </swiper>
+            <swiper :options="swiperOption1" class="list">
+                <swiper-slide>
+                    <img src="../../assets/img/home/notice@2x.png" alt="">
+                    <div class="list-font"><span>新闻 | </span>苍老师表示2018年进军中国市场的决心很坚定！ </div>
+                </swiper-slide>
+                <swiper-slide>
+                    <img src="../../assets/img/home/notice@2x.png" alt="">
+                    <div class="list-font"><span>咨询 | </span>发的是客服回答考官 打发打发 </div>
+                </swiper-slide>
+            </swiper>
+
+              <div class="content">
+                  <div>
+                      <Home-s></Home-s>
+                  </div>
+                  <!--投票上新-->
+                  <div>
+                      <div class="tilt tilt1">
+                          <span>投票上新</span>
+                          <div class="tilt_time">
+                              <a href="">全部</a><i class="el-icon-arrow-right"></i>
+                          </div>
+                      </div>
+                      <Tou-new></Tou-new>
+                  </div>
+                  <!--星讯-->
+                  <div>
+                      <div class="tilt tilt1">
+                          <span>星讯</span>
+                      </div>
+                      <x-list></x-list>
+                  </div>
+              </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import HeadNav from "@/components/public/hadeNav"
+    import HomeS from "@/components/public/homeS"
+    import Tpsx from "@/components/index/tpsx"
+    import Xlist from "@/components/index/Xlist"
+    import MeScroll from "../../../static/mescroll/mescroll.min"
+    export default {
+        name: "index",
+        data(){
+          return{
+            num:"",
+            swiperOption:{
+              notNextTick: true,
+              pagination: '.swiper-pagination',
+              paginationClickable: true,
+              autoplay: 2500,
+              autoplayDisableOnInteraction: false,
+              loop: false,
+              coverflow: {
+                rotate: 30,
+                stretch: 10,
+                depth: 60,
+                modifier: 2,
+                slideShadows: true
+              },
+              onTransitionStart(swiper){
+                  // console.log(swiper.realIndex)
+                  this.num =  swiper.realIndex
+                },
+
+            },
+            swiperOption1:{
+              pagination: '.swiper-pagination',
+              paginationClickable: true,
+              autoplay: 2500,
+              direction:'vertical',
+              autoplayDisableOnInteraction: false,
+              loop: true,
+              coverflow: {
+                rotate: 30,
+                stretch: 10,
+                depth: 60,
+                modifier: 2,
+                slideShadows: true
+              }
+            }
+          }
+        },
+        mounted (){
+
+            this.$axios.get('/api')
+              .then(function(data){
+              console.log(data)
+            });
+
+            var mescroll = new MeScroll("mescroll", { //第一个参数"mescroll"对应上面布局结构div的id
+              //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
+              //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback
+              up: {
+                callback: this.upCallback , //上拉加载的回调
+                isBounce: false ,//如果您的项目是在iOS的微信,QQ,Safari等浏览器访问的,建议配置此项.解析(必读)
+                toTop: {
+                  //配置回到顶部按钮
+                  src: "../res/img/mescroll-totop.png" ,//默认滚动到1000px显示,可配置offset修改
+                  offset : 100
+                },
+              },
+              down: {
+                callback: this.downCallback, //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
+              },
+            });
+        },
+        methods:{
+            downCallback(){
+
+            },
+            upCallback(){
+
+            }
+        },
+        components:{
+            "My-head":HeadNav,
+            "Home-s":HomeS,
+            "Tou-new":Tpsx,
+            "x-list":Xlist,
+        }
+    }
+</script>
+
+<style scoped lang="scss">
+  /*mescroll滚动的区域*/
+  .mescroll {
+    position: fixed;
+    top: .5rem;
+    bottom: .5rem;
+    height: auto;
+  }
+  .home_page{
+    display: flex;
+    flex-direction: column;
+  }
+  .banner img{
+    width: 100%;
+    display: block;
+  }
+  .content{
+    >div{
+      border-bottom: 5px solid #eee;
+      padding: 0 .1rem;
+    }
+  }
+  .list{
+    height: .35rem;
+    border-bottom: 5px solid #eee;
+  }
+  .list .swiper-slide{
+    display: flex;
+    align-items: center;
+    padding: 0 .1rem;
+  }
+  .list img{
+    width: .15rem ;
+    height: .15rem;
+  }
+  .list-font{
+    font-size: .14rem;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .tilt{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    >span{
+      font-size: .16rem;
+      border-left: 2px solid #FF5558;
+      padding-left: .1rem;
+    }
+  }
+  .tilt1{
+    padding: .2rem 0;
+    a{
+      color: #999;
+      text-decoration: none;
+    }
+  }
+  .tilt_time{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    p{
+      color: #FF5558;
+    }
+    img{
+      width: .3rem;
+      height: .3rem;
+    }
+  }
+</style>

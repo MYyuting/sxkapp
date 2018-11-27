@@ -1,0 +1,116 @@
+<template>
+    <div class="business">
+        <div class="nav">
+            <div class="img" @click="Rankings"><img src="../../assets/img/topBar/paiHangBang@2x.png" alt=""></div>
+						<div class="quotat_tab">
+								<router-link :to="item.url" v-model="debtLibraryTabIndex"   class="tab-item"  v-for="(item,index) in  tabList1" tag="div" :key="index">
+									<span class="tab-link">{{item.til}}</span>
+								</router-link>
+						</div>
+						<div class="img" @click="xiaoXi"><img src="../../assets/img/topBar/icon_message@2x.png"></div>
+				</div>
+				<router-view></router-view>
+		</div>
+</template>
+
+<script>
+		// import MeScroll from 'mescroll.js'
+		// import dynamicTemp from './../public/dynamic_temp'//买入
+		// import sellTemp from './../public/sell_temp'//卖出
+		// import positionTemp from './../public/position_temp'//持仓
+		// import woRder from './atorder'//订单
+		export default {
+				name: "business",
+				data(){
+						return {
+								tabList:['买入','卖出','持仓','订单'],
+								tabList1:[
+										{
+												til:"买入",
+												url:"/business/wbuy"
+										},
+										{
+												til:"卖出",
+												url:"/business/wmai"
+										},
+										{
+												til:"持仓",
+												url:"/business/chic"
+										},
+										{
+												til:"订单",
+												url:"/business/wqorder"
+										},
+								],
+								debtLibraryTabIndex: 0,
+								currentIndex: 0,
+								mescrollArr: new Array(4),
+								newsList0: [],
+								newsList1: [],
+								newsList2: [],
+								newsList3: [],
+						}
+				},
+				mounted(){
+
+				},
+				methods:{
+						Rankings(){
+								this.$router.push("/paihangb")
+						},
+						xiaoXi(){
+								this.$router.push("/news")
+						},
+
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+
+		$color:#ff5558;
+		.business{
+				height: 100%;
+				box-sizing: border-box;
+				.nav{
+						height: .5rem;
+						background: #ff5558;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						padding: 0 .1rem;
+						img{
+								width: .25rem;
+								height: .25rem;
+						}
+				}
+				.quotat_tab {
+						height: .4rem;
+						line-height: .4rem;
+						display: flex;
+						.tab-item {
+								width:.6rem;
+								text-align: center;
+								font-size: .14rem;
+								
+								
+						}
+						.active{
+								.tab-link{
+										color:rgba(255,255,255,1);
+								}
+						}
+				}
+		}
+		.tab-link {
+				display: inline-block;
+				height: .3rem;
+				line-height: .3rem;
+				color:rgba(255,255,255,0.5);
+		}
+		.router-link-active{
+				.tab-link{
+						color:rgba(255,255,255,1);
+				}
+		}
+</style>

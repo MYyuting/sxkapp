@@ -1,0 +1,34 @@
+<template>
+  <div class="issuser">
+      <div class="left_img">
+        <img :src="" alt="">
+      </div>
+      <div class="right_content">
+        <div class="right_title">
+          <span class="right_title_name">莫文蔚 <span class="fans">粉</span></span>
+          <span class="right_time">19:58</span>
+        </div>
+        <div class="right_matter"></div>
+        <div class="right_bottom">
+          <div class="right_start">
+            <img src="" alt="">
+            <span>2468 <i>(6)</i></span>
+          </div>
+          <div class="right_message">
+            <img src="" alt="">
+            <span>1420</span>
+          </div>
+        </div>
+      </div>
+  </div>
+</template>
+
+<script>
+    export default {
+        name: "issuser"
+    }
+</script>
+
+<style scoped>
+
+</style>

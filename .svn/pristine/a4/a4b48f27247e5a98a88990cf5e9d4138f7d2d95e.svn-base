@@ -1,0 +1,28 @@
+<template>
+		<!--当前订单-->
+  <div class="watchild">
+			<Mairu></Mairu>
+  </div>
+</template>
+
+<script>
+		import Mairu from './mairu_child'
+		export default {
+				name: "watchild",
+				data(){
+						return {
+
+						}
+				},
+				methods: {
+
+				},
+				components:{
+						Mairu
+				}
+}
+</script>
+
+<style scoped lang="scss">
+
+</style>

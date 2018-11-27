@@ -1,0 +1,96 @@
+<template>
+    <!--投票上新-->
+    <div class="Snew">
+				<div @click="newClick">
+						<img src="../../assets/img/home/home1.png" alt="">
+						<div>金钟国 <img src="../../assets/img/tip/fans@2x.png" alt=""></div>
+						<div class="text"><img class="img2" src="../../assets/img/home/star@2x.png" alt="">586301 </div>
+						<div class="top_img"><img src="../../assets/img/home/vote_theFirst@2x.png" alt=""></div>
+				</div>
+				<div>
+						<img src="../../assets/img/home/home1.png" alt="">
+						<div>金钟国 <img src="../../assets/img/tip/fans@2x.png" alt=""></div>
+						<div class="text"><img class="img2" src="../../assets/img/home/star@2x.png" alt="">586301 </div>
+						<div class="top_img"><span>2</span></div>
+				</div>
+				<div>
+						<img src="../../assets/img/home/home1.png" alt="">
+						<div>金钟国 <img src="../../assets/img/tip/fans@2x.png" alt=""></div>
+						<div class="text"><img class="img2" src="../../assets/img/home/star@2x.png" alt="">586301 </div>
+						<div class="top_img"><span>3</span></div>
+				</div>
+		</div>
+</template>
+
+<script>
+		export default {
+				name: "tpsx",
+				methods:{
+						newClick(){
+								this.$router.push("/toupiao")
+						}
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		.Snew{
+				display: flex;
+				justify-content: space-between;
+				>div{
+						border-radius: .06rem;
+						position: relative;
+						width: 1.1rem;
+						height: 1.2rem;
+						padding: .1rem 0;
+						/*border: 1px solid red;*/
+						text-align: center;
+						>img{
+								width: .6rem;
+								height: .6rem;
+								border-radius: 50%;
+								margin-bottom: .1rem;
+						}
+						div>img{
+								width: .2rem;
+								height: .2rem;
+						}
+						.img2{
+								width: .14rem;
+								height: .14rem;
+								vertical-align: middle;
+						}
+						.top_img img{
+								width: .3rem;
+								height: .3rem;
+								position: absolute;
+								top: -5px;
+								left: 2px;
+						}
+				}
+		}
+		.text{
+				font-size: .12rem;
+		}
+		.top_img{
+				position: absolute;
+				width: 43%;
+				height: .45rem;
+				top: -2px;
+				left: -2px;
+				/*border: 1px solid red;*/
+				background: url("../../assets/img/home/vote_corner@2x.png") no-repeat;
+				-webkit-background-size: 100% 100%;
+				background-size: 100% 100%;
+		}
+		.top_img span{
+				position: absolute;
+				left: 17%;
+				top: 10%;
+				font-size: .14rem;
+				color: #fff;
+				transform: rotateZ(-20deg);
+		}
+
+
+</style>

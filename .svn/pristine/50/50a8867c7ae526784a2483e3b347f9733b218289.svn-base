@@ -1,0 +1,24 @@
+<template>
+		<!--充值-->
+		<div class="recharge">
+				<Head></Head>
+		</div>
+</template>
+
+<script>
+  import Head from "@/components/mine/headMe"
+	export default {
+			name: "recharge",
+			methods:{
+
+			},
+			components:{
+				  "Head":Head
+			}
+
+	}
+</script>
+
+<style scoped>
+
+</style>

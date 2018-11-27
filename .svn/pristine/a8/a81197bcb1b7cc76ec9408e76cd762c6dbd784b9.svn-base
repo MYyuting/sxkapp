@@ -1,0 +1,26 @@
+<template>
+		<!--修改支付密码-->
+		<div class="zhifu">
+				<my-head :text="til"></my-head>
+
+		</div>
+</template>
+
+<script>
+	import Head from '@/components/mine/headMe'
+	export default {
+		name: "XGzfmm",
+	  data(){
+		  return{
+			  til:["修改支付密码"]
+		  }
+	  },
+	  components:{
+		  "my-head":Head
+	  }
+	}
+</script>
+
+<style scoped lang="scss">
+
+</style>

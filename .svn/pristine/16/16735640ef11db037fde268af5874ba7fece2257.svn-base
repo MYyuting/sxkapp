@@ -1,0 +1,242 @@
+<template>
+    <!--帮助-->
+		<div class="help">
+				<my-head :text="til"></my-head>
+				<div class="content">
+						<div class="rule">
+								<div>
+										<span class="iconfont icon-home_normal"></span>
+										交易规则
+								</div>
+								<div>
+										<span class="iconfont icon-rule_meeting"></span>
+										约见规则
+								</div>
+						</div>
+						<ul>
+								<li v-for="(item,index) in listArr">
+										<div class="list1" @click="showClick(index)">
+												<div>
+														<span :class="item.icon"></span>{{item.til}}
+												</div>
+												<div>
+														<i :class="item.flag ? 'el-icon-arrow-up':'el-icon-arrow-down'"></i>
+												</div>
+										</div>
+										<ul v-show="item.flag">
+												<li v-for="(item1,index) in item.list2" @click="list2Click(index)">
+														<i :class="index == ii? 'el-icon-arrow-down':'el-icon-arrow-right'"></i>{{item1.text}}
+														<div class="list2" v-show="index == ii">
+																{{item1.text2}}
+														</div>
+												</li>
+										</ul>
+								</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+    export default {
+        name: "Help",
+				data(){
+        		return{
+        				til:["帮助中心"],
+								listArr:[
+										{
+												til:"账户问题",
+												icon:"iconfont icon-Question_count",
+												flag:false,
+												list2:[
+														{
+																text:"邀请码是什么？我没有怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"为什么要填身份证实名认证？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"如何充值？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"忘记密码了怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+												]
+										},
+										{
+												til:"交易问题",
+												icon:"iconfont icon-Question_charge",
+												flag:false,
+												list2:[
+														{
+																text:"邀请码是什么？我没有怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"为什么要填身份证实名认证？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"如何充值？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"忘记密码了怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+												]
+										},
+										{
+												til:"约见问题",
+												icon:"iconfont icon-Question_meeting",
+												flag:false,
+												list2:[
+														{
+																text:"邀请码是什么？我没有怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"为什么要填身份证实名认证？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"如何充值？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"忘记密码了怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+												]
+										},
+										{
+												til:"使用问题",
+												icon:"iconfont icon-Question_using",
+												flag:false,
+												list2:[
+														{
+																text:"邀请码是什么？我没有怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"为什么要填身份证实名认证？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"如何充值？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+														{
+																text:"忘记密码了怎么办？",
+																text2:'邀请码是给用户推荐朋友发送的，注册时也可以不填，不影响用户注册和使用',
+														},
+												]
+										}
+								],
+								ii:-1
+						}
+				},
+				methods:{
+						showClick(index){
+								this.ii =-1;
+								this.listArr[index].flag= !this.listArr[index].flag;
+						},
+						list2Click(index){
+								this.ii =index
+						}
+				},
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.rule{
+				height: .8rem;
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 4px solid #F3F3F3;
+				align-items: center;
+				div{
+						width: 50%;
+						text-align: center;
+						position: relative;
+						span{
+								font-size: .3rem;
+								vertical-align: middle;
+								color: #FF5558;
+						}
+						&::after{
+								position: absolute;
+								content: "";
+								height: .4rem;
+								right: 0;
+								border-left: 1px solid #eee;
+						}
+				}
+
+				div+div{
+						span{
+								color: #009fe8;
+						}
+				}
+		}
+		.content>ul>li{
+				.list1{
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						height: .6rem;
+				}
+				ul{
+						width: 95%;
+						margin: auto;
+						li{
+								line-height: .4rem;
+						}
+						i{
+								margin-right: .06rem;
+								color: #999;
+						}
+				}
+				.list2{
+						margin-left: .2rem;
+						color: #999;
+				}
+				padding: 0 .15rem;
+				border-bottom: 4px solid #eee;
+				.iconfont{
+						font-size: .3rem;
+						vertical-align: middle;
+						margin-right: 5px;
+				}
+				&:nth-child(1){
+						.iconfont{
+								color: #FF5558;
+						}
+				}
+				&:nth-child(2){
+						.iconfont{
+								color: #f5a623;
+						}
+				}
+				&:nth-child(3){
+						.iconfont{
+								color: #009fe8;
+						}
+				}
+				&:nth-child(4){
+						.iconfont{
+								color: #F15BE5;
+						}
+				}
+		}
+
+
+</style>

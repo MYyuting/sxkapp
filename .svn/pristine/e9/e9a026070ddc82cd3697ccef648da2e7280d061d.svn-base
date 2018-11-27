@@ -1,0 +1,382 @@
+<template>
+  <div class="dynamic">
+    <homes v-if="flag" :buyList="buyList"></homes>
+    <div class="quotat_tab">
+      <div class="tab-item" v-for="(item,index) in tabList" v-model="debtLibraryTabIndex"
+           v-bind:class="{active:(currentIndex == index)}" @click="onItemClick(index)">
+        <span class="tab-link">{{item}}</span>
+      </div>
+    </div>
+    <!--自选和关注-->
+    <div id="mescroll0" class="mescroll" v-show="currentIndex==0">
+      <div id="dataList0">
+        <issuser :datalist="newsList0"></issuser>
+      </div>
+    </div>
+    <!--发行人-->
+    <div id="mescroll1" class="mescroll" v-show="currentIndex==1">
+      <div id="dataList1">
+        <issuser :datalist="newsList1"></issuser>
+      </div>
+    </div>
+    <!--社区-->
+    <div id="mescroll2" class="mescroll" v-show="currentIndex==2">
+      <div id="dataList2">
+        <issuser :datalist="newsList2"></issuser>
+      </div>
+    </div>
+		<!--回复-->
+    <div id="mescroll3" class="mescroll" v-show="currentIndex==3">
+      <div id="dataList2">
+        <issuser :datalist="newsList3"></issuser>
+      </div>
+    </div>
+			<!--添加动态-->
+			
+		<router-link  v-show="currentIndex!=3"  tag="div" class="add_dynamic beijing" to="/addynamic"><img src="../../assets/img/FaXingRen/addNewsOrService@2x.png" alt="" /></router-link>
+		<div class="wadd" v-show="currentIndex==3" >
+	    <div v-if="whide==0" @click="waddGray" tag="div" class=" add_dynamic closePop beijing" ><img src="../../assets/img/FaXingRen/closeAddNewsOrService@2x.png" alt="" /></div>
+			<div v-if="whide==1" @click="waddGray" tag="div" class="add_dynamic beijing " ><img src="../../assets/img/FaXingRen/addNewsOrService@2x.png" alt="" /></div>
+		  <router-link  v-if="whide==0" tag="div" class="add_dynamic beijing1" to="/addynamic"><img src="../../assets/img/FaXingRen/addNews@2x.png" alt="" /></router-link>
+		  <router-link  v-if="whide==0" tag="div" class="add_dynamic beijing2" to="/wtimeshop"><img src="../../assets/img/FaXingRen/addService@2x.png" alt="" /></router-link>
+		</div>
+
+  </div>
+</template>
+
+<script>
+  import homes from './../public/homeS'
+  import MeScroll from 'mescroll.js'
+  import issuser from './../public/issuser'
+  import community from './../public/community'
+	import { Toast } from 'mint-ui';
+  
+  export default {
+    name: "dynamic",
+    data() {
+      return {
+        tabList: ['自选和关注', '发行人', '社区',"回复"],
+        debtLibraryTabIndex: 0,
+        currentIndex: 0,
+        mescrollArr: new Array(4),
+        newsList0: [],
+        newsList1: [],
+        newsList2: [],
+        newsList3: [],  
+        mescroll: '',
+        whide:1,
+					flag:false,
+					token:'',
+					buyList:[],
+      }
+    },
+    mounted() {
+      //初始化首页
+				this.token = sessionStorage.getItem('userName');
+      this.mescrollArr[0] = this.initMescroll("mescroll0", "dataList0");
+				this.shenJson();
+    },
+    methods: {
+    	//	申购接口
+				shenJson(){
+						this.$axios.post(url+'/api/investors/findBuyInvestors',this.$qs.stringify({
+								token:this.token,
+						})).then((res) => {
+								console.log(res.data);
+								this.buyList = res.data.buyList;
+								this.flag =true
+						})
+				},
+    	waddGray(){
+      	this.whide=!this.whide
+      },
+      onItemClick(index) {
+        if (this.currentIndex != index) {
+          this.currentIndex = index;
+          if (this.mescrollArr[index] == null) {
+            this.mescrollArr[index] = this.initMescroll("mescroll" + index, "dataList" + index);
+          }
+        }
+      },
+      initMescroll(mescrollId, clearEmptyId) {
+        //创建MeScroll对象,内部已默认开启下拉刷新,自动执行up.callback,刷新列表数据;
+        let mescroll = new MeScroll(mescrollId, {
+          //上拉加载的配置项
+        	up: {
+        		use:true,
+            callback: this.getListData, //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+            isBounce: true, //是否允许ios的bounce回弹;默认true,允许回弹; 此处配置为false,可解决微信,QQ,Safari等等iOS浏览器列表顶部下拉和底部上拉露出浏览器灰色背景和卡顿2秒的问题
+           	offset:100,
+           page: {
+              num: 1, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+              size:6, //每页数据条数
+              time: null //加载第一页数据服务器返回的时间; 防止用户翻页时,后台新增了数据从而导致下一页数据重复;
+            },
+            noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+            empty: {
+              warpId: clearEmptyId,
+              icon: "", //图标,默认null
+              tip: "暂无数据...", //提示
+              // btntext: "去逛逛 >", //按钮,默认""
+              // btnClick: function () {//点击按钮的回调,默认null
+              // 	alert("点击了按钮,具体逻辑自行实现");
+              // }
+            },
+            // clearEmptyId: clearEmptyId, //相当于同时设置了clearId和empty.warpId; 简化写法;默认null
+            // toTop: { //配置回到顶部按钮
+            // 	src: ToTopImg, //默认滚动到1000px显示,可配置offset修改
+            // },
+            htmlNodata: '<p class="upwarp-nodata">-- 没有更多数据 --</p>', //无数据的布局
+          },
+          down: {
+//        	callback:,
+            isLock: false,
+            isBoth:false
+            },
+        });
+        return mescroll;
+      },
+      getListData(page) {
+        //联网加载数据
+        var self = this;
+        var dataIndex = this.currentIndex; //记录当前联网的nav下标,防止快速切换时,联网回来curNavIndex已经改变的情况;
+        this.getListDataFromNet(dataIndex, page.num, page.size, function (pageData) {
+          // console.log("dataIndex=" + dataIndex + ", curNavIndex=" + self.currentIndex + ", page.num=" + page.num + ", page.size=" + page.size + ", pageData.length=" + pageData.length);
+          self.mescrollArr[dataIndex].endSuccess(pageData.length);
+          self.setListData(pageData, dataIndex, page);
+        }, function () {
+          //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+          self.mescrollArr[dataIndex].endErr();
+        });
+      },
+      /*设置列表数据
+             * pageData 当前页的数据
+             * dataIndex 数据属于哪个nav */
+      setListData(pageData, dataIndex, page) {
+        //更新列表数据
+        switch (dataIndex) {
+          case 0:
+            if (page.num == 1) this.newsList0 = [];
+            this.newsList0 = this.newsList0.concat(pageData);
+            break;
+          case 1:
+            if (page.num == 1) this.newsList1 = [];
+            this.newsList1 = this.newsList1.concat(pageData);
+            break;
+          case 2:
+            if (page.num == 1) this.newsList2 = [];
+            this.newsList2 = this.newsList2.concat(pageData);
+            break;
+          case 3:
+            if (page.num == 1) this.newsList3 = [];
+            this.newsList3 = this.newsList3.concat(pageData);
+            break;
+//        case 4:
+//          if (page.num == 5) this.newsList4 = [];
+//          this.newsList4 = this.newsList1.concat(pageData);
+//          break;
+        }
+      },
+      /*联网加载列表数据*/
+      getListDataFromNet(curNavIndex, pageNum, pageSize, successCallback, errorCallback) {
+        // debugger;
+        //延时一秒,模拟联网
+        let that = this;
+       setTimeout(() => {
+        var listData = []
+        console.log(curNavIndex)
+        var url1=''
+	    switch (curNavIndex) {
+	          case 0:
+	          	url1=url+'/sxz/api/findMyList'
+	            break;
+	          case 1:
+	            url1=url+'/sxz/api/findMyList2'
+              break;
+            case 2:
+              url1=url+'/sxz/api/findMyList3'
+             break;
+            case 3:
+              url1=url+'/sxz/api/findMyList4'
+            break;
+        }
+     var token=sessionStorage.getItem("userName");
+      		this.$axios({
+						  headers:{'Content-Type':'application/x-www-form-urlencoded'},
+					      method: "POST",
+					      url: url1,
+					      data: this.$qs.stringify({
+										token:token,
+										pageNumber:pageNum,
+										pageSize:pageSize
+					      })
+					    })
+					     .then(res=> {
+									if(res.data.status==0){
+										var ic=res.data.data.list
+										console.log(res.data.data.list)
+						        for(var item of ic){
+						        		var a=item.grTime.substring(0,10)
+						        		//截取到8
+						        		var b=item.userName.substring(0,8)
+						        		item.grTime=a
+						        		item.userName=b
+						        }
+					       		 successCallback && successCallback(ic);
+									}else{
+										var msga=res.data.message
+										Toast({
+						          message:msga,
+						        });
+									}
+					     })
+					     .catch(err=>{
+					       console.log(err);
+					     });
+   			 }, 500)
+      }
+    },
+    components: {
+      homes,
+      issuser,
+      community
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+@charset "utf-8";
+$wi:100%;
+$b:1px solid blue;
+$f:flex;
+$co:column;
+$ar:space-around;
+$be:space-between;
+$start:flex-start;
+$c:center;
+$w:wrap;
+$r:right;
+$l:left;
+$bai:#fff;
+.colm{
+    flex-direction: $co;
+    display: $f;
+    justify-content: $c;
+    align-items: $c;
+}
+.dis{
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+}
+.wstart{
+    display: $f;
+    justify-content: $start;
+    align-items: $c;
+}
+.dicenter{
+    display: $f;
+    justify-content: $c;
+    align-items: $c;
+}
+.dis2{
+    display: $f;
+    justify-content: $be;
+    align-items: $c;
+}
+.dis1{
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+    flex-wrap:$w;
+}
+
+
+  $color: #ff5558;
+  .dynamic {
+			position:relative;
+			.beijing{
+			  	display: flex;
+					img{
+						width: .5rem;
+						height: .5rem;
+						display: block;
+					}
+					
+				}
+			.add_dynamic{
+					width:.5rem;
+					height:.5rem;
+					text-align: center;
+					line-height:.5rem;
+					background:#fff;
+					font-size:.56rem;
+					font-weight:bolder;
+					border-radius:50%;
+					position:fixed;
+					bottom:1rem;
+					right:.2rem;
+					&:before{
+							color:$color;
+					}
+			}
+    .quotat_tab {
+      width: 100%;
+      height: .4rem;
+		  box-sizing: border-box;
+      line-height: .4rem;
+      display: flex;
+      padding:0 .1rem;
+      .tab-item {
+        text-align: center;
+        font-size: .14rem;
+        margin-right: .2rem;
+        .tab-link {
+          display: inline-block;
+          height: .3rem;
+          line-height: .3rem;
+        }
+      }
+    }
+    .quotat_tab .tab-item.active {
+      color: $color;
+      background-color: #ffffff;
+      .tab-link {
+        border-bottom: 2px solid $color;
+      }
+    }
+  }
+  
+  .wadd .beijing{
+  	display: flex;
+		img{
+			width: .5rem;
+			height: .5rem;
+			display: block;
+		}
+
+	}
+	.wadd .beijing1{
+  	display: flex;
+		img{
+			width: .5rem;
+			height: .5rem;
+			display: block;
+		}
+
+		bottom:1.6rem;
+	}
+	.wadd .beijing2{
+  	display: flex;
+		img{
+			width: .5rem;
+			height: .5rem;
+			display: block;
+		}
+		bottom:2.2rem;
+		
+	}
+	.dynamic{
+		margin-bottom: .4rem;
+	}
+</style>

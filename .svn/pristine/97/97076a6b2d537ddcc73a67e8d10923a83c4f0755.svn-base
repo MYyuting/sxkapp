@@ -1,0 +1,184 @@
+<template>
+    <!--申购详情页-->
+		<div class="shenG-con">
+				<Head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">莫文蔚</span>
+						<span class="iconfont icon-paiHangBang_Star" slot="head_right"></span>
+				</Head>
+
+				<div id="mescroll" class="mescroll">
+						<div class="shuju">
+								<ul>
+										<li class="col"><span>1.15</span><span class="iconfont icon-priceUp"></span></li>
+										<li><span>最高</span> <span class="col">1.15</span></li>
+										<li><span>今开</span> <span>1.09</span></li>
+										<li class="col"><span class="col">0.07</span> <span>6.48</span></li>
+										<li><span>最低</span> <span>1.07</span></li>
+										<li><span>昨收</span> <span>1.08</span></li>
+										<li><span>成交量</span> <span>177,552</span></li>
+										<li><span>换手率</span> <span>20.55%</span></li>
+										<li><span>涨停价</span> <span>1.19%</span></li>
+										<li><span>成交额</span> <span>198.198.3</span></li>
+										<li><span>流通量</span> <span>864,000s</span></li>
+										<li><span>跌停价</span> <span>0.19</span></li>
+								</ul>
+						</div>
+						<!--图标-->
+						<xiantu></xiantu>
+
+						<!--tab-->
+						<div class="nav">
+								<p v-for="(item,index) in tabList"
+									 :class="{active:(currentIndex == index)}"
+									 @click="tabClick(index)">{{item}}</p>
+						</div>
+						<!--简介-->
+						<div v-show="currentIndex==0">
+								<Introduction></Introduction>
+						</div>
+						<!--时间商品-->
+						<div v-show="currentIndex==1">
+								<timeCom></timeCom>
+						</div>
+						<!--动态-->
+						<div v-show="currentIndex==2">
+								<DongTai></DongTai>
+						</div>
+						<!--新闻-->
+						<div v-show="currentIndex==3">
+								<Journalism></Journalism>
+						</div>
+				</div>
+
+				<!--底部-->
+				<footer>
+						<ul>
+								<router-link to="/business" tag="li">
+										<i class="iconfont icon-buy_normal"></i>
+										<p>买入</p>
+								</router-link>
+								<router-link to="/business" tag="li">
+										<i class="iconfont icon-sell_normal"></i>
+										<p>卖出</p>
+								</router-link>
+								<router-link to="" tag="li">
+										<i class="iconfont icon-favorite_normal"></i>
+										<p>加自选</p>
+								</router-link>
+						</ul>
+				</footer>
+
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/public/headNav'
+		import xiantu from '@/components/public/xiantu'
+		import MeScroll from "../../../static/mescroll/mescroll.min"
+		import DongTai from '@/components/public/dongtai'
+		import timeCom from '@/components/public/timeCom'
+		import Introduction from '@/components/public/introduction'
+		import Journalism from '@/components/public/Journalism'
+    export default {
+        name: "shenGXQ",
+				data(){
+						return {
+								tabList:['简介', '时间商品', '动态', '新闻'],
+								currentIndex:0,
+						}
+				},
+				methods:{
+						back(){
+								this.$router.go(-1)
+						},
+						tabClick(index){
+								this.currentIndex =index
+						},
+				},
+				components:{
+        		Head,
+						xiantu,
+						DongTai,
+						Introduction,
+						timeCom,
+						Journalism,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: .5rem;
+				height: auto;
+		}
+		$color:#ff5558;
+		.shuju{
+				ul{
+						padding: .1rem .15rem;
+						display: flex;
+						flex-wrap: wrap;
+						justify-content: space-between;
+						li{
+								min-width: 30%;
+								line-height: .21rem;
+								font-size: .12rem;
+
+						}
+						li:not(:first-child){
+								span:nth-child(1){
+										color: #999;
+								}
+						}
+						li:first-child{
+								span{
+										font-size: .2rem;
+								}
+						}
+						.col{
+								color: #FF5558;
+						}
+						.cor{
+								color: #00BB37;
+						}
+				}
+		}
+
+		.nav{
+				text-align: center;
+				border-bottom: 1px solid #ddd;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				height: .36rem;
+				p{
+						display: block;
+						padding: 8px 0;
+						&.active{
+								border-bottom: 2px solid $color;
+								color: $color;
+						}
+				}
+		}
+		footer{
+				position: fixed;
+				bottom: 0;
+				height: .5rem;
+				width: 100%;
+				ul{
+						display: flex;
+						align-items: center;
+						text-align: center;
+				}
+				li{
+						width: 34%;
+						color: $color;
+						.iconfont{
+								font-size: .28rem;
+						}
+				}
+		}
+</style>

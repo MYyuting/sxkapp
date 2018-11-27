@@ -1,0 +1,129 @@
+<template>
+    <!--实名认证-->
+		<div class="authentic">
+				<el-head :text="text"></el-head>
+				<div class="content">
+						<div class="text">
+								为方便您能在星时空平台交易，保障您的财产安全，请完善您的认证信息，确保信息的真实性和一致性
+						</div>
+						<ul>
+								<li>
+										<div>真实姓名</div>
+										<input type="text" placeholder="请输入您的真实姓名">
+								</li>
+								<li style="border-bottom: 4px solid #eee;">
+										<div>身份证号</div>
+										<input type="text" placeholder="请输入您的身份证号">
+								</li>
+								<li>
+										<div>验证码</div>
+										<div>
+										<input type="number">
+										<button>获取验证码</button>
+										</div>
+								</li>
+						</ul>
+						<div class="btn">
+								<button @click="showAlert">下一步</button>
+								<div class="check">
+										<input type="checkbox">
+										<span>已阅读并同意<span>《充值协议》</span></span>
+								</div>
+						</div>
+				</div>
+				<el-alert></el-alert>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+		import alert from '@/components/public/alert'
+    export default {
+        name: "authentication",
+				data(){
+        		return{
+        				text:["认证个人信息"]
+						}
+				},
+				methods:{
+						showAlert() {
+								this.$refs.alert.show();
+						}
+				},
+				components:{
+        		"el-head":Head,
+        		"el-alert":alert,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		$color:#FF5558;
+		.authentic{
+				background: #F6F6F6;
+				height: 100%;
+				.text{
+						font-size: .12rem;
+						line-height: 1.6;
+						padding: .16rem 0.15rem;
+				}
+		}
+		ul li{
+				background: #fff;
+				display:flex ;
+				justify-content: space-between;
+				align-items: center;
+				height: .6rem;
+				padding: 0 .15rem;
+				border-bottom: 1px solid #eee;
+				div:nth-child(2){
+						width: 50%;
+						text-align: right;
+				}
+				input{
+						outline: none;
+						width: 40%;
+						border: none;
+						text-align: right;
+				}
+				button{
+						width: .85rem;
+						height: .3rem;
+						border: 1px solid $color;
+						background: #fff;
+						color: $color;
+						font-size: .12rem;
+						border-radius: 4px;
+				}
+		}
+		.btn {
+				padding: 0 .15rem;
+				button{
+						width: 100%;
+						height: .48rem;
+						color: #fff;
+						background: #D6D6D6 ;
+						border-radius: 3px;
+						border: none;
+						margin-top: .55rem;
+				}
+				.colour{
+						background: #ff5558;
+				}
+				.check{
+						margin-top: .1rem;
+						display: block;
+						font-size: .13rem;
+						justify-content: left;
+						border: none;
+						input{
+								width: .18rem;
+								height: .18rem;
+						}
+						span span{
+								color: #ff5558;
+						}
+				}
+		}
+
+</style>

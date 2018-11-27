@@ -1,0 +1,51 @@
+<template>
+    <div class="addynamic">
+				<headnav>
+						<span class="el-icon-arrow-left" slot="head_left"></span>
+						<span class="" slot="head_center">发布动态</span>
+						<span class="" slot="head_right">发布</span>
+				</headnav>
+				<div class="addynamic_content">
+						<textarea name="textarea" id="textarea" placeholder="最多输入200字"></textarea>
+						<div class="content_bottom">
+								<span class="el-icon-picture-outline"></span>
+								<span></span>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import headnav from './../public/headNav'
+    export default {
+        name: "addynamic",
+				components:{
+        		headnav,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.addynamic{
+				height:100%;
+				display: flex;
+				flex-direction:column;
+				.addynamic_content{
+						flex:1;
+						box-sizing:border-box;
+						padding-bottom:.5rem;
+						position:relative;
+						textarea{
+								border:0;
+								box-sizing:border-box;
+								background:#eee;
+								height:100%;
+								width:100%;
+								padding:.2rem .3rem;
+								outline:none;
+								color:#333;
+								resize:none;
+						}
+				}
+		}
+</style>

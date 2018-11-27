@@ -1,0 +1,147 @@
+<template>
+    <!--投票上新-->
+    <div class="Snew">
+				<div @click="newClick(item.investorsId,item.voteNewId,item.tInvestors.investorsCode)" v-for="(item,index) in text">
+						<div class="tImg">
+								<img :src="item.tInvestors.investorsAvatar" :onerror="defaultImg" alt="">
+						</div>
+						<div class="til">
+								{{item.tInvestors.investorsName}}
+								<i class="iconfont icon-fans" v-show="false"></i>
+								<i class="iconfont icon-touPiao" v-show="true"></i>
+						</div>
+						<div class="text">
+								<img class="img2" src="../../assets/img/home/star@2x.png" alt=""> {{item.sumBallot}}
+						</div>
+						<div class="top_img" v-show="index === 0"><img src="../../assets/img/home/vote_theFirst@2x.png" alt=""></div>
+						<div class="top_img"><span>{{index+1}}</span></div>
+				</div>
+				<!--<div>-->
+						<!--<img src="../../assets/img/home/home1.png" alt="">-->
+						<!--<div>金钟国 <img src="../../assets/img/tip/fans@2x.png" alt=""></div>-->
+						<!--<div class="text"><img class="img2" src="../../assets/img/home/star@2x.png" alt="">586301 </div>-->
+						<!--<div class="top_img"><span>2</span></div>-->
+				<!--</div>-->
+				<!--<div>-->
+						<!--<img src="../../assets/img/home/home1.png" alt="">-->
+						<!--<div>金钟国 <img src="../../assets/img/tip/fans@2x.png" alt=""></div>-->
+						<!--<div class="text"><img class="img2" src="../../assets/img/home/star@2x.png" alt="">586301 </div>-->
+						<!--<div class="top_img"><span>3</span></div>-->
+				<!--</div>-->
+		</div>
+</template>
+
+<script>
+		export default {
+				name: "tpsx",
+				props:['text'],
+				data(){
+						return {
+								defaultImg: 'this.src="' + require('../../assets/img/home/home1.png') + '"',
+						}
+				},
+				mounted(){
+						console.log(this.text)
+				},
+				methods:{
+						newClick(index,voteId,code){
+								console.log(index);
+								// this.$router.push("/toupiao");
+								this.$router.push({
+										path: '/toupiao',
+										name: 'tpxq',
+										query: {
+												index:index,
+												voteNewId:voteId,
+												code:code,
+										}
+								})
+						}
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		.Snew{
+				display: flex;
+				padding-bottom: .12rem;
+				>div{
+						&:not(:nth-child(1)){
+								margin-left: .1rem;
+						}
+						&:nth-child(1){
+								background: -webkit-linear-gradient(#EADCA8, #F4DE85); /* Safari 5.1 - 6.0 */
+								background: -o-linear-gradient(#EADCA8, #F4DE85); /* Opera 11.1 - 12.0 */
+								background: -moz-linear-gradient(#EADCA8, #F4DE85); /* Firefox 3.6 - 15 */
+								background: linear-gradient(#EADCA8, #F4DE85); /* 标准的语法 */
+						}
+						box-shadow: 0px 3px 6px 1px #f2f2f2;
+						border-radius: .06rem;
+						position: relative;
+						width: 1.1rem;
+						height: 1.2rem;
+						/*padding: .1rem 0;*/
+						/*border: 1px solid red;*/
+						text-align: center;
+						.tImg{
+								width: .55rem;
+								height: .55rem;
+								border-radius: 50%;
+								margin: .12rem auto 0.05rem;
+								overflow: hidden;
+								img{
+										max-width: 100%;
+										max-height: 100%;
+								}
+						}
+						.iconfont{
+								color: #F5A623;
+						}
+						.til{
+								line-height: .2rem;
+								img{
+										width: .2rem;
+										height: .2rem;
+								}
+						}
+						.img2{
+								width: .14rem;
+								height: .14rem;
+								vertical-align: middle;
+						}
+						.top_img img{
+								width: .32rem;
+								height: .32rem;
+								position: absolute;
+								top: -5px;
+								left: 2px;
+								z-index: 99;
+						}
+				}
+		}
+		.text{
+				font-size: .12rem;
+				line-height: .2rem;
+		}
+		.top_img{
+				position: absolute;
+				width: 46%;
+				height: .45rem;
+				top: -0px;
+				left: -0px;
+				/*border: 1px solid red;*/
+				background: url("../../assets/img/home/vote_corner@2x.png") no-repeat;
+				-webkit-background-size: 100% 100%;
+				background-size: 100% 100%;
+		}
+		.top_img span{
+				position: absolute;
+				left: 17%;
+				top: 10%;
+				font-size: .14rem;
+				color: #fff;
+				transform: rotateZ(-20deg);
+		}
+
+
+</style>

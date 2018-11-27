@@ -1,0 +1,84 @@
+<template>
+  <div class="quotation">
+    <div class="nav">
+      <div><img src="./../../assets/img/topBar/paiHangBang@2x.png" alt=""></div>
+      <div class="quotation_tab">
+        <div :class="[classFlag ? 'select_class' : 'other_class']" @click="classClick">行情</div>
+        <div :class="[classFlag ? 'other_class' : 'select_class']" @click="classClicked">动态</div>
+      </div>
+      <div><img src="./../../assets/img/topBar/icon_message@2x.png" alt=""></div>
+    </div>
+    <div class="quotation_content">
+      <router-view></router-view>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "index",
+    data() {
+      return {
+        classFlag: false
+      }
+    },
+    methods: {
+      classClick() {
+        this.classFlag = false;
+        this.$router.push("/quotation/quotat")
+      },
+      classClicked() {
+        this.classFlag = true;
+        this.$router.push("/quotation/dynamic")
+      }
+    }
+  }
+</script>
+
+<style scoped lang="scss">
+  $color: #ff5558;
+  .quotation {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .nav {
+      height: .5rem;
+      background: $color;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 .1rem;
+      img {
+        width: .25rem;
+        height: .25rem;
+      }
+    }
+    .quotation_tab {
+      width: 1.64rem;
+      height: .3rem;
+      display: flex;
+      overflow: hidden;
+      border-radius: 5px;
+      > div {
+        height: 100%;
+        flex-grow: 1;
+        text-align: center;
+        line-height: .3rem;
+        font-size: .14rem;
+        color: $color;
+      }
+      .select_class {
+        background: rgba(255, 55, 58, .8);
+        color: #fff;
+      }
+      .other_class {
+        background: #fff;
+        color: $color;
+      }
+    }
+    .quotation_content {
+      height: 1rem;
+      flex-grow: 1;
+    }
+  }
+</style>

@@ -1,0 +1,248 @@
+<template>
+		<!--修改支付密码-->
+		<div class="zhifu">
+				<my-head :text="til"></my-head>
+				<ul>
+						<li>
+								<div>账号</div>
+								<span>{{phone}}</span>
+						</li>
+						<li>
+								<div>支付密码</div>
+								<input type="number" maxlength="6" v-on:input="mima" placeholder="请设置六位纯数字"  v-model="zfmi">
+						</li>
+						<li>
+								<div>验证码</div>
+								<input type="number" class="duan" ref="input1" v-on:input ="inputFunc" placeholder="请输入短信验证码" v-model="yzm">
+								<div>
+										<button class="getM" @click="chongGet" :class="disabled? 'active' : '' "
+														:disabled="disabled">{{yzmtxt}}</button>
+								</div>
+						</li>
+				</ul>
+				<div class="btn">
+						<button class="btnlogin" @click='payCom' :class="realy ? '' : 'colour' " :disabled="realy" >确认修改</button>
+						<p>设置后，将使用该密码支付</p>
+				</div>
+		</div>
+</template>
+
+<script>
+	import Head from '@/components/mine/headMe'
+	import { Toast } from 'mint-ui';
+	
+	export default {
+			name: "XGzfmm",
+			data(){
+					return{
+							til:["修改支付密码"],
+							yzmtxt:"获取验证码",
+							disabled:false,
+							verCode:'',
+							phone:'',
+							yzm:'',
+							flag:false,
+							check:true,
+							zfmi:'',
+							realy:true,
+							token:'',
+					}
+			},
+			mounted(){
+					this.phone = localStorage.getItem('phone');
+					this.token = localStorage.getItem("userName");
+			},
+			components:{
+					"my-head":Head
+			},
+			methods:{
+					//获取验证码
+					send(){
+							let _this=this;
+							_this.disabled=true;
+							_this.time=60;
+							let it=setInterval(()=> {
+									_this.time--;
+									if(_this.time==0){
+											//  时间走完
+											_this.yzmtxt='获取验证码';
+											_this.disabled=false;
+											clearInterval(it)//用了定时器一定要清楚
+									}else {
+											_this.yzmtxt=`${_this.time}s重新发送`;
+											// this.btn='59s'
+											_this.disabled=true
+									}
+							},1000)
+					},
+					chongGet(){
+							var reg=11 && /^((13|14|15|17|18|19)[0-9]{1}\d{8})$/;
+							if(!reg.test(this.phone)){
+									Toast({
+											message: '手机格式不正确',
+											position: 'middle',
+											duration: 1000
+									});
+									return;
+							}
+							let _this=this;
+							// this.time=10;
+							this.send();
+							this.$axios({
+									method:'get',
+									url:url+'/api/user/getCode',
+									params:{
+											clientPhone:this.phone
+									}
+							}).then(function (res) {
+									console.log(res.data);
+									_this.realy=false;
+							
+									_this.verCode = res.data.verCode
+							})
+					},
+					inputFunc(){
+							if(this.$refs.input1.value !="" ){
+									this.flag = true
+									this.realy=false
+							}else{
+									this.flag = false
+							}
+					},
+					mima(){
+							this.realy=false
+					},
+					//确认修改密码
+					payCom(){
+							let _this=this;
+							let patrn=/^\d{6}$/;
+							if(!patrn.test(this.zfmi)){
+									Toast({
+											message: '请输入密码（为6位数字）',
+											duration: 1000
+									});
+									return;
+							}
+							if(this.yzm=='' ){
+									Toast({
+											message: '请输入验证码',
+											duration: 1000
+									});
+									return;
+							}
+//					   mobile:手机号、
+//				     payPwd：支付密码、
+//				     validateCode：验证码
+//				     token：
+//				     payPwd：md5加密以后传到后台
+							this.$axios.post(url+'/api/user/editUserPayPwd',this.$qs.stringify({
+									token:_this.token,
+									mobile:_this.phone,  //用户名或手机号
+									payPwd:this.$md5(_this.zfmi),  //密码
+									validateCode:_this.yzm,   //验证码
+							}),{
+									headers:{'Content-Type':'application/x-www-form-urlencoded'}
+							}).then((res)=>{
+									console.log(res);
+									if(res.data.status==0){
+											Toast({
+													message:'密码设置成功',
+											});
+											setTimeout(function () {
+													_this.$router.push('/setting')
+											});
+									}else{
+											//否则提示
+											var msga=res.data.message;
+											Toast({
+													message:msga,
+											});
+									}
+							}).catch(error =>{
+									console.log(error)
+							})
+					},
+			}
+	}
+</script>
+
+<style scoped lang="scss">
+		.zhifu{
+				background: #F6F6F6;
+				height: 100%;
+		}
+		
+		$color:#FF5558;
+		ul li{
+				background: #fff;
+				display:flex ;
+				justify-content: space-between;
+				align-items: center;
+				height: .6rem;
+				padding: 0 .15rem;
+				border-bottom: 1px solid #eee;
+				div:nth-child(2){
+						width: 50%;
+						text-align: right;
+						input{
+								width: 35%;
+						}
+				}
+				input{
+						outline: none;
+						width: 50%;
+						border: none;
+						text-align: right;
+						font-size: .14rem;
+				}
+				input::placeholder{
+						text-align: right;
+				}
+				button{
+						/*width: .87rem;*/
+						height: .3rem;
+						border: 1px solid $color;
+						background: #fff;
+						color: $color;
+						font-size: .12rem;
+						border-radius: 4px;
+						&.active{
+								border: 1px solid #aaa;
+								color: #aaa;
+						}
+				}
+		}
+		.btn{
+				padding: 0 .15rem;
+				text-align: center;
+				button{
+						width: 100%;
+						margin-top: .55rem;
+						height: .48rem;
+						font-size: .145rem;
+						background: #D6D6D6;
+						color: #ffffff;
+						border: none;
+						border-radius: 4px;
+				}
+				.colour{
+						background: #ff5558 !important;
+				}	
+				p{
+						line-height: 3;
+						font-size: .12rem;
+						color: #9B9B9B;
+				}
+		}
+		.getM{
+				text-align: right;
+				font-size: .13rem;
+		}
+		button{
+				background: #fff;
+				border: none;
+		}
+				
+				
+
+</style>

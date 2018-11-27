@@ -1,0 +1,40 @@
+<template>
+		<div class='fade'>
+
+		</div>
+</template>
+
+<script>
+		export default {
+				name: 'alert',
+				data() {
+						return {
+								showAlert: false,
+						};
+				},
+				methods: {
+						open() {
+								this.$message({
+										type:"",
+										message:'消息提示',
+										iconClass:"",
+										center:true,
+										duration:3000
+								});
+						}
+				},
+		};
+</script>
+
+<style  lang="scss">
+		.el-message{
+				background-color: rgba(0,0,0,.7);
+				position: fixed;
+				left: 50%;
+				min-width: auto;
+				padding: 0 .15rem;
+				top:50%;
+				height: .6rem;
+				color: #fff;
+		}
+</style>

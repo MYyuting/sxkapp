@@ -1,0 +1,107 @@
+<template>
+    <!--注册-->
+		<div class="register">
+				<div class="nav">
+						<div class="text1" @click="back"><i class="el-icon-arrow-left"></i></div>
+						<div class="text"></div>
+				</div>
+				<div class="fill">
+						<h2>手机号注册</h2>
+						<div>
+								<span>+86 </span>
+								<input type="text" ref="input1" v-on:input ="inputFunc" placeholder="请输入手机号">
+						</div>
+						<h2>邀请码（可不填）</h2>
+						<div>
+								<input type="text" placeholder="邀请码(选填)">
+						</div>
+						<button @click="nextStep" :class="{'colour':flag}">下一步</button>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "register",
+				data(){
+        		return{
+        				flag:false
+						}
+				},
+				methods:{
+						back(){
+								this.$router.back(-1)
+						},
+						nextStep(){
+								this.$router.push("/getYzm")
+						},
+						inputFunc(){
+								if(this.$refs.input1.value !=""){
+										this.flag = true
+								}else{
+										this.flag = false
+								}
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.nav{
+				display: flex;
+				height: .5rem;
+				padding: 0 .15rem;
+				justify-content: space-between;
+				align-items: center;
+				.text1{
+						font-size: .2rem;
+				}
+		}
+		.fill{
+				width: 2.85rem;
+				margin: auto;
+				h2{
+						font-size: .18rem;
+						margin: .4rem 0 .3rem;
+						color: #000;
+				}
+				div{
+						height: .5rem;
+						display: flex;
+						align-items: center;
+						border: 1px solid #aaa;
+						-webkit-border-radius: 2px;
+						-moz-border-radius: 2px;
+						border-radius: 2px;
+						span{
+								font-size: .16rem;
+								color: #bcbcbc;
+								padding: 0 6px;
+						}
+						input{
+								width: 100%;
+								height: 70%;
+								border: none;
+								text-indent: .1rem;
+								outline: none;
+						}
+						input::placeholder{
+								text-align: left;
+								color: #BCBCBC;
+						}
+				}
+				button{
+						width: 100%;
+						height: .44rem;
+						color: #fff;
+						background: #D6D6D6 ;
+						border-radius: 3px;
+						border: none;
+						font-size: .16rem;
+						margin-top: .55rem;
+				}
+				.colour{
+						background: #ff5558;
+				}
+		}
+</style>

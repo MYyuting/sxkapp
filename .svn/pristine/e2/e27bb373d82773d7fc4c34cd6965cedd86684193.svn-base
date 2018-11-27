@@ -1,0 +1,75 @@
+<template>
+    <!--消息-->
+		<div class="news">
+				<my-head :text="til"></my-head>
+				<div class="newsCon">
+						<ul v-for="item in dataArr">
+								<li class="top">
+										<div>{{item.title}}</div>
+										<span>{{item.created}}</span>
+								</li>
+								<li class="bottom">{{item.content}}</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+    export default {
+        name: "news",
+				data(){
+        		return{
+        				til:["消息"],
+								dataArr:[
+										{
+												til:"昨日莫文蔚涨停10%",
+												time:"2018-05-07",
+												con:""
+										}
+								]
+						}
+				},
+				mounted(){
+						var token=sessionStorage.getItem("userName");
+						this.$axios.post('/api/api/main/top',this.$qs.stringify({
+								token:token
+						}),{
+								headers:{'Content-Type':'application/x-www-form-urlencoded'}
+						}).then((res)=>{
+								// console.log(res.data.msgList);
+								this.dataArr =res.data.msgList
+						});
+				},
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.newsCon{
+				padding: 0 .15rem;
+				ul{
+						padding: .13rem 0;
+						border-bottom: 1px solid #eee;
+						.top{
+								display: flex;
+								justify-content: space-between;
+								div{
+										width: 2.6rem;
+								}
+								span{
+										font-size: .12rem;
+										color: rgba(0,0,0,0.40);
+										text-align: right;
+								}
+						}
+						.bottom{
+								font-size: .12rem;
+								line-height: .24rem;
+								color: rgba(0,0,0,0.40);
+						}
+				}
+		}
+</style>

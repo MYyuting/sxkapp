@@ -1,0 +1,15 @@
+<template>
+    <div class="sellout">
+      sellout
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "sellout"
+    }
+</script>
+
+<style scoped>
+
+</style>

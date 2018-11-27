@@ -1,0 +1,33 @@
+<template>
+    <!--约见规则-->
+		<div class="make">
+				<headr :text="til"></headr>
+				<div class="makeCon">
+
+				</div>
+		</div>
+</template>
+
+<script>
+		import headr from '../headMe'
+    export default {
+        name: "make-rules",
+				data(){
+        		return {
+								til:["约见规则"],
+						}
+				},
+				components:{
+        		headr,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		ul{
+				padding: 0 .15rem;
+				*{
+						font-size: .14rem;
+				}
+		}
+</style>

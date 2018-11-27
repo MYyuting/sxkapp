@@ -1,0 +1,15 @@
+<template>
+    <div class="starlight">
+				星光
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "xingguang"
+    }
+</script>
+
+<style scoped>
+
+</style>

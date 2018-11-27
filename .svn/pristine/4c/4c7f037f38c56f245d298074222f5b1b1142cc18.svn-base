@@ -1,0 +1,92 @@
+<template>
+    <!--行情榜-->
+    <div class="hangqing">
+        <div class="tab">
+            <div class="left">
+                <span v-for="(item,index) in leftList"
+                      :class="{bottom:leftIndex == index}"
+                      @click="leftTab(index)">{{item.text}}</span>
+            </div>
+            <div class="right">
+                <span v-for="(item,index) in rightList"
+                      :class="{bottom:rightIndex == index}"
+                      @click="rightTab(index)">{{item.text}}</span>
+            </div>
+        </div>
+				<my-list></my-list>
+		</div>
+</template>
+
+<script>
+		import PaiList from "@/components/index/PaiList"
+		export default {
+				name: "hangqing",
+				data(){
+						return{
+								leftIndex:0,
+								rightIndex:0,
+								leftList:[
+										{
+												text:"本周"
+										},
+										{
+												text:"上周"
+										}
+								],
+								rightList:[
+										{
+												text:"涨幅榜"
+										},
+										{
+												text:"换手榜"
+										},
+										{
+												text:"收益榜"
+										}
+								],
+						}
+				},
+				methods:{
+						leftTab(index){
+								this.leftIndex = index
+						},
+						rightTab(index){
+								this.rightIndex = index
+						}
+				},
+				components:{
+						"my-list":PaiList
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		.tab{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				height: .4rem;
+				padding: 0 .15rem;
+				>div{
+						width: 50%;
+						span{
+								padding-bottom: .05rem;
+						}
+				}
+				.left span{
+						margin-right: .2rem;
+				}
+				.left .bottom{
+						border-bottom: 2px solid #0BA1EE;
+						color: #0BA1EE;
+				}
+				.right{
+						display: flex;
+						justify-content: space-between;
+				}
+				.right .bottom{
+						border-bottom: 2px solid #FF5558 ;
+						color: #FF5558 ;
+				}
+		}
+</style>

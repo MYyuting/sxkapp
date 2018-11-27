@@ -1,0 +1,68 @@
+<template>
+    <div name="Xlist">
+        <div class="list" v-for="item in newList">
+            <img :src="item.imgUrl" alt="">
+            <div class="text">
+                <p>{{item.til}}</p>
+                <span>{{item.text}}</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "Xlist",
+				data(){
+        		return {
+        				newList:[
+										{
+												imgUrl:require("../../assets/img/home/home1.png"),
+												til:'万元现金等你拿 | 第一期成交额活动正式启动！',
+												text:'腾讯新闻'
+										},
+										{
+												imgUrl:require("../../assets/img/home/home1.png"),
+												til:'万元现金等你拿 | 第一期成交额活动正式启动！',
+												text:'腾讯新闻'
+										},
+										{
+												imgUrl:require("../../assets/img/home/home1.png"),
+												til:'万元现金等你拿 | 第一期成交额活动正式启动！',
+												text:'腾讯新闻'
+										},
+										{
+												imgUrl:require("../../assets/img/home/home1.png"),
+												til:'万元现金等你拿 | 第一期成交额活动正式启动！',
+												text:'腾讯新闻'
+										}
+								]
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		$color:#333;
+		.list{
+				display: flex;
+				padding: .15rem 0 0;
+				justify-content: space-between;
+				>img{
+						width: .9rem;
+						height: .9rem;
+						margin-right: 1.3%;
+				}
+				div{
+						display: flex;
+						width: 1rem;
+						flex-grow: 1;
+						flex-direction: column;
+						justify-content: space-between;
+						span{
+								color: #BCBCBC;
+								font-size: .12rem;
+						}
+				}
+		}
+</style>

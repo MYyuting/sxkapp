@@ -1,0 +1,106 @@
+<template>
+    <!--当前订单子组件-->
+		<div class="mairu">
+				<div v-for="item in listSrr">
+						<div class="til" :class="item.id == 1 ? 'red'  :'lu'">
+								<span>{{item.investorsName}}</span>
+								<span>{{item.entrustDate | str}} {{item.orderDate}}</span>
+						</div>
+						<ul>
+								<li>
+										<span>委托价</span>
+										<p>{{item.orderPrice}}</p>
+								</li>
+								<li>
+										<span>委托量</span>
+										<p>{{item.orderNum}}</p>
+								</li>
+								<li>
+										<span>成交量</span>
+										<p>{{item.actualNumber}}</p>
+								</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Vue from 'vue'
+
+    export default {
+        name: "mairu_child",
+				data(){
+        		return {
+								listSrr:[]
+						}
+				},
+				beforeCreate(){
+						//自定义过滤器
+						Vue.filter( 'str' , function(value) {
+								return value.replace(/\./g,"-");
+						});
+				},
+				mounted(){
+						this.getwei();
+				},
+
+				methods:{
+						getwei(){
+        				this.$axios.post('/api/miao/queryEntrustedProduct.do',this.$qs.stringify({
+										token:this.token,
+										pageSize:'5',
+										currentPage:'2'
+								})).then((res) => {
+										console.log(res.data.LIST);
+										this.listSrr = res.data.LIST;
+								}).catch((err) => {
+										console.log(err);
+										alert('网络错误')
+								})
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.til{
+				padding: 0 .17rem;
+				line-height: .4rem;
+				display: flex;
+				justify-content: space-between;
+		&.red{
+				 color: #FF5558;
+		 }
+		&.lu{
+				 color: #0BA1EE;
+		 }
+		}
+		ul{
+				border-bottom: 1px solid #ddd;
+				display: flex;
+				justify-content: space-between;
+				padding-bottom: .15rem;
+		li{
+				position: relative;
+				width: 34%;
+				text-align: center;
+		span{
+				font-size: .12rem;
+				color: rgba(0,0,0,0.40);
+				line-height: .2rem;
+		}
+		p{
+				line-height: .3rem;
+		}
+		}
+		li:not(:first-child)::after{
+				position: absolute;
+				content: '';
+				width: 0;
+				top: 5px;
+				left: 0;
+				height: .34rem;
+				border: 1px solid #ddd;
+		}
+		}
+</style>

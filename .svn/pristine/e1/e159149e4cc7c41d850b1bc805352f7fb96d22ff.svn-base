@@ -1,0 +1,161 @@
+<template>
+    <!--邀请好友-->
+		<div class="Invitation">
+				<el-head :text="headTil"></el-head>
+				<div id="mescroll" class="mescroll">
+						<div class="content">
+								<div>
+										<span>成功邀请</span>
+										<p><span>0</span>人</p>
+								</div>
+								<div>
+										<span>累计收益</span>
+										<p><span>0</span>元</p>
+								</div>
+						</div>
+						<div class="picture">
+								<img src="../../../assets/img/inviteFriend@2x.png" alt="">
+								<p>我的邀请码</p>
+								<div>
+										<span>{{phone}}</span>
+										<img class="imgCopy"
+												 v-clipboard:copy="phone"
+												 v-clipboard:success="onCopy"
+												 v-clipboard:error="onError" src="../../../assets/img/copyCode.svg" alt="">
+								</div>
+						</div>
+						<div class="tabList">
+								<router-link to="/invitation/one" replace tag="div">一级好友</router-link>
+								<router-link to="/invitation/two" replace tag="div">二级好友</router-link>
+						</div>
+						<div id="upscrollWarp">
+								<router-view></router-view>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+		import MeScroll from "../../../../static/mescroll/mescroll.min"
+		import { Toast } from 'mint-ui';
+		export default {
+        name: "Invitation",
+				data(){
+        		return{
+        				headTil:["邀请好友","规则"],
+								phone:'',
+						}
+				},
+				mounted(){
+        		this.phone = localStorage.getItem('phone')
+				},
+				methods:{
+						onCopy(){
+								Toast({
+										message: '已复制到剪切板',
+										position: 'bottom',
+								});
+						},
+						onError(){
+								Toast({
+										message: '复制失败，请手动选择复制！',
+										position: 'bottom',
+								});
+						},
+
+				},
+				components:{
+        		"el-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+
+		.Invitation *{
+				font-family: PingFangSC-Regular;
+		}
+		.content{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: .2rem .2rem;
+				div{
+						text-align: center;
+						width: 1.6rem;
+						box-shadow: 0 2px 6px 0 rgba(0,0,0,0.08);
+						box-sizing: border-box;
+						height: 1rem;
+						padding: .2rem 0 .25rem;
+						p{
+								color: #888;
+								font-size: .12rem;
+								margin-top: .15rem;
+								span{
+										color: #333;
+										font-size: .24rem;
+										padding-right: 5px;
+								}
+						}
+				}
+		}
+		.picture{
+				padding: 0 .15rem;
+				text-align: center;
+				img{
+						width: 3.37rem;
+						height: 2.86rem;
+				}
+				p{
+						margin-top: .34rem;
+						font-size: .16rem;
+				}
+				div{
+						margin-top: .15rem;
+						line-height: .4rem;
+						text-align: center;
+						position: relative;
+						.imgCopy{
+								cursor: pointer;
+								width: .4rem;
+								height: .4rem;
+								position: absolute;
+								top: 0;
+								right: 0;
+						}
+						span{
+								font-family: PingFangSC-Semibold;
+								font-size: .24rem;
+						}
+				}
+		}
+		.tabList{
+				margin-top: .15rem;
+				height: .4rem;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				div{
+						&:nth-child(1){
+								margin-right: .5rem;
+						}
+						padding-bottom: .05rem;
+				}
+				.router-link-active{
+						color: #FF5558;
+						border-bottom: 2px solid #FF5558;
+				}
+		}
+		#upscrollWarp{
+				height: 3rem;
+				overflow-y: auto;
+		}
+</style>

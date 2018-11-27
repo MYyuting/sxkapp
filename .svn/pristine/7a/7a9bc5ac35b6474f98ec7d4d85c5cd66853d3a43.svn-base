@@ -1,0 +1,99 @@
+<template>
+    <div class="starlight">
+				<div class="tab">
+						<div class="left">
+                <span v-for="(item,index) in leftList"
+											:class="{bottom:leftIndex == index}"
+											@click="leftTab(index)">{{item.text}}</span>
+						</div>
+						<div class="right">
+                <span v-for="(item,index) in rightList"
+											:class="{bottom:rightIndex == index}"
+											@click="rightTab(index)">{{item.text}}</span>
+						</div>
+				</div>
+				<my-list></my-list>
+		</div>
+</template>
+
+<script>
+		import List from "@/components/index/PaiList"
+    export default {
+        name: "xingguang",
+				data(){
+						return{
+								leftIndex:0,
+								rightIndex:0,
+								leftList:[
+										{
+												text:"本周"
+										},
+										{
+												text:"上周"
+										},
+										{
+												text:"总榜"
+										}
+								],
+								rightList:[
+										{
+												text:"金主消费榜"
+										},
+										{
+												text:"大咖收入榜"
+										}
+								]
+						}
+				},
+				methods:{
+						leftTab(index){
+								this.leftIndex = index
+						},
+						rightTab(index){
+								this.rightIndex = index
+						}
+				},
+				components:{
+        		"my-list":List
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.starlight{
+				position: relative;
+				.tab{
+						position: absolute;
+						top: 0;
+						left: 0;
+						width: 100%;
+						box-sizing: border-box;
+						display: flex;
+						background: rgba(0,0,0,.4);
+						color: rgba(255,255,255,.5);
+						z-index: 999;
+						justify-content: space-between;
+						align-items: center;
+						height: .4rem;
+						padding: 0 .15rem;
+						>div{
+								width: 50%;
+								span{
+										padding-bottom: .05rem;
+								}
+						}
+						.left span{
+								margin-right: .2rem;
+						}
+						.left .bottom,.right .bottom{
+								border-bottom: 2px solid #fff;
+								color: #fff;
+						}
+						.right{
+								display: flex;
+								justify-content: space-between;
+						}
+
+				}
+		}
+</style>

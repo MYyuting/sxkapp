@@ -1,0 +1,179 @@
+<template>
+    <div class="shengou">
+        <div v-for="(item,index) in buyList">
+						<div class="tilt">
+								<span>正在申购</span>
+								<div class="tilt_time">
+										<i class="iconfont icon-timeRunning"></i>
+										<p>{{day}}天{{hour}}时{{min}}分{{sec}}秒</p>
+								</div>
+						</div>
+						<div class="home_s" v-for="item1 in item.votePeopleList">
+								<div @click="shen">
+										<img :src="item1.tInvestors.investorsAvatar" alt="">
+										<div class="home_text">
+												<p>{{item1.tInvestors.investorsName}}</p>
+												<p>{{item1.tInvestors.investorsCode}}</p>
+										</div>
+								</div>
+								<div>
+										{{item1.tInvestors.investorsFixPrice}}元/秒
+								</div>
+								<div>
+										<button @click="shenGouBtn">申购</button>
+								</div>
+						</div>
+				</div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "homeS",
+				props:['buyList'],
+				data(){
+        		return {
+        				arrlist:[],
+        				day:'00',
+								hour:'00',
+								min:'00',
+								sec:'00',
+						}
+				},
+				mounted(){
+        		console.log(this.buyList);
+        		this.arrlist = this.buyList;
+						let StartTime = new Date(this.arrlist[0].buyStartTime).getTime();
+						let EndTime = new Date(this.arrlist[0].buyEndTime).getTime();
+						// console.log(StartTime);
+        		this.setTimer(StartTime,EndTime);
+				},
+				methods:{
+						shenGouBtn(){
+								this.$router.push('/business');
+						},
+						shen(){
+								//申购详情
+								this.$router.push('/shengou')
+						},
+						//时间倒计时
+						setTimer(stateTime,endTime){
+								let self = this;
+								let timer = setInterval(function(){
+										//现在的时间
+										let time = new Date().getTime();
+										// console.log(time);
+										// console.log(endTime);
+										//开始时间小于现在时间  结束时间大于现在时间
+										if(stateTime < time && endTime > time){
+												// self.txt = '距投票结束剩余时间';
+												let t = endTime-time;
+												if(t > 0){
+														self.tiemPblic(t);
+												}else{
+														clearInterval(timer);
+												}
+										}else if(stateTime > time){
+												//开始时间大于现在时间
+												// self.txt = '距投票开始剩余时间';
+												let t = stateTime-time;
+												if(t > 0){
+														self.tiemPblic(t)
+												}else{
+														clearInterval(timer);
+												}
+										}else if(endTime< time){
+												// 结束时间小于现在时间
+												// console.log(3);
+												clearInterval(timer);
+												// self.txt = '投票时间已结束';
+										}
+								},1000);
+						},
+						tiemPblic(t){
+								let day = Math.floor(t/86400000);
+								let hour=Math.floor((t/3600000)%24);
+								let min=Math.floor((t/60000)%60);
+								let sec=Math.floor((t/1000)%60);
+								this.day = day < 10 ? "0" + day : day;
+								this.hour = hour < 10 ? "0" + hour : hour;
+								this.min = min < 10 ? "0" + min : min;
+								this.sec = sec < 10 ? "0" + sec : sec;
+						},
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+  .shengou{
+    padding:.12rem;
+    border-bottom:4px solid #eee;
+    /*height:.9rem;*/
+  }
+  .home_s{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height:.6rem;
+    >div:nth-child(1){
+      display: flex;
+				width: 50%;
+				overflow: hidden;
+      /*justify-content: space-between;*/
+      align-items: center;
+      img{
+        height: .45rem;
+					width: .5rem;
+        margin-right: .1rem;
+      }
+    }
+    .home_text{
+				p:nth-child(2){
+						font-size: .12rem;
+				}
+				p:nth-child(1){
+						margin-bottom: .1rem;
+				}
+		}
+    >div:nth-child(2){
+      font-size: .16rem;
+    }
+    button{
+      padding: .07rem .2rem;
+      background: #ff5558;
+      border: none;
+      color: #fff;
+    }
+  }
+  .tilt{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height:.3rem;
+    >span{
+      border-left: 2px solid #FF5558;
+      padding-left: .1rem;
+    }
+  }
+  .tilt1{
+    padding: .1rem 0;
+    a{
+      color: #999;
+      text-decoration: none;
+    }
+  }
+  .tilt_time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    p {
+      color: #FF5558;
+      font-size:.12rem;
+    }
+    i{
+				font-size: .3rem;
+				color:#FF5558 ;
+		}
+  }
+
+</style>

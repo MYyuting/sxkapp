@@ -1,0 +1,132 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import Index from '@/components/index'
+//首页
+import HomePage from '@/components/index/index'
+import PaiHang from '@/components/index/paihangb'
+import HangQB from '@/components/index/hangqing'
+import XingGB from '@/components/index/xingguang'
+//买卖
+import Business from '@/components/business/index'
+//行情
+import Quotation from '@/components/quotation/index'
+import Quotat from '@/components/quotation/quotat'
+import Dynamic from '@/components/quotation/dynamic'
+//我的
+import Mine from '@/components/mine/index'
+import Recharge from '@/components/mine/recharge'
+import Forward from '@/components/mine/forward'
+import MingXi from '@/components/mine/mingxi'
+//我的设置
+import SetTing from '@/components/mine/settings'
+import XiuGaiPhone from '@/components/mine/xiugaiphone'
+import XiuGaiMM from '@/components/mine/XGloginMM'
+import XiuGaizf from '@/components/mine/XGzfmm'
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    {
+      path:"/",
+      redirect:"/index"
+    },
+    {
+      path: '/',
+      name: '星时空 ',
+      component: Index,
+      children:[
+        {
+          path:"/index",
+          name:"星时空",
+          component:HomePage,
+        },
+        {
+          path:"/business",
+          name:"买卖",
+          component:Business
+        },
+        {
+          path:"/quotation",
+          name:"行情",
+          component:Quotation,
+          children:[
+            {
+              path:"/quotation",
+              redirect:"/quotation/quotat"
+            },
+            {
+              path:"/quotation/quotat",
+              component:Quotat
+            },
+            {
+              path:"/quotation/dynamic",
+              component:Dynamic
+            }
+          ]
+        },
+        {
+          path:"/mine",
+          name:"我的",
+          component:Mine
+        }
+      ]
+    },
+    {
+      path:"/index/paihangb",
+      name:"排行榜",
+      component:PaiHang,
+      children:[
+        {
+          path:"/index/paihangb",
+          redirect:"/index/paihangb/hangqing"
+        },
+        {
+          path:"/index/paihangb/hangqing",
+			name:"行情榜",
+          component:HangQB
+        },
+        {
+          path:"/index/paihangb/xingguang",
+			name:"星光榜",
+          component:XingGB
+        }
+      ]
+    },
+	{
+	  path:"/recharge",
+	  name:"充值",
+	  component:Recharge
+	},
+    {
+        path:"/forward",
+        name:"提现",
+        component:Forward
+    },
+    {
+        path:"/mingxi",
+        name:"明细",
+        component:MingXi
+    },
+    {
+      path:"/setting",
+        name:"设置",
+        component:SetTing
+    },
+	  {
+		  path:"/gphone",
+		  name:"修改手机号",
+		  component:XiuGaiPhone
+	  },
+	  {
+		  path:"/gmima",
+		  name:"修改登录密码",
+		  component:XiuGaiMM
+	  },
+	  {
+		  path:"/gzfmm",
+		  name:"修改支付密码",
+		  component:XiuGaizf
+	  }
+  ]
+})

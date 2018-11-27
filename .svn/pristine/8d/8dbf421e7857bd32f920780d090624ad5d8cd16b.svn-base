@@ -1,0 +1,36 @@
+<template>
+    <!--约见规则-->
+		<div class="makeCon">
+				<headr :text="til"></headr>
+				<ul>
+						<li>1、时间段来看是你发的女郎独守空房联发科了的房间打开快递费的看法答复您重新，每次都能分开的付款了加快递费那么多，地方</li>
+						<li>2、时间段来看是你发的女郎独守空房联发科了的房间打开快递费的看法答复您重新，每次都能分开的付款了加快递费那么多，地方</li>
+						<li>3、时间段来看是你发的女郎独守空房联发科了的房间打开快递费的看法答复您重新，每次都能分开的付款了加快递费那么多，地方</li>
+						<li>4、时间段来看是你发的女郎独守空房联发科了的房间打开快递费的看法答复您重新，每次都能分开的付款了加快递费那么多，地方</li>
+				</ul>
+		</div>
+</template>
+
+<script>
+		import headr from '../headMe'
+    export default {
+        name: "make-rules",
+				data(){
+        		return {
+								til:["约见规则"],
+						}
+				},
+				components:{
+        		headr,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		ul{
+				padding: 0 .15rem;
+				*{
+						font-size: .14rem;
+				}
+		}
+</style>

@@ -1,0 +1,116 @@
+<template>
+		<!--充值  提现公用-->
+		<div class="box">
+				<div class="shuoM">充值免手续费，提现手续费0.5%（支付通道收取）</div>
+				<div class="czfs">{{data}}</div>
+				<div class="zhifubao">
+						<div>
+								<img src="../../assets/img/topBar/zfb1.png" alt="">支付宝
+						</div>
+						<div class="person">
+								<input id="checkFour" type="checkbox" @click="check" v-model="flag" :checked="flag" name="">
+								<label for="checkFour"></label>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+	export default {
+			name: "gong",
+			props:["data"],
+			data(){
+					return {
+							flag:false,
+					}
+			},
+			methods:{
+					check(e){
+							// console.log(e)
+							console.log(e.target.checked);
+							this.flag = e.target.checked;
+							this.$emit('checkboxFlag', this.flag)
+					}
+			}
+	}
+</script>
+
+<style scoped lang="scss">
+		.display{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+		}
+		@mixin pad($value,$value1) {
+				padding: $value;
+				height: $value1;
+		}
+		.czfs,.zhifubao{
+				background: #fff;
+		}
+		.shuoM{
+				@include pad(0 .15rem,.5rem);
+				line-height: .5rem;
+		}
+		.czfs{
+				line-height: .4rem;
+				color: #9B9B9B;
+				font-size: .12rem;
+				@include pad(0 .15rem,.4rem);
+				border: 1px solid #eee;
+		}
+
+		.zhifubao{
+				box-sizing: border-box;
+				@extend .display;
+				@include pad(0 .15rem,.6rem);
+				>div{
+						flex-grow: 1;
+				}
+				>div:nth-child(2){
+						text-align: right;
+				}
+				input[type=checkbox]{
+						opacity: 0;
+				}
+				img{
+						width: .28rem;
+						height: .28rem;
+						vertical-align: middle;
+						margin-right: .1rem;
+				}
+		}
+		label{
+				width: 14px;
+				height: 14px;
+				position: relative;
+				display: inline-block;
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				border-radius: 50%;
+				border: 1px solid #aaa;
+				background: #fff;
+				margin-top: 3px;
+		}
+		input:checked+label{
+				background-color: #FF5558;
+				border: 1px solid #FF5558;
+		}
+		input:checked+label::after {
+				content: "";
+				display: inline-block;
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				border-radius: 50%;
+				border: 4px solid #fff;
+				position: absolute;
+				top: 23%;
+				left: 24%;
+				background: #fff;
+		}
+</style>
+<style>
+		.zhifubao{
+				border-bottom: 4px solid #F3F3F3;
+		}
+</style>

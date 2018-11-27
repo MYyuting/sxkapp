@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+		<meta content="yes" name="apple-mobile-web-app-capable"/>
+		<meta content="#ff5558" name="apple-mobile-web-app-status-bar-style"/>
+		<meta content="telephone=no" name="format-detection"/>
+		<meta name="referrer" content="no-referrer"/>
+		<title>星时空</title>
+		<script src="/static/mescroll/config.js"></script>
+		<link rel="stylesheet" href="/static/mescroll/mescroll.min.css">
+		<script type="text/javascript">
+			var url = 'http://xsk.quanxiankaibo.com';
+		  let wid = document.documentElement.clientWidth;
+		  document.documentElement.style.fontSize = wid/375*100 +'px';
+		  window.onresize = function(){
+		  		document.location.reload();
+		  }
+		</script>
+		<link rel="stylesheet" href="/static/css/reset.css">
+
+</head>
+<body>
+		<div id="app"></div>
+		<!-- built files will be auto injected -->
+</body>
+<script>
+		mui.init({
+				keyEventBind: {
+						backbutton: true //关闭back按键监听
+				}
+		});
+		//首页返回键处理
+		//处理逻辑：1秒内，连续两次按返回键，则退出应用；
+		// var first = null;
+		mui.back = function() {
+				//首次按键，提示 再按一次退出应用
+				// if (!first) {
+						// first = new Date().getTime();//记录第一次按下回退键的时间
+						// mui.toast('再按一次退出应用');//给出提示
+						history.go(-1)//回退到上一页面
+						// setTimeout(function() {//1s中后清除
+						// 		first = null;
+						// }, 1000);
+				// }
+		};
+</script>
+</html>

@@ -1,0 +1,136 @@
+<template>
+    <!--消息-->
+		<div class="news">
+				<my-head :text="til"></my-head>
+				<div class="newsCon mescroll" id="mescroll">
+						<ul v-for="item in dataArr">
+								<li class="top">
+										<div>{{item.title}}</div>
+										<span>{{item.created}}</span>
+								</li>
+								<li class="bottom">{{item.content}}</li>
+						</ul>
+						<div class="noArr" v-show="dataArrShow">
+								<span>没有消息</span>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+		import MeScroll from 'mescroll.js'
+    export default {
+        name: "news",
+				data(){
+        		return{
+        				til:["消息"],
+								dataArr:[],
+								token:'',
+								dataArrShow:false,
+								mescroll:null,
+						}
+				},
+				mounted(){
+						this.token=localStorage.getItem("userName");
+						var self = this;
+						self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
+								down: {
+										callback: this.downCallback, //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
+										hardwareClass:'mescroll-hardware'
+								},
+
+						});
+
+				},
+				methods:{
+						// 下拉
+						downCallback(){
+										this.$axios.post(url+'/api/main/top',this.$qs.stringify({
+												token:this.token
+										}),{
+												headers:{'Content-Type':'application/x-www-form-urlencoded'}
+										}).then((res)=>{
+												// console.log(res.data.msgList);
+												if(res.data.status ==0 && res.data.msgList.length > 0){
+														this.dataArr =res.data.msgList;
+														setTimeout(() => {
+																this.mescroll.endSuccess();
+														},1000);
+												}else{
+														this.dataArrShow = true;
+														setTimeout(() => {
+																this.mescroll.endSuccess();
+														},1000);
+												}
+
+										}).catch(function (error) {
+												console.log(error);
+												this.mescroll.endErr();
+										});
+
+						},
+
+				},
+				components:{
+        		"my-head":Head
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				box-sizing: border-box;
+				height: auto;
+		}
+		.noArr{
+				padding-top: .5rem;
+				text-align: center;
+				color: #999;
+		}
+		.noArr span{
+				position: relative;
+				font-size: .13rem;
+		}
+		.noArr span:after,.noArr span:before{
+				position: absolute;
+				content: '';
+				width: .6rem;
+				top: .1rem;
+				border-bottom: 1px solid #999;
+		}
+		.noArr span:before{
+				left: -.7rem;
+		}
+		.noArr span:after{
+				right: -.7rem;
+		}
+		.newsCon{
+				padding: 0 .15rem;
+				ul{
+						padding: .13rem 0;
+						border-bottom: 1px solid #eee;
+						.top{
+								display: flex;
+								justify-content: space-between;
+								div{
+										width: 2.6rem;
+								}
+								span{
+										font-size: .12rem;
+										color: rgba(0,0,0,0.40);
+										text-align: right;
+								}
+						}
+						.bottom{
+								font-size: .12rem;
+								line-height: .24rem;
+								color: rgba(0,0,0,0.40);
+						}
+				}
+		}
+</style>

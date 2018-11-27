@@ -1,0 +1,67 @@
+<template>
+  <div class="watchild">
+  	ergerg 
+  </div>
+</template>
+
+<script>
+//		import headnav from './../public/headNav'
+    export default {
+//      name: "addynamic",
+//				components:{
+//      		headnav,
+//				},
+ 			data(){
+          return {
+            
+          }
+      },
+			methods: {
+ 				
+     }
+}
+</script>
+
+<style scoped lang="scss">
+@charset "utf-8";
+$wi:100%;
+$b:1px solid blue;
+$f:flex;
+$co:column;
+$ar:space-around;
+$be:space-between;
+$c:center;
+$w:wrap;
+$r:right;
+$l:left;
+$bai:#fff;
+.colm{
+    flex-direction: $co;
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+}
+.dis{
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+}
+.dicenter{
+    display: $f;
+    justify-content: $c;
+    align-items: $c;
+}
+.dis2{
+    display: $f;
+    justify-content: $be;
+    align-items: $c;
+}
+.dis1{
+    display: $f;
+    justify-content: $ar;
+    align-items: $c;
+    flex-wrap:$w;
+}
+
+
+</style>

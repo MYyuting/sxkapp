@@ -1,0 +1,41 @@
+<template>
+    <!--一级邀请-->
+    <div class="one">
+				<ul>
+						<li>
+								<p>17610384765</p>
+								<span>2018-5-06 12:34</span>
+						</li>
+						<li>
+								<p>17610384765</p>
+								<span>2018-5-06 12:34</span>
+						</li>
+						<li>
+								<p>17610384765</p>
+								<span>2018-5-06 12:34</span>
+						</li>
+				</ul>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "one"
+    }
+</script>
+
+<style scoped lang="scss">
+		.one{
+				padding: 0 .15rem;
+				li{
+						height: .5rem;
+						display: flex;
+						border-bottom: 1px solid #ccc;
+						justify-content: space-between;
+						align-items: center;
+						span{
+								color:  #9B9B9B;
+						}
+				}
+		}
+</style>

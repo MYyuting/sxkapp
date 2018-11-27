@@ -1,0 +1,211 @@
+<template>
+    <div class="home_page">
+        <My-head></My-head>
+				<div id="mescroll" class="mescroll">
+						<!--轮播banner-->
+						<swiper :options="swiperOption" class="banner" ref="mySwiper">
+								<swiper-slide v-for="(item,index) in arrImg" :key="index">
+										<a :href="item.adv_adder"><img :src="item.adv_Info" alt=""></a>
+								</swiper-slide>
+								<div class="swiper-pagination" slot="pagination"></div>
+						</swiper>
+						<!--通知-->
+						<swiper :options="swiperOption1" class="list">
+								<swiper-slide v-for="(item,index) in noticeList" :key="index">
+										<img src="../../assets/img/home/notice@2x.png" alt="">
+										<div class="list-font">
+												<span>{{item.notice_type}} | </span>
+												<a :href="item.go_url"> {{item.notice_msg}}</a>
+										</div>
+								</swiper-slide>
+								<!--<swiper-slide>-->
+										<!--<img src="../../assets/img/home/notice@2x.png" alt="">-->
+										<!--<div class="list-font"><span>咨询 | </span>发的是客服回答考官 打发打发 </div>-->
+								<!--</swiper-slide>-->
+						</swiper>
+
+						<div class="content">
+								<div>
+										<Home-s :buyList="shenGouList" v-if="flag"></Home-s>
+								</div>
+								<!--投票上新-->
+								<div>
+										<div class="tilt tilt1">
+												<span>投票上新</span>
+												<div class="tilt_time">
+														<router-link to="/upnew">全部</router-link><i class="el-icon-arrow-right"></i>
+												</div>
+										</div>
+										<Tou-new :text="votePeopleList"></Tou-new>
+								</div>
+								<!--星讯-->
+								<div>
+										<div class="tilt tilt1">
+												<span>星讯</span>
+										</div>
+										<x-list :text="newsInformationList"></x-list>
+								</div>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import HeadNav from "@/components/public/hadeNav"
+		import HomeS from "@/components/public/homeS"
+		import Tpsx from "@/components/index/tpsx"
+		import Xlist from "@/components/index/Xlist"
+		import MeScroll from "../../../static/mescroll/mescroll.min"
+		export default {
+        name: "index",
+        data(){
+						return{
+								flag:false,
+								swiperOption:{
+										// notNextTick: true,
+										autoplay: 2500,
+										pagination: '.swiper-pagination',
+										// observer:true,
+										loop: true,
+										// observeParents:true,
+										// onSlideChangeEnd: swiper => {
+										// 		//这个位置放swiper的回调方法
+										// 		this.page = swiper.realIndex+1;
+										// 		this.index = swiper.realIndex;
+										// }
+								},
+								swiperOption1:{
+										pagination: '.swiper-pagination',
+										paginationClickable: true,
+										autoplay: 2500,
+										direction:'vertical',
+										autoplayDisableOnInteraction: false,
+										loop: true,
+										coverflow: {
+												rotate: 30,
+												stretch: 10,
+												depth: 60,
+												modifier: 2,
+												slideShadows: true
+										}
+								},
+								arrImg:[],      //轮播
+								noticeList:[],  // 消息滚动
+								newsInformationList:[],   //星讯
+								votePeopleList:[],     //投票
+								shenGouList:[],     //申购
+								token:'',
+						}
+				},
+				//定义这个sweiper对象
+				computed: {
+						// swiper() {
+						// 		return this.$refs.mySwiper.swiper;
+						// }
+				},
+				mounted (){
+						//这边就可以使用swiper这个对象去使用swiper官网中的那些方法
+						// this.swiper.slideTo(0, 0, false);
+						this.token=sessionStorage.getItem("userName");
+
+						//首页数据
+						this.$axios.get('/api/api/main/index',this.$qs.stringify({
+						})).then((res) => {
+								this.flag = true;
+								console.log('首页');
+								console.log(res.data);
+								this.arrImg = res.data.advertList;   //banner
+								this.noticeList = res.data.noticeList;  // 消息滚动
+								this.newsInformationList=res.data.newsInformationList;  //星讯
+								this.votePeopleList = res.data.votePeopleList;   //投票
+								console.log(this.votePeopleList);
+								this.shenGouList = res.data.buyList;   //申购
+								console.log(this.shenGouList);
+						}).catch((err) => {
+								console.log(err);
+						});
+
+				},
+				methods:{
+						downCallback(){
+
+						},
+						upCallback(){
+
+						}
+				},
+				components:{
+						"My-head":HeadNav,
+						"Home-s":HomeS,
+						"Tou-new":Tpsx,
+						"x-list":Xlist,
+				}
+		}
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: .5rem;
+				height: auto;
+		}
+		.home_page{
+				display: flex;
+				flex-direction: column;
+		}
+		.banner img{
+				width: 100%;
+				display: block;
+		}
+		.content{
+				>div+div{
+						border-bottom: 4px solid #eee;
+						padding: 0 .1rem;
+				}
+		}
+		.list{
+				height: .35rem;
+				border-bottom: 5px solid #eee;
+		}
+		.list .swiper-slide{
+				display: flex;
+				align-items: center;
+				padding: 0 .1rem;
+		}
+		.list img{
+				width: .12rem ;
+				height: .12rem;
+				margin-right: .08rem;
+		}
+		.list-font{
+				font-size: .12rem;
+				letter-spacing: 0;
+				white-space: nowrap;
+				overflow:hidden;
+				text-overflow:ellipsis;
+				a{
+						text-decoration: none;
+						color: #333;
+				}
+		}
+		.tilt{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				>span{
+						border-left: 2px solid #FF5558;
+						padding-left: .1rem;
+				}
+		}
+		.tilt1{
+				padding: .2rem 0;
+				a{
+						font-size: .12rem;
+						color: #999;
+						text-decoration: none;
+				}
+		}
+
+</style>

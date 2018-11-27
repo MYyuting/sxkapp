@@ -1,0 +1,158 @@
+<template>
+		<!--明细-->
+		<div class="mingxi">
+				<my-head :text="til"></my-head>
+				<div id="mescroll" class="mescroll">
+								<!--有数据-->
+								<div  v-show="!flag">
+										<List v-for="(item,index) in dataList" :key="index" :class="item.recordType ==1 ? 'cz':'tx'">
+												<div slot="left">
+														<span>￥</span>
+														<span>{{item.recordType ==1 ? '+' : '-'}} {{item.recordTradeMoney}}</span>
+												</div>
+												<div slot="right">
+														<p>{{item.recordType ==1 ? '充值' : '提现'}}{{item.recordStatus}}</p>
+														<span>{{item.recordTradeDate}}</span>
+												</div>
+										</List>
+								</div>
+								<!--无数据-->
+								<div class="wuJu" v-show="flag">
+										<div>
+												<img src="../../assets/img/state/order@2x.png" alt="">
+												<p>暂无相关的明细</p>
+										</div>
+								</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+		import List from '@/components/mine/list/tixian'
+		import { Toast } from 'mint-ui';
+		import MeScroll from 'mescroll.js'
+	export default {
+		name: "mingxi",
+			data(){
+					return{
+							til:["资产明细"],
+							pageNo:1,  //页数
+							pageSize:12,
+							token:'',
+							dataList:[],
+							flag:false,
+							mescroll:null,
+					}
+			},
+			mounted(){
+					this.token = localStorage.getItem('userName');
+					this.$axios.post(url+'/api/userStarlightDetails/findUserStarlightDetail',this.$qs.stringify({
+							token:this.token,
+					})).then((res) => {
+							console.log(res.data);
+					})
+					// this.loadFrist();
+					var self = this;
+					self.mescroll = new MeScroll("mescroll", { //请至少在vue的mounted生命周期初始化mescroll,以确保您配置的id能够被找到
+							up: {
+									callback: self.upCallback, //上拉回调
+									//以下参数可删除,不配置
+									isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+									htmlNodata:'<p class="upwarp-nodata">-- 没有更多数据 -- </p>'  //无数据布局
+							}
+					});
+			},
+			methods:{
+//上啦
+					upCallback(page){
+							//联网加载数据
+							var self = this;
+							this.getListDataFromNet(page.num, page.size, function(curPageData) {
+									// curPageData=[]; //打开本行注释,可演示列表无任何数据empty的配置
+
+									//如果是第一页需手动制空列表 (代替clearId和clearEmptyId的配置)
+									if(page.num == 1) self.dataList = [];
+
+									//更新列表数据
+									self.dataList = self.dataList.concat(curPageData);
+
+									//联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+									//mescroll会根据传的参数,自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+									console.log("page.num="+page.num+", page.size="+page.size+", curPageData.length="+curPageData.length+", self.pdlist.length==" + self.dataList.length);
+
+
+									//方法三(推荐): 您有其他方式知道是否有下一页 hasNext
+									self.mescroll.endSuccess(curPageData.length); //必传参数(当前页的数据个数, 是否有下一页true/false)
+
+									//方法四 (不推荐),会存在一个小问题:比如列表共有20条数据,每页加载10条,共2页.如果只根据当前页的数据个数判断,则需翻到第三页才会知道无更多数据,如果传了hasNext,则翻到第二页即可显示无更多数据.
+									// self.mescroll.endSuccess(curPageData.length);
+
+							}, function() {
+									//联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+									self.mescroll.endErr();
+							});
+					},
+					getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
+							//延时一秒,模拟联网
+							setTimeout(() => {
+									this.$axios.post(url+'/miao/newOrderRecord.do',this.$qs.stringify({
+											token:this.token,
+											currentPage:pageNum,  //当前分页数
+											pageSize:pageSize,     //每页的大小
+											languageType:3
+									})).then((res) => {
+											console.log(res.data);
+											if(res.data.LIST.length <= 0){
+													this.flag = true;
+													successCallback&&successCallback();//成功回调
+											}else{
+													let dataList = res.data.LIST;
+													successCallback&&successCallback(dataList);//成功回调
+											}
+									}).catch(function(error) {
+											errorCallback&&errorCallback()//失败回调
+									});
+							},500)
+					},
+
+			},
+			components:{
+					"my-head":Head,
+					List,
+			}
+	}
+</script>
+<style scoped lang="scss" >
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+		.mingxi{
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+				ul{
+						height: 100%;
+				}
+		}
+		.tx{
+				color: #FF8323 ;
+		}
+		.cz{
+				color: #00BB37;
+		}
+		.wuJu{
+				height: 100%;
+				div{
+						color: #666;
+						text-align: center;
+						img{
+								width: 2rem;
+								margin-top: 1rem;
+						}
+				}
+		}
+</style>

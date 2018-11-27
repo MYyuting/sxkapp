@@ -1,0 +1,215 @@
+<template>
+  <div class="wbtm">
+  	<div class="issuser">
+      <div class="left_img">
+        <img src="./../../assets/img/home/home1.png" alt="">
+      </div>
+      <div class="right_content">
+        <div class="right_title">
+          <span class="right_title_name">{{wmsg.userName}}<img src="./../../assets/img/tip/fans@2x.png" alt=""></span>
+          <span class="right_time">{{wmsg.grTime}}</span>
+        </div>
+        <router-link to="/wdynamic" tag="div" class="right_matter" @click="dynamic()" >
+          <div class="right_matter_content">
+         {{wmsg.grText}}
+          </div>
+          <div class="right_matter_img">
+            <img :src="'http://xsk.quanxiankaibo.com'+item1.path" alt=""  v-for="(item1,indexa) in wmsg.aList">
+          </div>
+        </router-link>
+        <div class="right_bottom">
+          <div class="right_start">
+            <img src="./../../assets/img/home/star@2x.png" alt="">
+            <span>2468 <i>(6)</i></span>
+          </div>
+          <div class="right_message">
+            <img src="./../../assets/img/news/comment@2x.png" alt="">
+            <span>{{wlistnum}}</span>
+          </div>
+          <div class="lerse" @click="wdel()">
+            <img src="./../../assets/img/news/deleteNews@2x.png" alt="">
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+</template>
+<script>
+	import { MessageBox } from 'mint-ui';
+	import { Indicator } from 'mint-ui';
+    export default {
+        name: "wissuser",
+				props:['wid','wlistnum'],
+				data(){
+					return{
+						wmsg:'',
+					}
+				},
+				mounted(){
+					var that=this
+					setTimeout(function(){
+						console.log('fuzhhhhhhhh')
+						console.log(that.wlistnum)
+					},200)
+						console.log(that.wlistnum)
+					
+					Indicator.open({
+					  text: 'Loading...',
+					  spinnerType: 'fading-circle'
+					});
+				   	var token=sessionStorage.getItem("userName");
+			      		this.$axios({
+							  headers:{'Content-Type':'application/x-www-form-urlencoded'},
+						      method: "POST",
+						      url: url+"/sxz/api/findSxzDetails",
+						      data: this.$qs.stringify({
+											token:token,
+											id:this.wid
+						      })
+						    })
+						     .then(res=> {
+						     	console.log("详情");
+						       console.log(res.data);
+						      if(res.data.status==0){
+						       	Indicator.close();//关闭loding
+						       	 this.wmsg=res.data.data //赋值
+						      	 console.log('节时间')
+						      	// 截取所需时间
+						      	var wtime=this.wmsg.grTime
+						      	var jiequ=wtime.slice(10,16)
+										this.wmsg.grTime=jiequ
+//						      	 this.cList=this.wmsg.cList.length
+						       }else{
+						        setTimeout(function(){
+						        	 	Indicator.close();//关闭loding
+						        },1000)
+						       }
+						     })
+						     .catch(err=>{
+						       console.log(err);
+						     });
+				},
+				methods:{
+					//删除
+					wdel(){
+						MessageBox.confirm('确定删除这条动态吗?',"").then(action => {
+								console.log("确定")
+								var token=sessionStorage.getItem("userName");
+			      		this.$axios({
+									  headers:{'Content-Type':'application/x-www-form-urlencoded'},
+								      method: "POST",
+								      url: url+"/sxz/api/delRecord",
+								      data: this.$qs.stringify({
+													token:token,
+													id:this.wid
+								      })
+								    })
+								     .then(res=> {
+								       console.log(res);
+								       if(res.data.status==0){
+														this.$router.back(-1)
+								     		}else{
+                  			//否则提示
+								     			var msga=res.data.message;
+													Toast({
+									          message:msga,
+									        });
+								     		}
+								     })
+								     .catch(err=>{
+								       console.log(err);
+								     });
+						}, action => {
+							console.log("取消")
+						})
+					}
+				}
+    }
+</script>
+<style scoped lang="scss">
+  $color:#ff5558;
+  .issuser{
+    display: flex;
+    justify-content:center;
+    align-items: flex-start;
+    padding:.15rem .2rem .15rem .1rem;
+    .left_img{
+      width:.8rem;
+      img{
+        border-radius:50%;
+        width:.6rem;
+      }
+    }
+    .right_content{
+    	padding-left: .1rem;
+      .right_title{
+        .right_title_name{
+          font-size:.18rem;
+          color:$color;
+          font-weight:bold;
+          img{
+            width:.2rem;
+          }
+        }
+        .right_time{
+          float:right;
+          font-size:.14rem;
+          color:#999;
+        }
+      }
+      .right_matter{
+        .right_matter_content{
+          padding:.1rem 0;
+          line-height:1.4;
+        }
+        .right_matter_img{
+        	width: 2.6rem;
+          img{
+            width:0.84rem;
+            height: 0.84rem;
+            margin:0 1px;
+            margin-bottom: .02rem;
+          }
+        }
+      }
+      .right_bottom{
+        height:.5rem;
+        line-height:.5rem;
+        >div{
+          display: inline-block;
+        }
+        .right_start{
+          img{width:.18rem;}
+          span{
+            color:#ff5558;
+          }
+        }
+        .right_message{
+          margin-left:.2rem;
+          img{width:.24rem;}
+          span{
+            color:#999;
+          }
+        }
+        .lerse{
+          float:right;
+          img{
+            height:.3rem;
+          }
+        }
+      }
+    }
+  }
+</style>
+<style>
+	.mint-msgbox-confirm{
+		color:#FF5558 
+	}
+	.mint-msgbox-cancel{
+		color:#AAAAAA 
+		
+	}
+	.mint-msgbox-message {
+		color: #333;
+	}
+</style>

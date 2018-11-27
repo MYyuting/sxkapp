@@ -1,0 +1,147 @@
+<template>
+   <form action="" @submit.prevent="submit">
+    <div class="addynamic">
+				<headnav>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">发布动态</span>
+						<span  slot="head_right" ><input type="submit" class="wstyle"  value="发布"/></span>
+				</headnav>
+				<div class="addynamic_content">
+						
+							<textarea name="wtextarea" id="textarea" v-model="inputText.wtextarea" placeholder="最多输入200字"></textarea>
+							<div class="content_bottom">
+									<label>
+											<input
+													class="file"
+													name="wfile"
+													type="file"
+													accept="image/png,image/gif,image/jpeg"
+													@change="update"
+													style="display:none;"
+													
+											/>
+											<span class="iconfont icon-photo"></span>
+									</label>
+									<span class="iconfont icon-face"></span>
+							</div>
+						
+				</div>
+
+		</div>
+	</form>
+		
+</template>
+
+<script>
+   import headnav from './../public/headNav'
+   import { Toast } from 'mint-ui';
+    export default {
+        name: "addynamic",
+	        data(){
+	        	
+	        	return{
+	        		inputText:{}
+	        		
+	        	}
+	        },
+				components:{
+        		headnav,
+				},
+				methods: {
+        			back(){
+    					this.$router.go(-1)
+					},
+					update(){
+
+					},
+					submit(){
+						var token=sessionStorage.getItem("userName");
+						console.log(typeof token);
+					 if(this.inputText.wtextarea==undefined){
+							console.log("空")	
+							let instance = Toast('内容不能为空');
+							setTimeout(() => {
+							  instance.close();
+							}, 2000);
+					 }else{
+					 	this.$axios({
+								headers:{'Content-Type':'application/x-www-form-urlencoded'},
+					      method: "POST",
+					      url: "/api/sxz/api/save",
+					      data: this.$qs.stringify({
+					        type:1,
+									text:this.inputText.wtextarea,
+									attid:"1",
+									token:token
+					     })
+					    })
+					     .then(res=> {
+					       console.log(res);
+//					       let instance1 = Toast('平台审核成功后将自动发布该时间商品');
+//							setTimeout(() => {
+//							  instance1.close();
+//							  this.$router.push("/quotation/dynamic")
+//							}, 2000);
+							
+					     })
+					     .catch(err=>{
+					       console.log(err);
+					     });
+					 		
+					 	
+							
+					  }	
+				  },
+//				  wpublish(){
+//					 
+//				  }
+				},
+			mounted(){
+			   
+			}
+				
+    }
+</script>
+
+<style scoped lang="scss">
+form{
+	height: 100%;
+}
+		.addynamic{
+				height:100%;
+				display: flex;
+				flex-direction:column;
+				
+				.addynamic_content{
+						flex-grow:1;
+						height: 1rem;
+						box-sizing:border-box;
+						padding-bottom:.55rem;
+						position:relative;
+						textarea{
+								border:0;
+								box-sizing:border-box;
+								background:#eee;
+								height:100%;
+								width:100%;
+								padding:.2rem .3rem;
+								outline:none;
+								color:#333;
+								resize:none;
+						}
+						.content_bottom{
+								height:.5rem;
+								line-height:.5rem;
+								padding:0 .12rem;
+								span{
+										font-size:.5rem;
+								}
+						}
+				}
+		}
+		.wstyle{
+			background:transparent;
+			border:none;
+			color: #fff;
+		}
+</style>

@@ -1,0 +1,16 @@
+<template>
+    <!--新闻 详情-->
+		<div class="journalism">
+				新闻
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "Journalism"
+    }
+</script>
+
+<style scoped>
+
+</style>

@@ -1,0 +1,286 @@
+<template>
+		<!--时间商品订单-->
+    <div class="timeD">
+				<Head :text="til"></Head>
+				<div id="mescroll" class="mescroll">
+						<!--没有数据的时候-->
+						<div class="nothing" v-show="flag">
+								<div>
+										<img src="../../../assets/img/state/order@2x.png" alt="">
+										<p>您还没有相关的订单</p>
+								</div>
+						</div>
+
+						<!--有数据-->
+						<div class="listCon">
+								<div class="list" v-for="(item,index) in dataList">
+										<div class="listTop" @click="listClick(index)">
+												<div class="left">
+														<img :src="item.investorsAvatar" alt="">
+														<div>
+																<p>{{item.investorsName}} {{item.investorsCode}}</p>
+																<span>{{item.investorsWork}} </span>
+														</div>
+												</div>
+												<div>
+														<i :class="index == index1? 'el-icon-arrow-up':'el-icon-arrow-down'"></i>
+												</div>
+										</div>
+										<div class="Speed">
+												<span :class="item.bookingStatus == 0 ? 'activ' : '' ">待受理{{item.bookingStatus}}</span>
+												<span :class="item.bookingStatus == 1 ? 'activ' : '' ">受理中</span>
+												<span :class="item.bookingStatus == 2 ? 'activ' : '' ">预约成功</span>
+												<span :class="item.bookingStatus == 3 ? 'activ' : '' ">订单进行中</span>
+												<span :class="item.bookingStatus == 4 ? 'activ' : '' ">订单完成</span>
+										</div>
+										<ul class="listUl" v-show="index == index1 " >
+												<li>
+														<span>时间商品</span>
+														<span>{{}}</span>
+												</li>
+												<li>
+														<span>下单时间</span>
+														<span>{{item.createTime}}</span>
+												</li>
+												<li>
+														<span>商品价格</span>
+														<span>{{item.averPrice}}</span>
+												</li>
+												<li>
+														<span>当前进度</span>
+														<span>{{arrJD[item.bookingStatus]}}</span>
+												</li>
+										</ul>
+										<div class="cancel">
+												<span>订单编号：{{item.bookingOrderNo}}</span>
+												<button @click="wdel(index,item.bookingId)">取消订单</button>
+										</div>
+								</div>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from "@/components/mine/headMe"
+		import { MessageBox,Toast } from 'mint-ui';
+		import MeScroll from 'mescroll.js'
+    export default {
+        name: "timeDD",
+				data(){
+        		return {
+        				flag:false,
+								til:["时间商品订单"],
+								mescroll:'',
+								arrJD:['待受理','受理中','预约成功','订单进行中','订单完成'],
+								dataList:[
+										{
+												url:require("../../../assets/img/home/home1.png"),
+												til:"莫文蔚 000001",
+												tilx:"微博转发",
+												hao:"00000120180503001",
+												listArr:[
+														{
+																til:"时间商品",
+																tilx:"微博转发"
+														},
+														{
+																til:"下单时间",
+																tilx:"2018-05-15 20:35"
+														},
+														{
+																til:"商品价格",
+																tilx:"800 秒"
+														},
+														{
+																til:"当前进度",
+																tilx:"待受理"
+														}
+												]
+										}
+								],
+								index1:-1,
+								token:'',
+						}
+				},
+				mounted(){
+        		this.token = sessionStorage.getItem('userName');
+        		this.dataJson();
+
+						this.mescroll = new MeScroll("mescroll", { //第一个参数"mescroll"对应上面布局结构div的id
+								//如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
+								//解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback
+								down: {
+										callback: downCallback //下拉刷新的回调,别写成downCallback(),多了括号就自动执行方法了
+								},
+								up: {
+										callback: upCallback , //上拉加载的回调
+										isBounce: false //如果您的项目是在iOS的微信,QQ,Safari等浏览器访问的,建议配置此项.解析(必读)
+								}
+						});
+
+				},
+				methods:{
+						listClick(index){
+								if(this.index1 == -1){
+										this.index1 = index;
+								}else{
+										this.index1 = -1;
+								}
+
+						},
+						dataJson(){
+								this.$axios.post('/api/miao/queryBookings.do',this.$qs.stringify({
+										token:this.token,
+										currentPage:'1',  //当前分页数
+										pageSize:'6',     //每页的大小
+								})).then((res) => {
+										console.log(res.data);
+										this.dataList = res.data.LIST
+								})
+						},
+				//		取消订单
+					wdel(index,id){
+						MessageBox.confirm('确定删除这笔订单吗?',"").then(action => {
+								console.log(index +'-----'+ id);
+								this.$axios.post('/api/miao/cancelBooking.do',this.$qs.stringify({
+										token:this.token,
+										bookingId:id,
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.STATUS == 0){
+												this.dataList.splice(index,1);
+												Toast({
+														message: '删除成功',
+														position: 'bottom',
+												});
+										}
+								})
+						}, action => {
+							console.log("取消")
+						})
+					}
+				},
+				components:{
+        		Head,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		/*mescroll滚动的区域*/
+		.mescroll {
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+		.list{
+				border-bottom: 4px solid #eee;
+		}
+		.listTop{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-bottom: 1px solid #eee;
+				padding: 0 .15rem;
+				height: .7rem;
+				.left{
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						img{
+								width: .5rem;
+								height: .5rem;
+								border-radius: 50%;
+								margin-right: .1rem;
+						}
+						p{
+								color: #FF5558;
+								line-height: .25rem;
+						}
+						span{
+								font-size: .12rem;
+								color: #999;
+								line-height: .25rem;
+						}
+				}
+		}
+		.Speed{
+				height: .4rem;
+				display: flex;
+				justify-content: space-between;
+				padding: 0 .15rem;
+				border-bottom: 1px solid #eee;
+				color: #999;
+				span{
+						font-size: .1rem;
+						line-height: .4rem;
+						position: relative;
+				}
+				.activ{
+						color: #FF5558;
+				}
+				span:not(:nth-child(5)):after{
+						content: "";
+						position: absolute;
+						width: .26rem;
+						height: 1px;
+						top: .18rem;
+						border-left: .2rem solid #999;
+				}
+				span:nth-child(1):after,span:nth-child(2):after{
+						left: .4rem;
+				}
+				span:nth-child(3):after{
+						left: .51rem;
+				}
+				span:nth-child(4):after{
+						left: .62rem;
+				}
+		}
+		.cancel{
+				height: .5rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0 .15rem;
+				font-size: .12rem;
+				color: #999;
+				button{
+						width: .6rem;
+						height: .28rem;
+						background: #d0d0d0;
+						color: #fff;
+						font-size: .1rem;
+						border:none ;
+				}
+		}
+
+		.listUl{
+				padding: 0 .15rem;
+				border-bottom: 1px solid #eee;
+				li{
+						display: flex;
+						justify-content: space-between;
+						line-height: .3rem;
+						font-size: .12rem;
+				}
+		}
+
+
+		.nothing{
+				div{
+						text-align: center;
+						padding-top: 1.7rem;
+				}
+				img{
+						width: 1.4rem;
+						height: 1.4rem;
+				}
+				p{
+						color: #aaa;
+				}
+		}
+
+</style>

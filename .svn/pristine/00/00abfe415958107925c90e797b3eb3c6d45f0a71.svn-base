@@ -1,0 +1,104 @@
+<template>
+    <!--当前订单子组件-->
+		<div class="mairu">
+				<div v-for="item in listSrr">
+						<div class="til" :class="item.id == 1 ? 'red'  :'lu'">
+								<span>{{item.til}}</span>
+								<span>{{item.time}}</span>
+						</div>
+						<ul>
+								<li>
+										<span>委托价</span>
+										<p>{{item.jia}}</p>
+								</li>
+								<li>
+										<span>委托量</span>
+										<p>{{item.num}}</p>
+								</li>
+								<li>
+										<span>成交量</span>
+										<p>{{item.num1}}</p>
+								</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "mairu_child",
+				data(){
+        		return {
+								listSrr:[
+										{
+												id:1,
+												til:"买入 李宗盛",
+												time:"2017-10-21 20:32:12",
+												jia:"0.12",
+												num:"100",
+												num1:"15"
+										},
+										{
+												id:2,
+												til:"买入 李宗盛",
+												time:"2017-10-21 20:32:12",
+												jia:"0.12",
+												num:"100",
+												num1:"16"
+										},
+										{
+												id:2,
+												til:"买入 李宗盛",
+												time:"2017-10-21 20:32:12",
+												jia:"0.12",
+												num:"100",
+												num1:"11"
+										}
+								]
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.til{
+				padding: 0 .17rem;
+				line-height: .4rem;
+				display: flex;
+				justify-content: space-between;
+		&.red{
+				 color: #FF5558;
+		 }
+		&.lu{
+				 color: #0BA1EE;
+		 }
+		}
+		ul{
+				border-bottom: 1px solid #ddd;
+				display: flex;
+				justify-content: space-between;
+				padding-bottom: .15rem;
+		li{
+				position: relative;
+				width: 34%;
+				text-align: center;
+		span{
+				font-size: .12rem;
+				color: rgba(0,0,0,0.40);
+				line-height: .2rem;
+		}
+		p{
+				line-height: .3rem;
+		}
+		}
+		li:not(:first-child)::after{
+				position: absolute;
+				content: '';
+				width: 0;
+				top: 5px;
+				left: 0;
+				height: .34rem;
+				border: 1px solid #ddd;
+		}
+		}
+</style>

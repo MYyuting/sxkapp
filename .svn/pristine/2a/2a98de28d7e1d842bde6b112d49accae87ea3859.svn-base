@@ -1,0 +1,407 @@
+<template>
+    <!--时间商品-->
+		<div class="timeCom">
+				<ul v-show="tiemShow">
+						<li v-for="(item,index) in dataList">
+								<p>{{item.name}}</p>
+								<p class="address" :class="item.flag ? '' : 'active'">{{item.content}}</p>
+								<span class="zhan" v-show="item.content.length >=68"
+											@click="zhankai(index)">{{item.flag ? '展开' : '收起'}}</span>
+								<p class="time">
+										<span>下架时间：{{item.isLongEffective == 0? '长期有效' : item.longEffectiveTime}}</span>
+										<span>价格：{{item.seconds}}s</span>
+								</p>
+								<button v-show="item.isshow == 1" @click="yueClick(item.projectId)">预约</button>
+						</li>
+				</ul>
+				<div v-show="!tiemShow" class="zanwu">暂无时间商品</div>
+
+				<mt-popup
+						v-model="popupVisible"
+						popup-transition="popup-fade"
+						position="bottom">
+						<div class="bottom-con">
+								<div class="nav">
+										<span class="el-icon-back" @click="popupVisible = false"></span>
+										<span>提交预约</span>
+										<span class="el-icon-close" @click="popupVisible = false"></span>
+								</div>
+								<div class="con-popup">
+										<div> <p>发行人</p> <p>莫文蔚</p></div>
+										<div> <p>时间商品</p> <p>下周可以来片场探班哦下周可以来片场探班哦下周可以来片场</p></div>
+										<div> <p>消耗时间</p> <p>1000秒</p></div>
+								</div>
+
+								<div class="check-input">
+										<el-checkbox fill="#FF5558" v-model="checked"></el-checkbox>
+										<span>提交预约即表示您已阅读并同意
+												<router-link to="/rels">《约见规则》</router-link>
+										</span>
+								</div>
+								<button @click="subyu">提交预约</button>
+						</div>
+				</mt-popup>
+
+				<mt-popup
+						v-model="popupVisible1"
+						popup-transition="popup-fade"
+						position="bottom">
+						<div class="pay-tool">
+								<div class="pay-tool-title border-bottom">
+										<span class="el-icon-back" @click="backHandle"></span>
+										<span>请输入交易密码</span>
+										<span class="el-icon-close" @click="backHandle"></span>
+								</div>
+								<div class="pay-tool-content">
+										<div class="pay-tool-inputs">
+												<div class="item" v-for="i in items">
+														<span class="icon_dot" v-if="password[i]"></span>
+												</div>
+										</div>
+										<div class="pay-tool-link">
+												<router-link class="link" to="/getP">忘记密码？</router-link>
+										</div>
+								</div>
+								<div class="pay-tool-keyboard">
+										<!--键盘-->
+										<ul>
+												<li @click="keyUpHandle($event)" v-for="val in keys">{{ val }}</li>
+												<li class="del" @click="delHandle"><span class="icon-del"><i class="el-icon-close"></i></span></li>
+										</ul>
+								</div>
+						</div>
+				</mt-popup>
+		</div>
+</template>
+
+<script>
+		const keys = () => [1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0];
+		import { Toast } from 'mint-ui'
+		import { Popup } from 'mint-ui';
+    export default {
+        name: "timeCom",
+				data(){
+        		return {
+								items: [0, 1, 2, 3, 4, 5],
+								keys: keys(),
+								password: [],
+								token:'',
+								investorsCode:'',  //发行人编码
+        				checked:true,
+								popupVisible:false,
+								popupVisible1:false,
+								showBtn:false,
+								dataList:[],
+								tiemShow:true,
+								bookingId:'',
+						}
+				},
+				mounted(){
+						this.token = localStorage.getItem('userName');
+						// this.yuyueJson()
+				},
+				components:{
+						Popup:Popup.name
+				},
+				methods:{
+        		// 展开
+						zhankai(index){
+								this.dataList[index].flag = !this.dataList[index].flag;
+						},
+
+						//预约列表
+						yuyueJson(){
+								this.$axios.post(url+'/miao/queryBookingType.do',this.$qs.stringify({
+										token:this.token,
+										investorsCode:localStorage.getItem('code'),
+										languageType:3,
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.STATUS == 0 ){
+												this.tiemShow = true;
+												this.dataList = res.data.LIST;
+												if(res.data.LIST.length <= 0){
+														this.tiemShow = false;
+														Toast({
+																message: '暂无时间商品',
+																duration: 1000
+														});
+												}
+										}else{
+												this.tiemShow = false;
+												Toast({
+														message: res.data.MSG,
+														duration: 1000
+												});
+										}
+								})
+						},
+						//预约按钮
+						yueClick(index){
+								this.$axios.post(url+'/miao/bookingInvestors.do',this.$qs.stringify({
+										token:this.token,
+										investorsCode:this.investorsCode,
+										projectId:index,
+								})).then((res) => {
+										console.log('预约'+res.data);
+										if(res.data.STATUS == 0 ){
+												this.popupVisible = true;
+												console.log(res.data.OBJECT.bookingId);
+												this.bookingId = res.data.OBJECT.bookingId;
+										}else{
+												Toast({
+														message: '您持有的时间不足',
+														position: 'middle',
+														duration: 3000,
+														className:'tishi'
+												});
+										}
+								})
+						},
+						//预约提交
+						subyu(){
+								console.log(this.checked);
+								if(this.checked){
+										this.popupVisible =false;
+										this.popupVisible1 = true
+								}else{
+										Toast({
+												message: '约见规则没有勾选',
+												position: 'middle',
+												duration: 3000,
+										});
+								}
+						},
+						backHandle () {
+								this.clearPasswordHandle();  // 返回时清除password
+								// this.$emit('backFnc') // 返回上级
+								this.popupVisible1 = false
+						},
+						keyUpHandle (e) {
+								let text = e.currentTarget.innerText;
+								let len = this.password.length;
+								if (!text || len >= 6) return;
+								this.password.push(text);
+								this.ajaxData()
+						},
+						delHandle () {
+								if (this.password.length <= 0) return false;
+								this.password.pop()
+						},
+						ajaxData () {
+								if (this.password.length >= 6) {
+										console.log(parseInt(this.password.join(' ').replace(/\s/g, '')))
+								}
+								return false
+						},
+						clearPasswordHandle: function () {
+								this.password = []
+						}
+				}
+    }
+</script>
+<style lang="scss">
+		.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+				background-color: #FF5558;
+				border-color:#FF5558
+		}
+		.tishi span{
+				margin: .05rem;
+		}
+		.el-checkbox__inner:hover{
+				border-color: #FF5558;
+		}
+		.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+				background: #FF5558;
+				border-color: #FF5558;
+		}
+</style>
+<style scoped lang="scss">
+		.zanwu{
+				text-align: center;
+				color: #999;
+				font-size: .13rem;
+				line-height: .8rem;
+		}
+		a{
+				text-decoration: none;
+				color: #FF5558;
+		}
+		.check-input{
+				padding: 0 0 .1rem;
+		}
+		.mint-popup-bottom{
+				width: 100%;
+				background: #fff;
+		}
+
+		.bottom-con{
+				padding: 0 .15rem .2rem;
+				.nav{
+						font-size: .16rem;
+						display: flex;
+						width: 100%;
+						border-bottom: 1px solid #ddd;
+						justify-content: space-between;
+						box-sizing: border-box;
+						align-items: center;
+						height: .6rem;
+				}
+				.con-popup{
+						padding: .15rem 0;
+						div{
+								display: flex;
+								padding: 4px 0;
+								p{
+										width: 68%;
+								}
+								p:nth-child(1){
+										width: 25%;
+										color: rgba(0,0,0,0.40);
+								}
+						}
+				}
+				button{
+						background: #FF5558;
+						width: 100%;
+						height: .44rem;
+						color: #fff;
+						border: none;
+				}
+		}
+
+		.timeCom{
+				li{
+						position: relative;
+						padding:  .15rem;
+						border-bottom: 1px solid #ddd;
+						p:not(:nth-child(1)){
+								margin-top: .1rem;
+						}
+						.address{
+								font-size: .12rem;
+								display: -webkit-box;
+								-webkit-box-orient: vertical;
+								-webkit-line-clamp: 2;// 限制快级元素的文本行数
+								overflow: hidden;
+								color: #999;
+								&.active{
+										-webkit-line-clamp: 100;// 限制快级元素的文本行数
+								}
+						}
+						.zhan{
+								text-align: right;
+								display: block;
+								background: #fff;
+								right: 0;
+								color: #54e4ff;
+						}
+						.time span{
+								font-size: .12rem;
+								margin-right: .3rem;
+						}
+						button{
+								position: absolute;
+								top: 8px;
+								width: .5rem;
+								height: .22rem;
+								border: 1px solid #FF5558;
+								color: #FF5558;
+								font-size: .12rem;
+								background: #fff;
+								right: .1rem;
+								border-radius: 4px;
+						}
+				}
+		}
+
+
+		.pay-tool {
+				/*position: relative;*/
+				height: 3.8rem;
+				background-color: #fff;
+				overflow: hidden;
+				box-sizing: border-box;
+				&-title {
+						font-size: .16rem;
+						padding: 0 .15rem;
+						height: .6rem;
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+				}
+				&-content {
+						padding: 0 .15rem;
+						.pay-tool-inputs {
+								width: 100%;
+								height: .52rem;
+								margin: .1rem auto 0;
+								border: 1px solid #b9b9b9;
+								box-shadow: 0 0 1px #e6e6e6;
+								display: flex;
+								.item {
+										width: 16.66666666%;
+										height: .52rem;
+										border-right: 1px solid #b9b9b9;
+										line-height: .52rem;
+										text-align: center;
+										&:last-child {
+												border-right: none;
+										}
+										.icon_dot {
+												display: inline-block;
+												width: 0.2rem;
+												height: 0.16rem;
+												background: url("../../assets/img/home/password@2x.png") no-repeat;
+												background-size: cover;
+										}
+								}
+						}
+						.pay-tool-link {
+								height: .35rem;
+								padding: .15rem 0 0;
+								text-align: right;
+								.link {
+										color: #FF5558;
+								}
+						}
+				}
+				.pay-tool-keyboard {
+						/*position: absolute;*/
+						/*left: 0;*/
+						/*bottom: 0;*/
+						/*width: 100%;*/
+						height: 2.35rem;
+						ul {
+								width: 100%;
+								display: flex;
+								flex-wrap: wrap;
+								li {
+										width: 25%;
+										height: .2rem;
+										line-height: .2rem;
+										text-align: center;
+										border-right: 1px solid #aeaeae;
+										border-bottom: 1px solid #aeaeae;
+										font-size: 0.2rem;
+										font-weight: bold;
+										&:nth-child(1), &:nth-child(2), &:nth-child(3) {
+												border-top: 1px solid #eee;
+										}
+										&:nth-child(3), &:nth-child(6), &:nth-child(9), &:nth-child(12) {
+												border-right: none;
+										}
+										&:nth-child(10), &:nth-child(11), &:nth-child(12) {
+												border-bottom: none;
+										}
+										&:nth-child(10), &:nth-child(12), &:active {
+												background-color: #d1d4dd;
+										}
+										&:nth-child(12):active {
+												background-color: #fff;
+										}
+								}
+						}
+				}
+		}
+</style>

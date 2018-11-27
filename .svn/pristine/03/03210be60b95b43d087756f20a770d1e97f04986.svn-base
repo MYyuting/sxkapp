@@ -1,0 +1,154 @@
+<template>
+    <!--简介 详情-->
+		<div class="introduction">
+				<!--轮播-->
+				<swiper :options="swiperOption" class="In-img" ref="mySwiper">
+						<swiper-slide>
+								<img src="../../assets/img/xiangqing1.jpg" alt="">
+						</swiper-slide>
+						<swiper-slide>
+								<img src="../../assets/img/xiangqing.jpg" alt="">
+						</swiper-slide>
+						<swiper-slide>
+								<img src="../../assets/img/xiangqing.jpg" alt="">
+						</swiper-slide>
+						<swiper-slide>
+								<img src="../../assets/img/xiangqing.jpg" alt="">
+						</swiper-slide>
+				</swiper>
+
+				<!--个人资料-->
+				<div class="personal">
+						<h4>个人资料</h4>
+						<ul>
+								<li v-for="item in geren">
+										<div>{{item.til}}<i></i></div>
+										<span>：</span>
+										<p>{{item.text}}</p>
+								</li>
+						</ul>
+				</div>
+				<!--主要成就-->
+				<div class="achievement">
+						<h4>主要成就</h4>
+						<ul>
+								<li>香港电影金像奖最佳女配角</li>
+								<li>MTV亚洲大奖启发精神奖</li>
+								<li>CCTV-MTV音乐盛典最佳女歌手</li>
+								<li>两届台湾金曲奖最佳国语女歌手</li>
+						</ul>
+				</div>
+
+				<!--主要经历-->
+				<div class="experience">
+						<h4>主要经历</h4>
+						<ul>
+								<li>1997年莫文蔚被选为PIFAN 1997第一届韩国釜山市国际电影节评审委员。</li>
+								<li>2001年成为Christian Dior口红亚洲区诱人舞会代言人；2001年在电视剧《烈爱伤痕》中饰演更纱。</li>
+								<li>2001年莫文蔚被选为第四届法国杜维尔亚洲电影节评审委员。</li>
+								<li>2003年凭借专辑《i》 获得第14届台湾金曲奖最佳国语女演唱人奖，成为首位赢得台湾金曲奖的香港女歌手，同年获得第5届CCTV-MTV音乐盛典香港地区年度最佳女歌手奖</li>
+						</ul>
+				</div>
+		</div>
+</template>
+
+<script>
+    export default {
+        name: "introduction",
+				data(){
+        		return {
+								swiperOption:{
+										notNextTick: true,
+										pagination: '.swiper-pagination',
+										paginationClickable: true,
+										observer:true,
+										loop: false,
+										spaceBetween:10,  //slide之间的距离
+										slidesPerView: 2.5,  // 显示数量
+										loopedSlides: 8,
+										slidesOffsetBefore : 10, //设定slide与左边框的预设偏移量（单位px）。
+										observeParents:true,
+								},
+								geren:[
+										{
+												til:"姓名",
+												text:"李宗盛",
+										},
+										{
+												til:"国籍",
+												text:"中国",
+										},
+										{
+												til:"出生年月",
+												text:"1970年6月2日",
+										},
+										{
+												til:"职业",
+												text:"音乐制作人、歌手、演员",
+										},
+										{
+												til:"毕业院校",
+												text:"英国伦敦大学皇家霍洛威学院",
+										}
+								]
+						}
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		.introduction{
+				padding: .1rem 0;
+		}
+		.In-img{
+				img{
+						width: 1.4rem;
+						height: 1.9rem;
+				}
+		}
+		h4{
+				position: relative;
+				text-indent: 7px;
+				margin-top: .15rem;
+				margin-bottom: .1rem;
+				&::after{
+						content: "";
+						position: absolute;
+						width: 4px;
+						height: 14px;
+						top: 4px;
+						left: 0;
+						border: transparent;
+						border-left: 2px solid #FF5558;
+				}
+
+		}
+		.personal{
+				padding: 0 .15rem;
+
+				li{
+						display: flex;
+				}
+				span{
+						color:  #888888;
+						margin-right: .1rem;
+				}
+				div{
+						height: .25rem;
+						color:  #888888;
+						width: 18%;
+						text-align: justify;
+						i{
+								display:inline-block;
+								/*padding-left: 100%;*/
+								width:100%;
+						}
+				}
+		}
+		.achievement,.experience{
+				padding: 0 .15rem;
+				li{
+						line-height: .24rem;
+				}
+		}
+</style>

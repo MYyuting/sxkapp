@@ -1,0 +1,15 @@
+<template>
+    <div class="holdpos">
+      holdpos
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "holdpos"
+    }
+</script>
+
+<style scoped>
+
+</style>

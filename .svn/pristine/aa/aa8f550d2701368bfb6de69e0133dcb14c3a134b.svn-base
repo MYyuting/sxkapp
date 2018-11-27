@@ -1,0 +1,39 @@
+<template>
+		<!--明细-->
+		<div class="mingxi">
+				<my-head :text="til"></my-head>
+				<List>
+						<div slot="left">
+								<span>￥</span>
+								<span>+10000.00</span>
+						</div>
+						<div slot="right">
+								<p>充值</p>
+								<span>2018-05-02 12:25</span>
+						</div>
+				</List>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/mine/headMe'
+		import List from '@/components/mine/list/tixian'
+	export default {
+		name: "mingxi",
+			data(){
+					return{
+							til:["充值明细"],
+					}
+			},
+			mounted(){
+
+			},
+			methods:{
+
+			},
+			components:{
+					"my-head":Head,
+					List
+			}
+	}
+</script>

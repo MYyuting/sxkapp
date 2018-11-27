@@ -1,0 +1,391 @@
+<template>
+    <!--投票上新详情页-->
+		<div class="TouPiao">
+				<Head>
+						<span class="el-icon-arrow-left" slot="head_left" @click="back"></span>
+						<span class="" slot="head_center">{{issuserArr.investorsName}}</span>
+						<span class="iconfont icon-paiHangBang_Star" slot="head_right" @click="topR(issuserArr.investorsAvatar)"></span>
+				</Head>
+
+				<div id="mescroll" class="mescroll">
+						<!--内容上-->
+						<div class="con-top">
+								<div class="con-top-left">
+										<img :src="issuserArr.investorsAvatar" alt="">
+										<div class="left-con">
+												<p style="font-weight: bold">{{issuserArr.investorsName}} <i class="iconfont icon-fans"></i>
+														<i class="iconfont icon-touPiao"></i></p>
+												<p><img src="../../assets/img/home/star@2x.png" alt="">
+														<span> {{issuserArr1.starlightNum}}</span>
+												</p>
+												<button @click="song">送星光</button>
+										</div>
+								</div>
+								<div class="con-top-right">
+										<div>投票上新</div>
+										<p><span>排名</span><b>{{issuserArr1.starlightRanking}}</b></p>
+								</div>
+						</div>
+						<!--内容下-->
+						<div class="nav">
+								<p v-for="(item,index) in tabList"
+									 :class="{active:(currentIndex == index)}"
+								@click="tabClick(index)">{{item}}</p>
+						</div>
+						<!--简介-->
+						<div v-show="currentIndex==0">
+								<Introduction :investors="issuserArr"></Introduction>
+						</div>
+						<!--时间商品-->
+						<div v-show="currentIndex==1">
+								<timeCom></timeCom>
+						</div>
+						<!--动态-->
+						<div v-show="currentIndex==2">
+								<DongTai :datalist="dongtai1"></DongTai>
+						</div>
+						<!--新闻-->
+						<div v-show="currentIndex==3">
+								<Journalism :text="dataJson"></Journalism>
+						</div>
+				</div>
+
+				<!--弹框-->
+				<div class="el-motai" v-show="alert1">
+						<div>
+								<div>
+										<p>送给  <span class="til-name">{{issuserArr.issuerName}}</span></p>
+										<input type="number" v-model="xingNum">
+										<div class="img-k">
+												<img src="../../assets/img/home/star@2x.png" alt="">
+												<span class="shu"> {{user_num}} 可用</span>
+										</div>
+										<div class="btn-el">
+												<button class="quxiao" @click="quxiao">取消</button>
+												<button class="queren" @click="queren">确认</button>
+										</div>
+								</div>
+						</div>
+				</div>
+		</div>
+</template>
+
+<script>
+		import Head from '@/components/public/headNav'
+		import DongTai from '@/components/public/issuser'
+		import timeCom from '@/components/public/timeCom'
+		import Introduction from '@/components/public/introduction'
+		import Journalism from '@/components/index/Xlist'
+		import { Toast } from 'mint-ui';
+    export default {
+        name: "toupiao",
+				data(){
+        		return {
+								tabList:['简介', '时间商品', '动态', '新闻'],
+								currentIndex:0,
+								listIndex:null,
+								code:'',
+								token:'',
+								issuserArr:{},
+								issuserArr1:{},
+								alert1:false,
+								xingNum:'',
+								user_num:0,
+								investorsId:'',
+								dongtai1:{},
+								dataJson:[],   //新闻列表
+						}
+				},
+				created(){
+						//本ye数据
+        		this.token = localStorage.getItem('userName');
+        		if(this.token){
+								console.log(this.$route.query.voteNewId);
+								this.code = this.$route.query.code;
+								this.$axios.post(url+'/api/investors/findInvestors',this.$qs.stringify({
+										token:this.token,
+										investorsCode:this.code,
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.issuserArr = res.data.issuerDatabase;
+												this.issuserArr1 = res.data.issuerDatabase.userTeam;
+												this.investorsId = res.data.issuerDatabase.investorsId
+										}else{
+
+										}
+								})
+						}else{
+								// this.$router.push('/signin')
+						}
+				},
+				mounted(){
+						// this.token = localStorage.getItem('userName');
+				},
+				methods:{
+						back(){
+								this.$router.go(-1)
+						},
+						topR(imgUrl){
+								// this.$router.push('');
+								this.$router.push({
+										path: '/xgph',
+										name: 'xgph',
+										query: {
+												imgUrl:imgUrl,
+												id:this.investorsId
+										}
+								})
+						},
+						tabClick(index){
+								this.currentIndex =index
+								if(index == 2){
+										this.dongtai()
+								}else if(index == 3){
+										this.getJsonData();
+								}
+						},
+						//送星光
+						song(){
+								this.alert1 = true;
+								console.log(this.token);
+								this.$axios.post(url+'/api/user/getUserInfo',this.$qs.stringify({
+										token:this.token
+								})).then((res) => {
+										console.log(res.data);
+										this.user_num = res.data.data.starlight_num;
+								})
+						},
+						quxiao(){
+								this.alert1 = false
+						},
+						queren(){
+								//送星光接口
+								this.$axios.post(url+'/api/user/updateStarlightNum',this.$qs.stringify({
+										token:this.token,
+										operatingType:'0',
+										starlightNum:this.xingNum,
+										tInvestorsId:this.investorsId,
+										recordId:this.$route.query.voteNewId,
+										voteNewId:this.$route.query.voteNewId,
+								})).then((res) => {
+										console.log(res.data);
+										switch (res.data.status)
+										{
+												case '0':
+														this.issuserArr1.starlightNum += parseInt(this.xingNum);
+														Toast({
+																message: '赠送成功',
+																position: 'bottom',
+																duration: 1000
+														});
+														break;
+												default:
+														Toast({
+																message: res.data.message,
+																position: 'bottom',
+																duration: 1000
+														});
+										}
+										this.alert1 = false;
+										this.xingNum = '';
+								})
+						},
+						//动态接口
+						dongtai(){
+								this.$axios.post(url+'/sxz/api/findSxzRecordPageList',this.$qs.stringify({
+										token:this.token,
+										userId:this.issuserArr1.userId,
+								})).then((res) => {
+										console.log(res.data);
+										if(res.data.status == 0){
+												this.dongtai1 = res.data.data.list
+										}else{
+												Toast({
+														message: '暂无动态信息',
+														duration: 1000
+												});
+										}
+								})
+						},
+						//新闻list
+						getJsonData(){
+								this.$axios.post(url+'/api/investors/findInvestorsNewsInformation',this.$qs.stringify({
+										token:this.token,
+										investorsCode: this.code  ,  //  发行人代码
+								})).then((res) => {
+										console.log(res.data);
+										this.dataJson = res.data.data;
+								}).catch((err) => {
+										console.log(err);
+								})
+						}
+
+				},
+				components:{
+        		Head,
+						DongTai,
+						Introduction,
+						timeCom,
+						Journalism,
+				}
+    }
+</script>
+
+<style scoped lang="scss">
+		$color:#ff5558;
+		.display{
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+		}
+		.con-top{
+				@extend .display;
+				border-bottom: 1px solid #eee;
+				height: 1.1rem;
+				padding: 0 .15rem;
+				.con-top-left{
+						@extend .display;
+						>img{
+								width: .7rem;
+								height: .7rem;
+								border-radius: 50%;
+								margin-right: .1rem;
+						}
+						.left-con{
+								.iconfont{
+										font-size: .2rem;
+								}
+								.icon-fans{
+										color: $color;
+								}
+								.icon-touPiao{
+										color: #F5A623;
+								}
+								img{
+										width: .12rem;
+										height: .12rem;
+								}
+								p{
+										font-size: .16rem;
+										color: $color;
+										line-height: .2rem;
+										span{
+												font-size: .12rem;
+												color: #9013FE;
+												line-height: .14rem;
+										}
+								}
+								button{
+										font-size: .11rem;
+										color: $color;
+										margin-top: 5px;
+										width: .6rem;
+										height: .2rem;
+										border-radius: 5px;
+										border: 1px solid $color;
+										background: #fff;
+								}
+						}
+				}
+				.con-top-right{
+						box-shadow: 0 2px 6px 0 rgba(0,0,0,0.10);
+						border-radius: 3px;
+						width: 1.4rem;
+						height: .7rem;
+						line-height: .35rem;
+						text-align: center;
+						p{
+								@extend .display;
+								justify-content: center;
+								color: $color;
+								span{
+										color: #BCBCBC;
+								}
+								b{
+										margin-left: .1rem;
+										font-size: .24rem;
+								}
+						}
+				}
+
+		}
+		/*菜单*/
+		.nav{
+				text-align: center;
+				border-bottom: 1px solid #ddd;
+				@extend .display;
+				justify-content: space-around;
+				height: .36rem;
+				p{
+						display: block;
+						padding: 8px 0;
+						&.active{
+								border-bottom: 2px solid $color;
+								color: $color;
+						}
+				}
+		}
+		.mescroll{
+				position: fixed;
+				top: .5rem;
+				bottom: 0;
+				height: auto;
+		}
+		.el-motai{
+				position: fixed;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				background: rgba(0,0,0,.4);
+				>div{
+						width: 100%;
+						height: 100%;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						>div{
+								border-radius: 5px;
+								width: 60%;
+								overflow: hidden;
+								background: #fff;
+								text-align: center;
+						}
+						p{
+								line-height: 3;
+						}
+						.til-name{
+								color: #FF5558;
+						}
+				}
+				.img-k{
+						height: .35rem;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						img{
+								width: .15rem;
+								margin-right: 5px;
+						}
+						color: #9013FE;
+				}
+				input{
+						height: .25rem;
+						border-radius: 4px;
+						border: 1px solid #aaa;
+				}
+				input::placeholder{
+						text-align: center;
+				}
+				.btn-el{
+						display: flex;
+						button{
+								width: 50%;
+								height: .35rem;
+								background: #fff;
+								border: 1px solid #ccc;
+						}
+				}
+		}
+</style>
